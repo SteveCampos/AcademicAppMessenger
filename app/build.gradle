@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        applicationId "com.consultoraestrategia.messengeracademico"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile ("com.lamudi.phonefield:phone-field:$rootProject.ext.phonefileLibraryVersion") {
+        transitive = true
+    }
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    compile "com.google.firebase:firebase-database:$rootProject.ext.firebaseVersion"
+    compile "com.google.firebase:firebase-auth:$rootProject.ext.firebaseVersion"
+    compile "com.google.firebase:firebase-storage:$rootProject.ext.firebaseVersion"
+    compile "com.google.firebase:firebase-messaging:$rootProject.ext.firebaseVersion"
+    compile "com.google.firebase:firebase-ads:$rootProject.ext.firebaseVersion"
+
+    compile "com.android.support:support-v4:$rootProject.ext.supportLibraryVersion"
+    compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
+    compile "com.android.support:design:$rootProject.ext.supportLibraryVersion"
+    compile "com.android.support:cardview-v7:$rootProject.ext.supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$rootProject.ext.supportLibraryVersion"
+
+    compile "de.hdodenhof:circleimageview:$rootProject.ext.circleImageViewVersion"
+
+    compile "com.fasterxml.jackson.core:jackson-annotations:$rootProject.ext.jacksonVersion"
+    compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
+    compile "com.jakewharton:butterknife:$rootProject.ext.butterKnifeVersion"
+
+    apt "com.jakewharton:butterknife-compiler:$rootProject.ext.butterKnifeVersion"
+    compile "org.greenrobot:eventbus:$rootProject.ext.eventBusVersion"
+
+    testCompile "junit:junit:$rootProject.ext.junitVersion"
+}
+
+apply plugin: 'com.google.gms.google-services'

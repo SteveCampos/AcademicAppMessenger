@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Messenger Academico</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="verification.button.next">Sig.</string>
+    <string name="verification.message.costwarning">Puede que tu operador te cobre por el SMS </string>
+    <string name="verification.message.smssend">Messenger Académico te enviará un SMS para verificar tu número de teléfono. Introduce tu código de país y número de teléfono:</string>
+    <string name="verification.title">Verifica tu número</string>
+    <string name="verification.title.verificating">Verificar %s</string>
+    <string name="verification.message.verificating">Esperando para detectar automáticamente el SMS enviado al &lt;b>%s&lt;/b>. &lt;a href="https://www.facebook.com/jairsteve.camposvega">¿Número equivocado?&lt;/a></string>
+    <string name="verification.dialog.message.confirm">Vamos a verificar el número de teléfono \n\n%s \n\n¿Es correcto o quieres modificarlo?</string>
+    <string name="verification.error.invalid.phonenumber">El número introducido no es válido.</string>
+    <string name="verification.error.code.invalid">El código introducido no es válido</string>
+
+    <string name="verification.hint.code">Código</string>
+    <string name="verification.button.sendsmsagain">Enviar SMS de nuevo</string>
+    <string name="verification.button.call">Llámame</string>
+    <string name="verification.button.retro">Cambiar Número</string>
+
+
+    <string name="loadprofile.title">Info. de perfil</string>
+    <string name="loadprofile.subtitle">Por favor, introduce tu nombre y una foto (opcional)</string>
+</resources>
