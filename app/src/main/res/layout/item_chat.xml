@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:orientation="vertical">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_profile"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_centerVertical="true"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/global.img.description"
+        android:src="@drawable/common_google_signin_btn_icon_dark_disabled" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/txt_name"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/img_profile"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@+id/img_profile"
+        android:layout_toStartOf="@+id/txt_time"
+        android:maxLines="1"
+        android:text="Default name"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/txt_time"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/txt_name"
+        android:text="00:00 PM"
+        android:textAllCaps="true"
+        android:textColor="@color/colorAccent" />
+
+    <View
+        android:id="@+id/view_pivot"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/txt_message"
+        android:layout_alignStart="@+id/txt_name"
+        android:layout_below="@+id/txt_name" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/img_status_message"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignBottom="@+id/txt_message"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@+id/view_pivot"
+        android:contentDescription="@string/global.img.description"
+        android:src="@drawable/ic_double_check_colored"
+        android:visibility="visible" />
+
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/txt_message"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_name"
+        android:layout_marginTop="2dp"
+        android:layout_toEndOf="@+id/img_status_message"
+        android:layout_toStartOf="@+id/img_notification_state"
+        android:maxLines="1"
+        android:text="@string/contactlist.message.status.default" />
+
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/img_notification_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/txt_message"
+        android:layout_toStartOf="@+id/txt_counter"
+        android:contentDescription="@string/global.img.description"
+        android:src="@drawable/ic_notifications_off"
+        android:visibility="gone" />
+
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/txt_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/txt_message"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/badge_circle"
+        android:gravity="center"
+        android:paddingLeft="9dp"
+        android:paddingRight="9dp"
+        android:text="7"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignEnd="@+id/txt_time"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/txt_name"
+        android:background="@color/md_grey_200" />
+</RelativeLayout>

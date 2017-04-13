@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.google.gms:google-services:3.0.0'
         // NOTE: Do not place your application dependencies here; they belong
@@ -26,7 +26,7 @@ task clean(type: Delete) {
 ext{
     compileSdkVersion = 25
     buildToolsVersion = '25.0.2'
-    minSdkVersion = 19
+    minSdkVersion = 18
     targetSdkVersion = 25
     supportLibraryVersion = '25.1.1'
     junitVersion = '4.12'
@@ -38,5 +38,10 @@ ext{
     materialDialogVersion = '0.9.1.0'
     glideVersion = '3.7.0'
     circleImageViewVersion = '2.1.0'
+    dbflow_version = '4.0.0-beta5'
+    debugDbVersion = '1.0.0'
+    permissionsdispatcher = '2.3.2'
+    androidannotations = '4.0.0'
+    AndroidAnnotationsPermissionsDispatcherPlugin = '0.1.0'
 }
 

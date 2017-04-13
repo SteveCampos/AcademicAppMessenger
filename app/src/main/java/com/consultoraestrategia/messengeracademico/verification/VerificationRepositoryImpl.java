@@ -43,15 +43,14 @@ public class VerificationRepositoryImpl implements VerificationRepository {
         helper.validateCode(phoneNumber, code, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "dataSnapshot: " + dataSnapshot  );
-                if (dataSnapshot != null){
+                Log.d(TAG, "dataSnapshot: " + dataSnapshot);
+                if (dataSnapshot != null) {
                     PhoneNumberVerified numberVerified = dataSnapshot.getValue(PhoneNumberVerified.class);
-                    if (numberVerified != null){
-                        if (numberVerified.getCode() != null  && numberVerified.getCode().equals(code)){
-                            //Está validado el putazo!
+                    if (numberVerified != null) {
+                        if (numberVerified.getCode() != null && numberVerified.getCode().equals(code)) {
                             post(VerificationEvent.OnPhoneNumberVerificated, numberVerified, null);
                             return;
-                        }else{
+                        } else {
                             post(VerificationEvent.OnInvalidCode, getPhoneNumberVerified(phoneNumber), "");
                             return;
                         }
@@ -83,7 +82,7 @@ public class VerificationRepositoryImpl implements VerificationRepository {
         eventBus.post(event);
     }
 
-    private PhoneNumberVerified getPhoneNumberVerified(String phoneNumber){
+    private PhoneNumberVerified getPhoneNumberVerified(String phoneNumber) {
         PhoneNumberVerified numberVerified = new PhoneNumberVerified();
         numberVerified.setPhoneNumber(phoneNumber);
         return numberVerified;

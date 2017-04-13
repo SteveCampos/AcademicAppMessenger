@@ -1,11 +1,13 @@
 package com.consultoraestrategia.messengeracademico.verification.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -25,7 +27,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.consultoraestrategia.messengeracademico.MainActivity;
+import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.entities.PhoneNumberVerified;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfileActivity;
@@ -38,10 +40,13 @@ import com.lamudi.phonefield.PhoneInputLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 
 import static com.consultoraestrategia.messengeracademico.loadProfile.LoadProfileActivity.PREF_STEP_LOAD_PROFILE;
 
-public class VerificationActivity extends AppCompatActivity implements VerificationView, SmsListener{
+@RuntimePermissions
+public class VerificationActivity extends AppCompatActivity implements VerificationView, SmsListener {
 
     private static final String TAG = VerificationActivity.class.getSimpleName();
     public static final String EXTRA_PHONENUMBER = "EXTRA_PHONENUMBER";
@@ -77,6 +82,15 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
 
     private VerificationPresenter presenter;
     private String phoneNumber;
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        VerificationActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,8 +135,8 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
         requestFocus(phoneInputLayout);
     }
 
-    private String getCountryCode(){
-        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+    private String getCountryCode() {
+        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getSimCountryIso();
     }
 
@@ -151,19 +165,26 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //listener.onPossitiveButtonClick();
-                                presenter.verificatePhoneNumber(phoneNumber);
+                                verificate();
                             }
                         })
                 .setNegativeButton("EDITAR",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //listener.onNegativeButtonClick();
                             }
                         });
-
         return builder.create();
+    }
+
+    public void verificate() {
+        VerificationActivityPermissionsDispatcher.verificatePhoneNumberWithCheck(this);
+    }
+
+    @NeedsPermission({Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS})
+    public void verificatePhoneNumber() {
+        Log.d(TAG, "verificatePhoneNumber");
+        presenter.verificatePhoneNumber(phoneNumber);
     }
 
     @Override
@@ -178,12 +199,12 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
         requestFocus(edtCode);
     }
 
-    private Spanned getSpanned(String htmlText){
-        Log.d(TAG, "getSpanned: "+ htmlText);
+    private Spanned getSpanned(String htmlText) {
+        Log.d(TAG, "getSpanned: " + htmlText);
         Spanned textFormatted;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             textFormatted = Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY);
-        }else{
+        } else {
             textFormatted = Html.fromHtml(htmlText);
         }
         return textFormatted;
@@ -213,7 +234,6 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
     }
 
 
-
     @Override
     public void setCode(String code) {
         edtCode.setText(code);
@@ -241,17 +261,18 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d(TAG, "afterTextChanged count: " + s.length());
-                if (s.length()==6){
+                if (s.length() == 6) {
                     presenter.validateCode(phoneNumber, s.toString());
                 }
             }
         });
     }
-    private void hideSoftInput(){
+
+    private void hideSoftInput() {
         // Check if no view has focus:
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
@@ -287,7 +308,7 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
 
     @Override
     public void onMessageReceived(String sender, String messageText) {
-        Log.d(TAG, "sender: " + sender + ", messageText: "+ messageText );
+        Log.d(TAG, "sender: " + sender + ", messageText: " + messageText);
         presenter.onMessageReceived(phoneNumber, messageText);
     }
 
@@ -301,7 +322,7 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
         startActivity(intent);
     }
 
-    private void savePreferences(String phoneNumber){
+    private void savePreferences(String phoneNumber) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(PREF_PHONENUMBER, phoneNumber);
@@ -310,7 +331,12 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
     }
 
     @OnClick(R.id.btnRetro)
-    public void btnRetro(){
+    public void btnRetro() {
         presenter.initVerificationViews();
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
     }
 }

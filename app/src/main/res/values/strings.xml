@@ -20,4 +20,50 @@
 
     <string name="loadprofile.title">Info. de perfil</string>
     <string name="loadprofile.subtitle">Por favor, introduce tu nombre y una foto (opcional)</string>
+    <string name="importdata.title">¡Bienvenido %s!</string>
+    <string name="importdata.subtitle">Institución: %s</string>
+    <string name="importdata.message.main">Messenger Académico permite a alumnos, profesores y padres comunicarse.</string>
+
+    <string name="importdata.title.import">Importar Contactos</string>
+    <string name="importdata.subtitle.import">%1$d Institucion(es) Y %2$d Contactos encontrados</string>
+    <string name="importdata.content.import">Importar tus mensajes a messenger académico. Así podrás intercambiar mensajes, imágenes y videos rápidamente.</string>
+    <string name="importdata.button.import">Importar</string>
+
+
+    <string name="importdata.button.go">Importar Contactos</string>
+    <string name="importdata.message.ready">Listo</string>
+    <string name="importdata.notice.success">Importado correctamente</string>
+    <string name="importdata.notice.error">Lo sentimos hubo un error al importar, inténtelo nuevamente.</string>
+
+    <string name="importdata.message.contacts.imported">%d Contactos Importados</string>
+
+
+    <string name="title_activity_test">TestActivity</string>
+    <string name="fragment_chatlist_title">Chats</string>
+    <string name="fragment_contacts_title">Contacts</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="contactlist.message.status.default">Hola, estoy usando Messenger Académico.</string>
+    <string name="global_notice_online">En línea</string>
+    <string name="chat_info_connection_lastseen">últ. vez hoy a las %s</string>
+    <string name="loadprofile.button.next">Sig.</string>
+    <string name="menu_chat_item_attach_file_title">Attach File</string>
+    <string name="menu_chat_item_call_title">Call</string>
+    <string name="action_view_contact">Ver contacto</string>
+    <string name="action_view_files">Archivos</string>
+    <string name="action_mute">Silenciar</string>
+    <string name="action_change_background">Fondo</string>
+    <string name="action_more">Más</string>
+    <string name="action_shorcut">Crear acceso directo</string>
+    <string name="action_send_email">Enviar chat por email</string>
+    <string name="action_delete">Vaciar</string>
+    <string name="action_block">Blockear</string>
+
+
+    <string name="global_action_writing">escribiendo…</string>
+    <string name="global_action_user_writing">%s está escribiendo…</string>
+    <string name="global.img.description">Image Description</string>
+
+
 </resources>

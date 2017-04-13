@@ -1,10 +1,7 @@
 package com.consultoraestrategia.messengeracademico.domain;
 
-import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.entities.PhoneNumberVerified;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
@@ -18,12 +15,12 @@ import java.util.Map;
 
 public class FirebaseNumberVerification extends FirebaseHelper{
 
-    public static final String CHILD_VERIFIED_NUMBERS = "VERIFIED_NUMBERS";
-    public static final String CHILD_ALL = "ALL";
-    public static final String CHILD_IN_PROCESS = "IN_PROCESS";
+    private static final String CHILD_VERIFIED_NUMBERS = "VERIFIED_NUMBERS";
+    private static final String CHILD_ALL = "ALL";
+    private static final String CHILD_IN_PROCESS = "IN_PROCESS";
 
-    public static final String PATH_IN_PROCESS = "/" + CHILD_VERIFIED_NUMBERS + "/" + CHILD_IN_PROCESS + "/";
-    public static final String PATH_ALL = "/" + CHILD_VERIFIED_NUMBERS + "/" + CHILD_ALL + "/";
+    private static final String PATH_IN_PROCESS = "/" + CHILD_VERIFIED_NUMBERS + "/" + CHILD_IN_PROCESS + "/";
+    private static final String PATH_ALL = "/" + CHILD_VERIFIED_NUMBERS + "/" + CHILD_ALL + "/";
     private static final String TAG = FirebaseNumberVerification.class.getSimpleName();
 
     private DatabaseReference verifiedNumbersRef;

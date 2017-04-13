@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_import_contacts"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity">
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTitle"
+            style="@style/TextAppearance.AppCompat.Display1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/importdata.title"
+            android:textColor="@color/colorAccent" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgProfile"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:src="@drawable/common_google_signin_btn_icon_dark_disabled" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/txtSubtitle"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:text="@string/importdata.subtitle"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/txtContent"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:gravity="center"
+            android:text="@string/importdata.message.main" />
+    </android.support.v7.widget.LinearLayoutCompat>
+
+    <RelativeLayout
+        android:id="@+id/layoutAnimation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnGo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btnGo"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/txtNotice"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:text="@string/importdata.button.go" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/txtNotice"
+        android:gravity="center"
+        style="@style/TextAppearance.AppCompat.Notification.Info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

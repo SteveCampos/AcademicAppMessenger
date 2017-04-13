@@ -1,0 +1,65 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.consultoraestrategia.messengeracademico.main.ui.MainActivity">
+    <item
+        android:id="@+id/action_call"
+        android:icon="@drawable/ic_local_phone_24dp"
+        android:title="@string/menu_chat_item_call_title"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_atttach_file"
+        android:icon="@drawable/ic_attach_file_24dp"
+        android:title="@string/menu_chat_item_attach_file_title"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_view_contact"
+        android:orderInCategory="100"
+        android:title="@string/action_view_contact"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_view_files"
+        android:orderInCategory="100"
+        android:title="@string/action_view_files"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_mute"
+        android:orderInCategory="100"
+        android:title="@string/action_mute"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_change_background"
+        android:orderInCategory="100"
+        android:title="@string/action_change_background"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_more"
+        android:orderInCategory="100"
+        android:title="@string/action_more"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/action_block"
+                android:orderInCategory="100"
+                android:title="@string/action_block"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_delete"
+                android:orderInCategory="100"
+                android:title="@string/action_delete"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_send_email"
+                android:orderInCategory="100"
+                android:title="@string/action_send_email"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_shorcut"
+                android:orderInCategory="100"
+                android:title="@string/action_shorcut"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+
+</menu>
