@@ -76,12 +76,12 @@ class MainRepositoryImpl implements MainRepository {
         firebaseUser.listenToIncomingMessages(contact, new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ChatRepositoryImpl.manageSnapshotMessage(ChatRepositoryImpl.FROM_USER_PATH, me, dataSnapshot);
+                ChatRepositoryImpl.manageSnapshotMessage(true, ChatRepositoryImpl.FROM_USER_PATH, me, dataSnapshot);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                ChatRepositoryImpl.manageSnapshotMessage(ChatRepositoryImpl.FROM_USER_PATH, me, dataSnapshot);
+                ChatRepositoryImpl.manageSnapshotMessage(true, ChatRepositoryImpl.FROM_USER_PATH, me, dataSnapshot);
             }
 
             @Override

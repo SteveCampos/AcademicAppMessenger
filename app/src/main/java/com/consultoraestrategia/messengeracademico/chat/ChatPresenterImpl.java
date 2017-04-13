@@ -27,6 +27,9 @@ public class ChatPresenterImpl implements ChatPresenter {
     private ChatInteractor interactor;
     private EventBus eventBus;
 
+
+    private boolean online = false;
+
     public ChatPresenterImpl(ChatView view) {
         this.view = view;
         this.interactor = new ChatInteractorImpl();
@@ -69,7 +72,7 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     @Override
     public void sendMessage(Contact from, Contact to, ChatMessage message) {
-        interactor.sendMessage(from, to, message);
+        interactor.sendMessage(online, from, to, message);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void setMessageStatusReaded(ChatMessage message) {
         Log.d(TAG, "setMessageStatusReaded");
-        interactor.setMessageStatusReaded(emisor, receptor, message);
+        interactor.setMessageStatusReaded(online, emisor, receptor, message);
     }
 
     @Subscribe
@@ -125,6 +128,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void onConnectionChanged(Connection connection) {
         this.lastConnection = connection;
+        this.online = connection.isOnline();
         if (view != null) {
             view.onConnectionChanged(connection);
         }

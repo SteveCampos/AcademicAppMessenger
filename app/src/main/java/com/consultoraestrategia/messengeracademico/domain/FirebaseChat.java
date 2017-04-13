@@ -87,8 +87,10 @@ public class FirebaseChat extends FirebaseHelper {
         return chatsRef.child(keyChat).child(CHILD_MESSAGES).push().getKey();
     }
 
-    public void sendMessage(Contact from, Contact to, ChatMessage message, DatabaseReference.CompletionListener listener) {
+    public void sendMessage(boolean online, Contact from, Contact to, ChatMessage message, DatabaseReference.CompletionListener listener) {
         message.setMessageStatus(ChatMessage.STATUS_SEND);
+        changeStatus(online, ChatMessage.STATUS_SEND, message, listener);
+        /*
         String emisorKey = from.getUserKey();
         String receptorKey = to.getUserKey();
         String[] sortKeys = StringUtils.sortAlphabetical(emisorKey, receptorKey);
@@ -99,10 +101,10 @@ public class FirebaseChat extends FirebaseHelper {
         Map<String, Object> map = new HashMap<>();
         map.put(PATH_CHATS + keyChat + "/" + CHILD_MESSAGES + "/" + keyMessage, message.toMap());
         map.put(FirebaseUser.CHILD_USER + "/" + receptorKey + "/" + FirebaseUser.CHILD_INCOMING_MESSAGES + "/" + keyMessage, message.toMap());
-        getDatabase().getReference().updateChildren(map, listener);
+        getDatabase().getReference().updateChildren(map, listener);*/
     }
 
-    private void changeStatus(int messageStatus, ChatMessage message, DatabaseReference.CompletionListener listener) {
+    private void changeStatus(boolean online, int messageStatus, ChatMessage message, DatabaseReference.CompletionListener listener) {
         Contact from = message.getEmisor();
         Contact to = message.getReceptor();
 
@@ -117,20 +119,46 @@ public class FirebaseChat extends FirebaseHelper {
 
         Map<String, Object> map = new HashMap<>();
         map.put(PATH_CHATS + keyChat + "/" + CHILD_MESSAGES + "/" + keyMessage, message.toMap());
-        map.put(FirebaseUser.CHILD_USER + "/" + receptorKey + "/" + FirebaseUser.CHILD_INCOMING_MESSAGES + "/" + keyMessage, message.toMap());
+
+
+        String userKey = null;
+
+        int status = message.getMessageStatus();
+        switch (status) {
+            case ChatMessage.STATUS_SEND:
+                userKey = receptorKey;
+                break;
+            case ChatMessage.STATUS_DELIVERED:
+                userKey = emisorKey;
+                break;
+            case ChatMessage.STATUS_READED:
+                userKey = emisorKey;
+                break;
+            default:
+                userKey = receptorKey;
+                break;
+        }
+
+        if (online) {
+            map.put(FirebaseUser.CHILD_USER + "/" + userKey + "/" + FirebaseUser.CHILD_INCOMING_MESSAGES + "/" + keyMessage, message.toMap());
+        } else {
+            map.put(FirebaseUser.CHILD_NOTIFICATIONS + "/" + keyMessage, message.toMap());
+        }
+
+
         getDatabase().getReference().updateChildren(map, listener);
     }
 
-    public void setStatusReaded(ChatMessage message, DatabaseReference.CompletionListener listener) {
-        changeStatus(ChatMessage.STATUS_READED, message, listener);
+    public void setStatusReaded(boolean online, ChatMessage message, DatabaseReference.CompletionListener listener) {
+        changeStatus(online, ChatMessage.STATUS_READED, message, listener);
     }
 
-    public void setStatusDelivered(ChatMessage message, DatabaseReference.CompletionListener listener) {
-        changeStatus(ChatMessage.STATUS_DELIVERED, message, listener);
+    public void setStatusDelivered(boolean online, ChatMessage message, DatabaseReference.CompletionListener listener) {
+        changeStatus(online, ChatMessage.STATUS_DELIVERED, message, listener);
     }
 
-    public void setStatusSend(ChatMessage message, DatabaseReference.CompletionListener listener) {
-        changeStatus(ChatMessage.STATUS_SEND, message, listener);
+    public void setStatusSend(boolean online, ChatMessage message, DatabaseReference.CompletionListener listener) {
+        changeStatus(online, ChatMessage.STATUS_SEND, message, listener);
     }
 
     public void changeConnection(Contact from, Connection connection) {

@@ -43,14 +43,14 @@ public class ChatInteractorImpl implements ChatInteractor {
     }
 
     @Override
-    public void setMessageStatusReaded(Contact from, Contact to, ChatMessage message) {
+    public void setMessageStatusReaded(boolean online, Contact from, Contact to, ChatMessage message) {
         Log.d(TAG, "setMessageStatusReaded");
-        repository.setMessageStatusReaded(from, to, message);
+        repository.setMessageStatusReaded(from, to, message, online);
     }
 
     @Override
-    public void sendMessage(Contact from, Contact to, ChatMessage message) {
-        repository.sendMessage(from, to, message);
+    public void sendMessage(boolean online, Contact from, Contact to, ChatMessage message) {
+        repository.sendMessage(online, from, to, message);
     }
 
     @Override

@@ -19,11 +19,13 @@ public interface ChatRepository {
 
     void changeConnection(Contact from, Connection connection);
 
-    void sendMessage(Contact from, Contact to, ChatMessage message);
+    void sendMessage(boolean online, Contact from, Contact to, ChatMessage message);
 
-    void setMessageStatusReaded(Contact from, Contact to, ChatMessage message);
+    void setMessageStatusReaded(Contact from, Contact to, ChatMessage message, boolean online);
 
-    void setMessageStatusSended(Contact from, Contact to, ChatMessage message);
+    void setMessageStatusDelivered(Contact from, Contact to, ChatMessage message, boolean online);
+
+    void setMessageStatusSended(Contact from, Contact to, ChatMessage message, boolean online);
 
     void getContactEmisor(String id);
 

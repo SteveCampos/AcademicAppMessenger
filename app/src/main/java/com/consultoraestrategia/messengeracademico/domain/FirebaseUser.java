@@ -18,6 +18,7 @@ import java.util.Map;
 
 public class FirebaseUser extends FirebaseHelper {
 
+    public static final String CHILD_NOTIFICATIONS = "NOTIFICATIONS";
     public static final String CHILD_USER = "USER";
     private static final String CHILD_PROFILE = "PROFILE";
     public static final String CHILD_CONNECTION = "CONNECTION";

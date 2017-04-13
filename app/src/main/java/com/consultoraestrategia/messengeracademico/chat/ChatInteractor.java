@@ -19,9 +19,9 @@ public interface ChatInteractor {
 
     void changeConnection(Contact from, Connection connection);
 
-    void setMessageStatusReaded(Contact from, Contact to, ChatMessage message);
+    void setMessageStatusReaded(boolean online, Contact from, Contact to, ChatMessage message);
 
-    void sendMessage(Contact from, Contact to, ChatMessage message);
+    void sendMessage(boolean online, Contact from, Contact to, ChatMessage message);
 
     void getContactEmisor(String id);
 

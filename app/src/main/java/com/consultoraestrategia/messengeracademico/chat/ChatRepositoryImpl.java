@@ -39,6 +39,8 @@ public class ChatRepositoryImpl implements ChatRepository {
     public static final int FROM_USER_PATH = 101;
     public static final int FROM_NOTIFICATION = 102;
 
+    private boolean online = false;
+
 
     private Chat chat;
     private Contact from;
@@ -67,12 +69,12 @@ public class ChatRepositoryImpl implements ChatRepository {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "dataSnapshot: " + dataSnapshot);
-                manageSnapshotMessage(FROM_CHAT, from, dataSnapshot);
+                manageSnapshotMessage(online, FROM_CHAT, from, dataSnapshot);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                manageSnapshotMessage(FROM_CHAT, from, dataSnapshot);
+                manageSnapshotMessage(online, FROM_CHAT, from, dataSnapshot);
             }
 
             @Override
@@ -104,6 +106,7 @@ public class ChatRepositoryImpl implements ChatRepository {
                 if (dataSnapshot != null) {
                     Connection connection = dataSnapshot.getValue(Connection.class);
                     if (connection != null) {
+                        online = connection.isOnline();
                         post(ChatEvent.TYPE_CONNECTION, connection);
                     }
                 }
@@ -161,7 +164,7 @@ public class ChatRepositoryImpl implements ChatRepository {
         firebaseChat.changeConnection(from, connection);
     }
 
-    public static void manageSnapshotMessage(int type, Contact me, DataSnapshot dataSnapshot) {
+    public static void manageSnapshotMessage(boolean online, int type, Contact me, DataSnapshot dataSnapshot) {
         Log.d(TAG, "manageSnapshotMessage");
         if (me == null || dataSnapshot == null) {
             return;
@@ -209,7 +212,7 @@ public class ChatRepositoryImpl implements ChatRepository {
                         saveMessageAndPost(type, message.getReceptor(), message);
 
                         FirebaseChat firebaseChat = new FirebaseChat();
-                        firebaseChat.setStatusDelivered(message, new DatabaseReference.CompletionListener() {
+                        firebaseChat.setStatusDelivered(online, message, new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 
@@ -230,7 +233,6 @@ public class ChatRepositoryImpl implements ChatRepository {
                         break;
                 }
             }
-
         }
 
     }
@@ -270,7 +272,7 @@ public class ChatRepositoryImpl implements ChatRepository {
     }
 
 
-    private void saveMessageAndSend(final Contact from, final Contact to, ChatMessage chatMessage) {
+    private void saveMessageAndSend(final boolean online, final Contact from, final Contact to, ChatMessage chatMessage) {
 
         Chat chat = getChat(chatMessage);
 
@@ -291,7 +293,7 @@ public class ChatRepositoryImpl implements ChatRepository {
                         public void onSuccess(Transaction transaction) {
                             Log.d(TAG, "saveMessageAndPost onSuccess");
                             post(eventBus, ChatEvent.TYPE_MESSAGE, message);
-                            sendMessageToFirebase(from, to, message);
+                            sendMessageToFirebase(online, from, to, message);
                         }
                     }, new Transaction.Error() {
                         @Override
@@ -304,11 +306,11 @@ public class ChatRepositoryImpl implements ChatRepository {
         }
     }
 
-    private void sendMessageToFirebase(final Contact from, final Contact to, final ChatMessage chatMessage) {
+    private void sendMessageToFirebase(boolean online, final Contact from, final Contact to, final ChatMessage chatMessage) {
         chatMessage.setMessageStatus(ChatMessage.STATUS_SEND);
         //final ChatMessage message = chatMessage;
         FirebaseChat firebaseChat = new FirebaseChat();
-        firebaseChat.sendMessage(from, to, chatMessage, new DatabaseReference.CompletionListener() {
+        firebaseChat.sendMessage(online, from, to, chatMessage, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
@@ -324,13 +326,13 @@ public class ChatRepositoryImpl implements ChatRepository {
 
 
     @Override
-    public void sendMessage(Contact from, Contact to, ChatMessage message) {
+    public void sendMessage(boolean online, Contact from, Contact to, ChatMessage message) {
         Log.d(TAG, "sendMessage");
-        saveMessageAndSend(from, to, message);
+        saveMessageAndSend(online, from, to, message);
     }
 
     @Override
-    public void setMessageStatusReaded(Contact from, Contact to, ChatMessage message) {
+    public void setMessageStatusReaded(Contact from, Contact to, ChatMessage message, final boolean online) {
         Log.d(TAG, "setMessageStatusReaded");
 
         Chat chat = getChat(message);
@@ -349,7 +351,7 @@ public class ChatRepositoryImpl implements ChatRepository {
                     public void onSuccess(Transaction transaction) {
                         Log.d(TAG, "saveMessageAndPost onSuccess");
 
-                        firebaseChat.setStatusReaded(chatMessage, new DatabaseReference.CompletionListener() {
+                        firebaseChat.setStatusReaded(online, chatMessage, new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                 if (databaseError != null) {
@@ -370,9 +372,22 @@ public class ChatRepositoryImpl implements ChatRepository {
     }
 
     @Override
-    public void setMessageStatusSended(Contact from, Contact to, ChatMessage message) {
+    public void setMessageStatusDelivered(Contact from, Contact to, ChatMessage message, boolean online) {
+        Log.d(TAG, "setMessageStatusDelivered");
+        firebaseChat.setStatusDelivered(online, message, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.d(TAG, "setMessageStatusSended databaseError: " + databaseError);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setMessageStatusSended(Contact from, Contact to, ChatMessage message, boolean online) {
         Log.d(TAG, "setMessageStatusSended");
-        firebaseChat.setStatusSend(message, new DatabaseReference.CompletionListener() {
+        firebaseChat.setStatusSend(online, message, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
