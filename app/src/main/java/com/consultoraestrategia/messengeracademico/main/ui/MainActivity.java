@@ -19,7 +19,7 @@ import com.consultoraestrategia.messengeracademico.chatList.ui.ChatListFragment;
 import com.consultoraestrategia.messengeracademico.contactList.ui.ContactListFragment;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
-import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfileActivity;
+import com.consultoraestrategia.messengeracademico.loadProfile.ui.LoadProfileActivity;
 import com.consultoraestrategia.messengeracademico.main.ChatsFragment;
 import com.consultoraestrategia.messengeracademico.main.MainPresenter;
 import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;

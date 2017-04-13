@@ -1,7 +1,9 @@
 package com.consultoraestrategia.messengeracademico.importData;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
+import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Person;
 import com.consultoraestrategia.messengeracademico.importData.events.ImportDataEvent;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataView;
@@ -21,6 +23,7 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
 
     private boolean importFinished = false;
 
+
     public ImportDataPresenterImpl(ImportDataView view, Context context) {
         this.view = view;
         this.interactor = new ImportDataInteractorImpl(context);
@@ -30,16 +33,6 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
     @Override
     public void onCreate() {
         eventBus.register(this);
-        if (view != null) {
-            view.setPerson(createPerson());
-        }
-    }
-
-    private Person createPerson() {
-        Person person = new Person();
-        person.setName("Steve");
-        person.setUrlImgProfile("https://lh3.googleusercontent.com/-B42xVxBMpx0/AAAAAAAAAAI/AAAAAAAAEc8/aZ66s9K0gR4/s60-p-rw-no/photo.jpg");
-        return person;
     }
 
     @Override
@@ -84,8 +77,17 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
             case ImportDataEvent.OnImportError:
                 onImportError();
                 break;
+            case ImportDataEvent.OnProfileRetrieved:
+                onProfileRetrieved(event.getContact());
+                break;
         }
 
+    }
+
+    private void onProfileRetrieved(Contact contact) {
+        if (view != null) {
+            view.setProfile(contact);
+        }
     }
 
     private void onImportError() {

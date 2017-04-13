@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.importData.ui;
 
+import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Person;
 
 /**
@@ -8,7 +9,7 @@ import com.consultoraestrategia.messengeracademico.entities.Person;
 
 public interface ImportDataView {
 
-    void setPerson(Person person);//
+    void setProfile(Contact contact);//
 
     void showWelcomeView();
     void hideWelcomeView();

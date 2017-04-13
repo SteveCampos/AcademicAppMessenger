@@ -51,7 +51,7 @@ public class ConnectionRepositoryImpl implements ConnectionRepository {
 
     public Contact getMainContact() {
         String phoneNumber = getPhoneNumberFromPreferences();
-        if (!phoneNumber.isEmpty()) {
+        if (phoneNumber != null) {
             return SQLite.select()
                     .from(Contact.class)
                     .where(Contact_Table.phoneNumber.eq(phoneNumber))

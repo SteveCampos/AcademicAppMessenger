@@ -30,7 +30,7 @@ import android.widget.RelativeLayout;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.entities.PhoneNumberVerified;
-import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfileActivity;
+import com.consultoraestrategia.messengeracademico.loadProfile.ui.LoadProfileActivity;
 import com.consultoraestrategia.messengeracademico.verification.VerificationPresenter;
 import com.consultoraestrategia.messengeracademico.verification.VerificationPresenterImpl;
 import com.consultoraestrategia.messengeracademico.verification.sms.SmsListener;
@@ -43,7 +43,7 @@ import butterknife.OnClick;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
-import static com.consultoraestrategia.messengeracademico.loadProfile.LoadProfileActivity.PREF_STEP_LOAD_PROFILE;
+import static com.consultoraestrategia.messengeracademico.loadProfile.ui.LoadProfileActivity.PREF_STEP_LOAD_PROFILE;
 
 @RuntimePermissions
 public class VerificationActivity extends AppCompatActivity implements VerificationView, SmsListener {

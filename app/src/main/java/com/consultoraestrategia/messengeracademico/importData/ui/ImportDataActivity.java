@@ -9,12 +9,15 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.entities.Profile;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.entities.Person;
@@ -33,6 +36,10 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
 
 
     public static final String PREF_STEP_IMPORT_DATA = "PREF_STEP_IMPORT_DATA";
+    public static final String TAG = ImportDataActivity.class.getSimpleName();
+    private static final String EXTRA_NAME = "EXTRA_NAME";
+    private static final String EXTRA_PHOTO_URI = "EXTRA_PHOTO_URI";
+    private static final String EXTRA_PHONENUMBER = "EXTRA_PHONENUMBER";
 
     @BindView(R.id.txtTitle)
     TextView txtTitle;
@@ -67,8 +74,24 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import_data);
         ButterKnife.bind(this);
+        manageIntent(getIntent());
         presenter = new ImportDataPresenterImpl(this, getActivity());
         presenter.onCreate();
+    }
+
+    private void manageIntent(Intent intent) {
+        if (intent.hasExtra(EXTRA_NAME) && intent.hasExtra(EXTRA_PHOTO_URI) && intent.hasExtra(EXTRA_PHONENUMBER)) {
+            String name = intent.getStringExtra(EXTRA_NAME);
+            String uri = intent.getStringExtra(EXTRA_PHOTO_URI);
+            String phoneNumber = intent.getStringExtra(EXTRA_PHONENUMBER);
+
+            Contact contact = new Contact();
+            contact.setName(name);
+            contact.setPhotoUri(uri);
+            contact.setPhoneNumber(phoneNumber);
+
+            setProfile(contact);
+        }
     }
 
     @Override
@@ -99,10 +122,10 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
     }
 
     @Override
-    public void setPerson(Person person) {
-        String title = String.format(getString(R.string.importdata_title), person.getName());
+    public void setProfile(Contact contact) {
+        String title = String.format(getString(R.string.importdata_title), contact.getName());
         txtTitle.setText(title);
-        Glide.with(this).load(person.getUrlImgProfile()).into(imgProfile);
+        Glide.with(this).load(contact.getPhotoUri()).into(imgProfile);
     }
 
     @Override

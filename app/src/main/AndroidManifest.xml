@@ -37,13 +37,16 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".loadProfile.LoadProfileActivity" />
+        <activity android:name=".loadProfile.ui.LoadProfileActivity" />
         <activity android:name=".importData.ui.ImportDataActivity" />
         <activity
             android:name=".TestActivity"
             android:label="@string/title_activity_test"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".chat.ui.ChatActivity" />
+
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/> <!-- optional (needed if default theme has no action bar) -->
     </application>
 
 </manifest>
