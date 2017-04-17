@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Photo;
 import com.consultoraestrategia.messengeracademico.entities.Profile;
 import com.consultoraestrategia.messengeracademico.loadProfile.listener.UploadProfileListener;
@@ -103,7 +104,7 @@ public class FirebaseLoadProfile extends FirebaseHelper {
                             Photo photo = new Photo();
                             photo.setUrl(uriPhoto.toString());
                             profile.setPhoto(photo);
-                            postProfile(profile, listener);
+                            saveContact(profile,uriPhoto,listener);
                         }
                     }
                 })
@@ -114,6 +115,16 @@ public class FirebaseLoadProfile extends FirebaseHelper {
                     }
                 });
 
+    }
+
+    private void saveContact(Profile profile, Uri uriPhoto,UploadProfileListener listener) {
+        Contact contact = new Contact();
+        contact.setUserKey(profile.getUserKey());
+        contact.setName(profile.getmName());
+        contact.setPhoneNumber(profile.getmPhoneNumber());
+        contact.setPhotoUri(uriPhoto.toString());
+        contact.save();
+        postProfile(profile, listener);
     }
 
     private void postProfile(final Profile profile, final UploadProfileListener listener) {

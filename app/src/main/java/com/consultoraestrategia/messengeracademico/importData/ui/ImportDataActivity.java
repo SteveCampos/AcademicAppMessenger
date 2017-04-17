@@ -37,9 +37,9 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
 
     public static final String PREF_STEP_IMPORT_DATA = "PREF_STEP_IMPORT_DATA";
     public static final String TAG = ImportDataActivity.class.getSimpleName();
-    private static final String EXTRA_NAME = "EXTRA_NAME";
-    private static final String EXTRA_PHOTO_URI = "EXTRA_PHOTO_URI";
-    private static final String EXTRA_PHONENUMBER = "EXTRA_PHONENUMBER";
+    public static final String EXTRA_NAME = "EXTRA_NAME";
+    public static final String EXTRA_PHOTO_URI = "EXTRA_PHOTO_URI";
+    public static final String EXTRA_PHONENUMBER = "EXTRA_PHONENUMBER";
 
     @BindView(R.id.txtTitle)
     TextView txtTitle;

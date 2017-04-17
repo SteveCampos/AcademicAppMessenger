@@ -87,6 +87,7 @@ public class LoadProfileRepositoryImpl implements LoadProfileRepository {
         event.setmName(loadProfile.getmName());
         event.setmPhoneNumber(loadProfile.getmPhoneNumber());
         event.setPhoto(loadProfile.getPhoto());
+        event.setProfile(loadProfile);
 
 
         if (errorMessage != null) {

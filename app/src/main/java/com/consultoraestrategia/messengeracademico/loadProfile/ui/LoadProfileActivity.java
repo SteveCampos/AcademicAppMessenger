@@ -153,8 +153,17 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     @OnClick(R.id.btnGo)
     public void btnGo() {
         // final String phoneNumber = getPhoneNumberFromPreferences();
+     /*   String mName = edtName.getText().toString();
+        onRegisterNewProfile(imageUri, mName, getPhoneNumber());*/
+
+
         String mName = edtName.getText().toString();
-        onRegisterNewProfile(imageUri, mName, getPhoneNumber());
+        if(imageUri!=null){
+            onRegisterNewProfile(imageUri, mName, getPhoneNumber());
+        }else{
+            Uri myURI = Uri.parse(getActivity().getString(R.string.load_profile_user) +R.drawable.ic_user);
+            onRegisterNewProfile(myURI, mName, getPhoneNumber());
+        }
 
        /* if (phoneNumber != null) {
             phoneNumberExists(phoneNumber);
@@ -264,12 +273,12 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         if (profile != null) {
             try {
 
-                Contact contact = new Contact();
+             /*   Contact contact = new Contact();
                 contact.setUserKey(profile.getUserKey());
                 contact.setPhoneNumber(profile.getmPhoneNumber());
                 contact.setName(profile.getmName());
                 contact.setPhotoUri(profile.getPhoto().getUrl());
-                contact.save();
+                contact.save();*/
 
                 saveStep();
 
@@ -280,7 +289,7 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
             }
 
 
-            goToImport();
+            goToImport(profile);
 
         } else {
 
@@ -300,8 +309,11 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     }
 
 
-    public void goToImport() {
+    public void goToImport(Profile profile) {
         Intent intent = new Intent(this, ImportDataActivity.class);
+        intent.putExtra(ImportDataActivity.EXTRA_NAME, profile.getmName());
+        intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER,getPhoneNumber());
+        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI,profile.getPhoto().getUrl());
         intent
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
