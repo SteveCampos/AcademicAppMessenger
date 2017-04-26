@@ -118,6 +118,10 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
             menu.findItem(R.id.crop_image_menu_rotate_left).setVisible(true);
         }
 
+        if (!mOptions.allowFlipping) {
+            menu.removeItem(R.id.crop_image_menu_flip);
+        }
+
         Drawable cropIcon = null;
         try {
             cropIcon = ContextCompat.getDrawable(this, R.drawable.crop_image_menu_crop);
@@ -130,6 +134,7 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
         if (mOptions.activityMenuIconColor != 0) {
             updateMenuItemIconColor(menu, R.id.crop_image_menu_rotate_left, mOptions.activityMenuIconColor);
             updateMenuItemIconColor(menu, R.id.crop_image_menu_rotate_right, mOptions.activityMenuIconColor);
+            updateMenuItemIconColor(menu, R.id.crop_image_menu_flip, mOptions.activityMenuIconColor);
             if (cropIcon != null) {
                 updateMenuItemIconColor(menu, R.id.crop_image_menu_crop, mOptions.activityMenuIconColor);
             }
@@ -150,6 +155,14 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
         }
         if (item.getItemId() == R.id.crop_image_menu_rotate_right) {
             rotateImage(mOptions.rotationDegrees);
+            return true;
+        }
+        if (item.getItemId() == R.id.crop_image_menu_flip_horizontally) {
+            mCropImageView.flipImageHorizontally();
+            return true;
+        }
+        if (item.getItemId() == R.id.crop_image_menu_flip_vertically) {
+            mCropImageView.flipImageVertically();
             return true;
         }
         if (item.getItemId() == android.R.id.home) {
@@ -265,7 +278,7 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
             try {
                 String ext = mOptions.outputCompressFormat == Bitmap.CompressFormat.JPEG ? ".jpg" :
                         mOptions.outputCompressFormat == Bitmap.CompressFormat.PNG ? ".png" : ".webp";
-                outputUri = Uri.fromFile(File.createTempFile("MessengerAcademico", ext, getCacheDir()));
+                outputUri = Uri.fromFile(File.createTempFile("cropped", ext, getCacheDir()));
             } catch (IOException e) {
                 throw new RuntimeException("Failed to create temp file for output image", e);
             }
@@ -294,7 +307,8 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
      * Get intent instance to be used for the result of this activity.
      */
     protected Intent getResultIntent(Uri uri, Exception error, int sampleSize) {
-        CropImage.ActivityResult result = new CropImage.ActivityResult(null,
+        CropImage.ActivityResult result = new CropImage.ActivityResult(
+                mCropImageView.getImageUri(),
                 uri,
                 error,
                 mCropImageView.getCropPoints(),

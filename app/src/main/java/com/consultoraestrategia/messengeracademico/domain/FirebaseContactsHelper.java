@@ -1,17 +1,16 @@
 package com.consultoraestrategia.messengeracademico.domain;
 
-import android.util.Log;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.consultoraestrategia.messengeracademico.domain.FirebaseUser.CHILD_PROFILE;
+import static com.consultoraestrategia.messengeracademico.domain.FirebaseUser.CHILD_USER;
+
 /**
- * Created by Steve on 3/03/2017.
+ * Created by @stevecampos on 3/03/2017.
  */
 
 public class FirebaseContactsHelper extends FirebaseHelper {
@@ -48,8 +47,16 @@ public class FirebaseContactsHelper extends FirebaseHelper {
         phoneToCodeRef.updateChildren(map, listener);
     }
 
-    public String getUserKey(final String phoneNumber, ValueEventListener listener) {
+    public void listenUserProfile(String userKey, ValueEventListener listener) {
+        getDatabase()
+                .getReference()
+                .child(CHILD_USER)
+                .child(userKey)
+                .child(CHILD_PROFILE)
+                .addListenerForSingleValueEvent(listener);
+    }
+
+    public void getUserKey(final String phoneNumber, ValueEventListener listener) {
         phoneToCodeRef.child(phoneNumber).addListenerForSingleValueEvent(listener);
-        return null;
     }
 }

@@ -8,13 +8,22 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 import java.util.List;
 
 /**
- * Created by Steve on 9/03/2017.
+ * Created by @stevecampos on 9/03/2017.
  */
 
 public interface ChatPresenter {
+
     void onCreate();
 
+    void onResume();
+
+    void onPause();
+
+    void onStop();
+
     void onDestroy();
+
+    void onBackPressed();
 
     void listenMessages(Contact from, Contact to);
 
@@ -24,7 +33,7 @@ public interface ChatPresenter {
 
     void sendMessage(Contact from, Contact to, ChatMessage message);
 
-    void changeAction(Contact from, Contact to, String action);
+    void afterTextChanged(String message);
 
     void setMessageStatusReaded(ChatMessage message);
 

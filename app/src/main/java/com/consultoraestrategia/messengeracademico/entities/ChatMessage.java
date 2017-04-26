@@ -11,34 +11,26 @@ import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Steve on 9/03/2017.
+ * Created by @stevecampos on 9/03/2017.
  */
 
 @Table(database = MessengerAcademicoDatabase.class)
 public class ChatMessage extends BaseModel {
 
-    public static final int STATUS_WRITED = 1000;
-    public static final int STATUS_SEND = 1001;
-    public static final int STATUS_DELIVERED = 1002;
-    public static final int STATUS_READED = 1003;
+    public static final int STATUS_WRITED = 2000;
+    public static final int STATUS_SEND = 2002;
+    public static final int STATUS_DELIVERED = 2004;
+    public static final int STATUS_READED = 2006;
 
     public static final String TYPE_TEXT = "TEXT";
     public static final String TYPE_IMAGE = "IMAGE";
     public static final String TYPE_AUDIO = "AUDIO";
     public static final String TYPE_VIDEO = "VIDEO";
     public static final String TYPE_FILE = "FILE";
-    //MORE TYPES HERE...
-
-    //Firebase fields
-    /*
-    @Column
-    private String emisorId;
-
-    @Column
-    private String receptorId;*/
 
     @ForeignKey(stubbedRelationship = true, saveForeignKeyModel = true)
     private Contact emisor;
@@ -66,11 +58,10 @@ public class ChatMessage extends BaseModel {
     @Column
     private String chatKey; //Foreign key xd
 
+
+    @Exclude
     @Column
     private int stateChatMessage;// VISIBLE, DELETED, ETC.
-
-    /*@ForeignKey(stubbedRelationship = true, saveForeignKeyModel = true)
-    private Chat chat; // long chatId*/
 
     public ChatMessage() {
     }
@@ -133,9 +124,7 @@ public class ChatMessage extends BaseModel {
     public boolean equals(Object obj) {
         boolean equals = false;
         ChatMessage message = (ChatMessage) obj;
-        Long t1 = this.timestamp;
-        Long t2 = message.getTimestamp();
-        if (this.messageText.equals(message.getMessageText()) && t1.equals(t2)) {
+        if (this.keyMessage.equals(message.getKeyMessage())) {
             equals = true;
         }
         return equals;
@@ -195,5 +184,26 @@ public class ChatMessage extends BaseModel {
         result.put("keyMessage", keyMessage);
         result.put("chatKey", chatKey);
         return result;
+    }
+
+    public Contact getTo(Contact user) {
+        if (user == null || emisor == null || receptor == null) {
+            return null;
+        }
+        if (user.equals(emisor)) {
+            return receptor;
+        }
+        if (user.equals(receptor)) {
+            return emisor;
+        }
+        return null;
+    }
+
+    public List<ChatMessage> getMessagesNoReaded() {
+        return SQLite.select()
+                .from(ChatMessage.class)
+                .where(ChatMessage_Table.chatKey.eq(chatKey))
+                .and(ChatMessage_Table.messageStatus.eq(ChatMessage.STATUS_DELIVERED))
+                .queryList();
     }
 }

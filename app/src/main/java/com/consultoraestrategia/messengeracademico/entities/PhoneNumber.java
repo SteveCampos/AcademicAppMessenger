@@ -1,7 +1,7 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
 /**
- * Created by Steve on 17/02/2017.
+ * Created by @stevecampos on 17/02/2017.
  */
 
 public class PhoneNumber {

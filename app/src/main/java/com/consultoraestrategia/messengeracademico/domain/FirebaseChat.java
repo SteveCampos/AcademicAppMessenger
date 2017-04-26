@@ -45,12 +45,13 @@ public class FirebaseChat extends FirebaseHelper {
     public void listenMessages(Chat chat, ChildEventListener listener) {
         Contact from = chat.getEmisor();
         Contact to = chat.getReceptor();
-        long lastMessageTimestamp = chat.getStateTimestamp();
+
+        //long lastMessageTimestamp = chat.getLastTimeStamp();
 
         String[] sort = StringUtils.sortAlphabetical(from.getUserKey(), to.getUserKey());
         String key1 = sort[0];
         String key2 = sort[1];
-        chatsRef.child(key1 + "_" + key2).child(CHILD_MESSAGES).orderByChild("timestamp").startAt(lastMessageTimestamp).addChildEventListener(listener);
+        chatsRef.child(key1 + "_" + key2).child(CHILD_MESSAGES)/*.orderByChild("timestamp").startAt(lastMessageTimestamp)*/.limitToLast(1).addChildEventListener(listener);
     }
 
 
@@ -88,8 +89,8 @@ public class FirebaseChat extends FirebaseHelper {
     }
 
     public void sendMessage(boolean online, Contact from, Contact to, ChatMessage message, DatabaseReference.CompletionListener listener) {
-        message.setMessageStatus(ChatMessage.STATUS_SEND);
-        changeStatus(online, ChatMessage.STATUS_SEND, message, listener);
+        //message.setMessageStatus(ChatMessage.STATUS_SEND);
+        changeStatus(online, ChatMessage.STATUS_WRITED, message, listener);
         /*
         String emisorKey = from.getUserKey();
         String receptorKey = to.getUserKey();
@@ -125,6 +126,9 @@ public class FirebaseChat extends FirebaseHelper {
 
         int status = message.getMessageStatus();
         switch (status) {
+            case ChatMessage.STATUS_WRITED:
+                userKey = receptorKey;
+                break;
             case ChatMessage.STATUS_SEND:
                 userKey = receptorKey;
                 break;

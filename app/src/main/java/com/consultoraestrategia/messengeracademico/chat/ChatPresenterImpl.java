@@ -4,21 +4,21 @@ import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.chat.events.ChatEvent;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatView;
-import com.consultoraestrategia.messengeracademico.domain.ChatDbHelper;
 import com.consultoraestrategia.messengeracademico.entities.Action;
-import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
+import com.consultoraestrategia.messengeracademico.main.ConnectionInteractor;
+import com.consultoraestrategia.messengeracademico.main.ConnectionInteractorImpl;
 
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
 /**
- * Created by Steve on 10/03/2017.
+ * Created by @stevecampos on 10/03/2017.
  */
 public class ChatPresenterImpl implements ChatPresenter {
 
@@ -26,14 +26,16 @@ public class ChatPresenterImpl implements ChatPresenter {
     private ChatView view;
     private ChatInteractor interactor;
     private EventBus eventBus;
-
+    private ConnectionInteractor connectionInteractor;
 
     private boolean online = false;
+    private boolean forwardToAnotherActivity = false;
 
     public ChatPresenterImpl(ChatView view) {
         this.view = view;
         this.interactor = new ChatInteractorImpl();
         this.eventBus = GreenRobotEventBus.getInstance();
+        this.connectionInteractor = new ConnectionInteractorImpl();
     }
 
     @Override
@@ -42,9 +44,36 @@ public class ChatPresenterImpl implements ChatPresenter {
     }
 
     @Override
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        forwardToAnotherActivity = false;
+        connectionInteractor.setOnline();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause");
+        if (!forwardToAnotherActivity) {
+            connectionInteractor.setOffline();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop");
+    }
+
+    @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy");
         view = null;
         eventBus.unregister(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        forwardToAnotherActivity = true;
     }
 
     @Override
@@ -75,10 +104,31 @@ public class ChatPresenterImpl implements ChatPresenter {
         interactor.sendMessage(online, from, to, message);
     }
 
+    private boolean isWriting = false;
+
     @Override
-    public void changeAction(Contact from, Contact to, String action) {
-        interactor.changeAction(from, to, action);
+    public void afterTextChanged(String message) {
+        Log.d(TAG, "afterTextChanged");
+        if (message.length() == 0) {
+            saveNoWritingState();
+        } else {
+            saveWritingState();
+        }
     }
+
+
+    private void saveNoWritingState() {
+        isWriting = false;
+        interactor.changeAction(emisor, receptor, Action.ACTION_NO_ACTION);
+    }
+
+    private void saveWritingState() {
+        if (!isWriting) {
+            isWriting = true;
+            interactor.changeAction(emisor, receptor, Action.ACTION_WRITING);
+        }
+    }
+
 
     @Override
     public void setMessageStatusReaded(ChatMessage message) {
@@ -98,6 +148,10 @@ public class ChatPresenterImpl implements ChatPresenter {
                 onReceptorRetrieved(event.getContact());
                 break;
             case ChatEvent.TYPE_MESSAGE:
+                Log.d(TAG, "TYPE_MESSAGE");
+                ChatMessage message = event.getMessage();
+                Log.d(TAG, "messate text: " + message.getMessageText());
+                Log.d(TAG, "messate getMessageStatus: " + message.getMessageStatus());
                 onMessagedAdded(event.getMessage());
                 break;
             case ChatEvent.TYPE_CONNECTION:
@@ -107,9 +161,14 @@ public class ChatPresenterImpl implements ChatPresenter {
                 onActionChanged(event.getContact(), event.getAction());
                 break;
             case ChatEvent.TYPE_INCOMING_MESSAGE:
+                Log.d(TAG, "TYPE_INCOMING_MESSAGE");
+                ChatMessage message1 = event.getMessage();
+                Log.d(TAG, "messate text: " + message1.getMessageText());
+                Log.d(TAG, "messate getMessageStatus: " + message1.getMessageStatus());
                 onIncomingMessage(event.getContact(), event.getReceptor(), event.getMessage());
                 break;
             case ChatEvent.TYPE_MESSAGE_LIST:
+                Log.d(TAG, "TYPE_MESSAGE_LIST");
                 onMessageListAdded(event.getMessages());
                 break;
         }
@@ -143,7 +202,8 @@ public class ChatPresenterImpl implements ChatPresenter {
                     onConnectionChanged(lastConnection);
                     break;
                 default:
-                    view.onUserAction(contact, action);
+                    if (receptor.equals(contact))
+                        view.onUserAction(contact, action);
                     break;
             }
         }
@@ -153,14 +213,13 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void onIncomingMessage(Contact from, Contact to, ChatMessage message) {
         Log.d(TAG, "onIncomingMessage");
         if (view != null) {
+            /*
             Chat chat = ChatDbHelper.getChat(emisor, receptor);
             Chat incomingChat = ChatDbHelper.getChat(from, to);
-            Log.d(TAG, "chat id: " + chat.getId());
-            Log.d(TAG, "incomingChat id: " + incomingChat.getId());
             if (chat.equals(incomingChat)) {
                 Log.d(TAG, "receptor.equals(contact");
                 onMessagedAdded(message);
-            }
+            }*/
         }
     }
 

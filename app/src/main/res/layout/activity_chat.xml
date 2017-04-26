@@ -67,15 +67,13 @@
                         style="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:text="Steve Campos" />
+                        android:maxLines="1" />
 
                     <TextView
                         android:id="@+id/txt_connection"
                         style="@style/TextAppearance.AppCompat.Notification.Info"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="En línea"
                         android:textColor="@color/white"
                         android:visibility="gone" />
                 </LinearLayout>

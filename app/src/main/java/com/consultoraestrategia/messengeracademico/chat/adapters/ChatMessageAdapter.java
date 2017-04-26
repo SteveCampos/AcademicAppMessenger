@@ -18,13 +18,13 @@ import java.util.List;
 
 
 /**
- * Created by Steve on 9/03/2017.
+ * Created by @stevecampos on 9/03/2017.
  */
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int TYPE_TEXT_EMISOR = 1000;
-    private static final int TYPE_TEXT_RECEPTOR = 1001;
+    private static final int TYPE_TEXT_EMISOR = 777;
+    private static final int TYPE_TEXT_RECEPTOR = 778;
     private static final String TAG = ChatMessageAdapter.class.getSimpleName();
 
     private List<ChatMessage> messages;
@@ -41,8 +41,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemViewType(int position) {
+        Log.d(TAG, "getItemViewType");
         ChatMessage message = messages.get(position);
-        if (message.getEmisor().getUserKey().equals(emisor.getUserKey())) {
+        if (message.getEmisor().equals(emisor)) {
             return TYPE_TEXT_EMISOR;
         } else {
             return TYPE_TEXT_RECEPTOR;
@@ -69,6 +70,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Log.d(TAG, "onBindViewHolder");
         ChatMessage message = messages.get(position);
         switch (holder.getItemViewType()) {
             case TYPE_TEXT_EMISOR:
@@ -87,20 +89,31 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return messages.size();
     }
 
+    public void onMessageAdded(ChatMessage message) {
+        Log.d(TAG, "onMessageAdded");
+        if (messages.contains(message)) {
+            onMessagedChanged(message);
+        } else {
+            messages.add(message);
+            notifyItemInserted(getItemCount());
+        }
+    }
+
     public void onMessagedChanged(ChatMessage message) {
+        Log.d(TAG, "onMessagedChanged");
         if (messages.contains(message)) {
             int position = messages.indexOf(message);
             messages.set(position, message);
             notifyItemChanged(position);
         } else {
-            messages.add(message);
-            notifyItemInserted(getItemCount() > 0 ? getItemCount() : 0);
+            onMessageAdded(message);
         }
+
     }
 
     public void addMessageList(List<ChatMessage> messages) {
         Log.d(TAG, "addMessageList");
-        if (messages != null) {
+        if (messages != null && !messages.isEmpty()) {
             this.messages = messages;
             notifyDataSetChanged();
         }

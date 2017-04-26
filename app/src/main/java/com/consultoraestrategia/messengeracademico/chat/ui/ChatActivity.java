@@ -42,9 +42,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+
+/**
+ * Created by @stevecampos on 9/03/2017.
+ */
+
+
 public class ChatActivity extends AppCompatActivity implements ChatView, ChatMessageListener {
 
-    public static final String EXTRA_EMISOR_PHONENUMBER = "EXTRA_EMISOR_PHONENUMBER";
     public static final String EXTRA_RECEPTOR_PHONENUMBER = "EXTRA_RECEPTOR_PHONENUMBER";
     private static final String TAG = ChatActivity.class.getSimpleName();
     @BindView(R.id.img_profile)
@@ -80,8 +85,15 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
     @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        presenter.onBackPressed();
+        super.onBackPressed();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
@@ -95,18 +107,22 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
+        presenter.onPause();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume");
+
+        presenter.onResume();
         super.onResume();
     }
 
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
+        presenter.onStop();
         super.onStop();
     }
 
@@ -170,15 +186,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         @Override
         public void afterTextChanged(Editable editable) {
             Log.d(TAG, "afterTextChanged editable.length(): " + editable.length());
-            if (editable.length() == 0) {
-                isWriting = false;
-                //enterChatView1.setImageResource(R.drawable.ic_insert_photo);
-                presenter.changeAction(emisor, receptor, Action.ACTION_NO_ACTION);
-            } else {
-                isWriting = true;
-                //enterChatView1.setImageResource(R.drawable.ic_chat_send_active);
-                presenter.changeAction(emisor, receptor, Action.ACTION_WRITING);
-            }
+            presenter.afterTextChanged(editable.toString());
         }
     };
 
@@ -196,7 +204,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     public void setReceptor(Contact receptor) {
         this.receptor = receptor;
         txtName.setText(receptor.getName());
-        Glide.with(this).load("https://lh3.googleusercontent.com/-B42xVxBMpx0/AAAAAAAAAAI/AAAAAAAAEc8/aZ66s9K0gR4/s60-p-rw-no/photo.jpg").into(imgProfile);
+        Glide.with(this).load(receptor.getPhotoUri()).into(imgProfile);
     }
 
     @Override
@@ -219,7 +227,10 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
 
     @Override
     public void onMessagAdded(ChatMessage message) {
-        adapter.onMessagedChanged(message);
+        Log.d(TAG, "onMessagAdded");
+        Log.d(TAG, "message getMessageStatus: " + message.getMessageStatus());
+        Log.d(TAG, "message getMessageText: " + message.getMessageText());
+        adapter.onMessageAdded(message);
         recycler.scrollToPosition(adapter.getItemCount() - 1);
     }
 
@@ -289,7 +300,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         Log.d(TAG, "onMessageListAdded");
         if (messages != null) {
             adapter.addMessageList(messages);
-            recycler.scrollToPosition(adapter.getItemCount() - 1);
+            recycler.scrollToPosition(adapter.getItemCount());
         }
     }
 

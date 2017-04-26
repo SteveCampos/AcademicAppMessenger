@@ -50,12 +50,12 @@ public class LoadProfileRepositoryImpl implements LoadProfileRepository {
         helper.uploadProfile(profile, new UploadProfileListener() {
             @Override
             public void onSucess(Profile profile) {
-                post(LoadProfileEvent.OnProfileUploadSuccess, getProfileProcess(mUri,mName, mPhoneNumber), null);
+                post(LoadProfileEvent.OnProfileUploadSuccess, getProfileProcess(mUri, mName, mPhoneNumber), null);
             }
 
             @Override
             public void onError(String error) {
-                post(LoadProfileEvent.OnProfileUploadError, getProfileProcess(mUri,mName, mPhoneNumber), error);
+                post(LoadProfileEvent.OnProfileUploadError, getProfileProcess(mUri, mName, mPhoneNumber), error);
             }
         });
     }
@@ -112,10 +112,6 @@ public class LoadProfileRepositoryImpl implements LoadProfileRepository {
         photo.setUrl(uri.toString());
         return photo;
     }
-
-
-
-
 
 
 }

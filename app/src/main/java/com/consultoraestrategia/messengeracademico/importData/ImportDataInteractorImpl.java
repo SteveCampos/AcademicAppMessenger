@@ -5,7 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 /**
- * Created by Steve on 24/02/2017.
+ * Created by @stevecampos on 24/02/2017.
  */
 public class ImportDataInteractorImpl implements ImportDataInteractor {
     private static final String TAG = ImportDataInteractorImpl.class.getSimpleName();

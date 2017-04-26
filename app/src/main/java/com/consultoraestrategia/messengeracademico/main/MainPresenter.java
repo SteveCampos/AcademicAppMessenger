@@ -13,11 +13,11 @@ public interface MainPresenter {
 
     void onCreate();
 
+    void onResume();
+
     void onPause();
 
     void onStop();
-
-    void onResume();
 
     void onDestroy();
 

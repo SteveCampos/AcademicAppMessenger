@@ -98,10 +98,12 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
     }
 
     private void setStatusMessage(Contact me, Contact messageSender, AppCompatImageView imgStatusMessage, int statusMessage, Context context) {
-        if (messageSender.getPhoneNumber().equals(me.getPhoneNumber())) {
-            showStatusMessage(imgStatusMessage, statusMessage, context);
-        } else {
-            hideImageView(imgStatusMessage);
+        if (messageSender != null && me != null && messageSender.getPhoneNumber() != null && me.getPhoneNumber() != null) {
+            if (messageSender.getPhoneNumber().equals(me.getPhoneNumber())) {
+                showStatusMessage(imgStatusMessage, statusMessage, context);
+            } else {
+                hideImageView(imgStatusMessage);
+            }
         }
     }
 
@@ -133,10 +135,14 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
             ChatMessage lastMessage = chat.getLastMessage();
             setLastMessage(me, lastMessage, context);
 
+            Log.d(TAG, "chatKey: " + chat.getChatKey());
 
-            setCountMessages(txtCounter, chat.countMessagesNoReaded());
+            long countMessagesNoReaded = chat.countMessagesNoReaded(me.getUserKey());
+            setCountMessages(txtCounter, countMessagesNoReaded);
             /*setNotificationState(imgNotificationState);*/
         }
+
+
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,6 +171,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
 
 
     private void setCountMessages(AppCompatTextView txtCounter, long count) {
+        Log.d(TAG, "countMessagesNoReaded: " + count);
         if (count > 0) {
             txtCounter.setVisibility(View.VISIBLE);
             txtCounter.setText(String.valueOf(count));

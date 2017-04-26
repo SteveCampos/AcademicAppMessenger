@@ -23,6 +23,8 @@ public class MainPresenterImpl implements MainPresenter {
     private MainInteractor interactor;
     private ConnectionInteractor connectionInteractor;
 
+    private boolean forwardToAnotherActivity = false;
+
     public MainPresenterImpl(MainView view) {
         this.view = view;
         this.eventBus = GreenRobotEventBus.getInstance();
@@ -40,24 +42,26 @@ public class MainPresenterImpl implements MainPresenter {
     @Override
     public void onPause() {
         Log.d(TAG, "onPause");
+        if (!forwardToAnotherActivity) {
+            connectionInteractor.setOffline();
+        }
     }
 
     @Override
     public void onStop() {
         Log.d(TAG, "onStop");
-
     }
 
     @Override
     public void onResume() {
         Log.d(TAG, "onResume");
+        forwardToAnotherActivity = false;
         connectionInteractor.setOnline();
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-        connectionInteractor.setOffline();
         eventBus.unregister(this);
     }
 
@@ -98,7 +102,8 @@ public class MainPresenterImpl implements MainPresenter {
 
     @Override
     public void launchChat(Contact contact) {
-        if (view != null){
+        forwardToAnotherActivity = true;
+        if (view != null) {
             view.startChat(contact);
         }
     }

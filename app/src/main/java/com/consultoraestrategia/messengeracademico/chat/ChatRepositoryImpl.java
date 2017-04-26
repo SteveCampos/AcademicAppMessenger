@@ -3,10 +3,7 @@ package com.consultoraestrategia.messengeracademico.chat;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.chat.events.ChatEvent;
-import com.consultoraestrategia.messengeracademico.chatList.ChatListRepositoryImpl;
-import com.consultoraestrategia.messengeracademico.domain.ChatDbHelper;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseChat;
-import com.consultoraestrategia.messengeracademico.domain.FirebaseUser;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
@@ -15,27 +12,30 @@ import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.main.ConnectionRepositoryImpl;
+import com.consultoraestrategia.messengeracademico.messageRepository.MessageRepository;
+import com.consultoraestrategia.messengeracademico.messageRepository.MessageRepositoryImpl;
+import com.consultoraestrategia.messengeracademico.storage.ChatDbFlowStorage;
+import com.consultoraestrategia.messengeracademico.storage.ChatStorage;
+import com.consultoraestrategia.messengeracademico.storage.ChatStorageImpl;
+import com.consultoraestrategia.messengeracademico.utils.StringUtils;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
-import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
-
 import java.util.List;
 
-import static com.consultoraestrategia.messengeracademico.domain.ChatDbHelper.getChat;
-
 /**
- * Created by Steve on 10/03/2017.
+ * Created by @stevecampos on 10/03/2017.
  */
+
 public class ChatRepositoryImpl implements ChatRepository {
 
     private static final String TAG = ChatRepositoryImpl.class.getSimpleName();
     private EventBus eventBus;
     private FirebaseChat firebaseChat;
-    private static final int FROM_CHAT = 100;
+    public static final int FROM_CHAT = 100;
     public static final int FROM_USER_PATH = 101;
     public static final int FROM_NOTIFICATION = 102;
 
@@ -45,10 +45,24 @@ public class ChatRepositoryImpl implements ChatRepository {
     private Chat chat;
     private Contact from;
     private Contact to;
+    private ChatStorage chatStorage;
+    private MessageRepository messageRepository;
 
     public ChatRepositoryImpl() {
         this.eventBus = GreenRobotEventBus.getInstance();
         this.firebaseChat = new FirebaseChat();
+        this.chatStorage = new ChatStorageImpl(new ChatDbFlowStorage());
+        this.messageRepository = new MessageRepositoryImpl();
+    }
+
+    private void manageSnapshot(DataSnapshot dataSnapshot) {
+        Log.d(TAG, "manageSnapshot");
+        if (dataSnapshot != null) {
+            ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
+            if (message != null) {
+                messageRepository.manageIncomingMessage(message, from, FROM_CHAT);
+            }
+        }
     }
 
     @Override
@@ -61,20 +75,20 @@ public class ChatRepositoryImpl implements ChatRepository {
         List<ChatMessage> messages = chat.getMessageList();
 
         if (messages != null && !messages.isEmpty()) {
-            Log.d(TAG, "message list size: " + messages.size());
             post(ChatEvent.TYPE_MESSAGE_LIST, messages);
         }
 
         firebaseChat.listenMessages(chat, new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "dataSnapshot: " + dataSnapshot);
-                manageSnapshotMessage(online, FROM_CHAT, from, dataSnapshot);
+                Log.d(TAG, "onChildAdded: " + dataSnapshot);
+                manageSnapshot(dataSnapshot);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                manageSnapshotMessage(online, FROM_CHAT, from, dataSnapshot);
+                Log.d(TAG, "onChildChanged: " + dataSnapshot);
+                manageSnapshot(dataSnapshot);
             }
 
             @Override
@@ -156,124 +170,24 @@ public class ChatRepositoryImpl implements ChatRepository {
 
     @Override
     public void changeAction(Contact from, Contact to, String action) {
+        Log.d(TAG, "changeAction");
         firebaseChat.changeAction(from, to, action);
     }
 
     @Override
     public void changeConnection(Contact from, Connection connection) {
+        Log.d(TAG, "changeConnection");
         firebaseChat.changeConnection(from, connection);
     }
 
-    public static void manageSnapshotMessage(boolean online, int type, Contact me, DataSnapshot dataSnapshot) {
-        Log.d(TAG, "manageSnapshotMessage");
-        if (me == null || dataSnapshot == null) {
-            return;
-        }
-        if (dataSnapshot.getValue() != null && dataSnapshot.getKey() != null) {
-
-            ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
-            String keyMessage = dataSnapshot.getKey();
-
-            Log.d(TAG, "keyMessage: " + dataSnapshot.getKey());
-
-
-            String emisorKey = message.getEmisor().getUserKey();
-            String receptorKey = message.getReceptor().getUserKey();
-            int messageStatus = message.getMessageStatus();
-
-            Log.d(TAG, "messageStatus: " + message.getMessageStatus());
-
-            message.setKeyMessage(keyMessage);
-
-            if (emisorKey.equals(me.getUserKey())) {
-                //SOY EL EMISOR DEL MENSAJE
-                Log.d(TAG, "SOY EL EMISOR DEL MENSAJE");
-                switch (messageStatus) {
-                    case ChatMessage.STATUS_SEND:
-                        //DO NOTHING!
-                        break;
-                    case ChatMessage.STATUS_DELIVERED:
-                        //SAVE MESSAGE AND POST!
-                        saveMessageAndPost(type, message.getEmisor(), message);
-                        break;
-                    case ChatMessage.STATUS_READED:
-                        //SAVE MESSAGE AND POST!
-                        saveMessageAndPost(type, message.getEmisor(), message);
-                        break;
-
-                }
-            } else if (receptorKey.equals(me.getUserKey())) {
-                //SOY EL RECEPTOR DEL MENSAJE
-                Log.d(TAG, "SOY EL RECEPTOR DEL MENSAJE");
-                switch (messageStatus) {
-                    case ChatMessage.STATUS_SEND:
-                        //SAVE MESSAGE WITH OTHER STATUS, POST, AND UPLOAD TO FIREBASE.
-                        message.setMessageStatus(ChatMessage.STATUS_DELIVERED);
-                        saveMessageAndPost(type, message.getReceptor(), message);
-
-                        FirebaseChat firebaseChat = new FirebaseChat();
-                        firebaseChat.setStatusDelivered(online, message, new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-
-                                if (databaseError != null) {
-                                    Log.d(TAG, "firebaseChat.setStatusDelivered ERROR: " + databaseError.getMessage());
-                                } else {
-                                    Log.d(TAG, "firebaseChat.setStatusDelivered SUCESS");
-                                }
-                            }
-                        });
-                        break;
-                    case ChatMessage.STATUS_DELIVERED:
-                        //DO NOTHING!
-                        break;
-                    case ChatMessage.STATUS_READED:
-                        //DO NOTHING!
-                        removeMessage(message.getReceptor(), message);
-                        break;
-                }
-            }
-        }
-
-    }
-
-    private static void removeMessage(Contact userIncomingMessage, ChatMessage message) {
-        FirebaseUser firebaseUser = new FirebaseUser();
-        firebaseUser.removeIncomingMessage(userIncomingMessage, message);
-    }
-
-    private static void saveMessageAndPost(final int type, final Contact userIncomingMessage, final ChatMessage message) {
-        final Chat chat = getChat(message);
-
-        message.setEmisor(chat.getEmisor());
-        message.setReceptor(chat.getReceptor());
-        message.setChatKey(chat.getChatKey());
-
-        //final ChatMessage chatMessage = message;
-
-        ChatDbHelper.saveMessage(message,
-                chat,
-                new Transaction.Success() {
-                    @Override
-                    public void onSuccess(Transaction transaction) {
-                        Log.d(TAG, "saveMessageAndPost onSuccess");
-                        post(GreenRobotEventBus.getInstance(), ChatEvent.TYPE_MESSAGE, message);
-                        ChatListRepositoryImpl.post(chat);
-                        if (type != FROM_CHAT) {
-                            removeMessage(userIncomingMessage, message);
-                        }
-                    }
-                }, new Transaction.Error() {
-                    @Override
-                    public void onError(Transaction transaction, Throwable error) {
-                        Log.d(TAG, "onError: " + error);
-                    }
-                });
+    private void saveMessageAndPost(final int source, final Contact userIncomingMessage, final ChatMessage message) {
+        Log.d(TAG, "saveMessageAndPost");
+        messageRepository.saveMessage(message, source);
     }
 
 
     private void saveMessageAndSend(final boolean online, final Contact from, final Contact to, ChatMessage chatMessage) {
-
+        Log.d(TAG, "saveMessageAndSend");
         Chat chat = getChat(chatMessage);
 
         chatMessage.setEmisor(chat.getEmisor());
@@ -284,39 +198,24 @@ public class ChatRepositoryImpl implements ChatRepository {
 
         if (!keyMessage.isEmpty()) {
             chatMessage.setKeyMessage(keyMessage);
-            final ChatMessage message = chatMessage;
+            messageRepository.saveMessage(chatMessage, FROM_CHAT);
+            sendMessageToFirebase(online, from, to, chatMessage);
 
-            ChatDbHelper.saveMessage(message,
-                    chat,
-                    new Transaction.Success() {
-                        @Override
-                        public void onSuccess(Transaction transaction) {
-                            Log.d(TAG, "saveMessageAndPost onSuccess");
-                            post(eventBus, ChatEvent.TYPE_MESSAGE, message);
-                            sendMessageToFirebase(online, from, to, message);
-                        }
-                    }, new Transaction.Error() {
-                        @Override
-                        public void onError(Transaction transaction, Throwable error) {
-                            Log.d(TAG, "onError: " + error);
-                        }
-                    });
         } else {
-            Log.e(TAG, "ERROR KEYMESSAGE EMPTY!");
+            Log.e(TAG, "ERROR: keyMessage can't be empty!");
         }
     }
 
     private void sendMessageToFirebase(boolean online, final Contact from, final Contact to, final ChatMessage chatMessage) {
-        chatMessage.setMessageStatus(ChatMessage.STATUS_SEND);
-        //final ChatMessage message = chatMessage;
+        Log.d(TAG, "sendMessageToFirebase");
         FirebaseChat firebaseChat = new FirebaseChat();
         firebaseChat.sendMessage(online, from, to, chatMessage, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    Log.d(TAG, "sendMessage databaseError: " + databaseError);
+                    Log.d(TAG, "sendMessageToFirebase databaseError: " + databaseError);
                 } else {
-                    Log.d(TAG, "sendMessage SEND!");
+                    Log.d(TAG, "sendMessageToFirebase SUCCESS");
                     chatMessage.setMessageStatus(ChatMessage.STATUS_SEND);
                     saveMessageAndPost(FROM_CHAT, from, chatMessage);
                 }
@@ -334,7 +233,6 @@ public class ChatRepositoryImpl implements ChatRepository {
     @Override
     public void setMessageStatusReaded(Contact from, Contact to, ChatMessage message, final boolean online) {
         Log.d(TAG, "setMessageStatusReaded");
-
         Chat chat = getChat(message);
 
         message.setEmisor(chat.getEmisor());
@@ -344,6 +242,19 @@ public class ChatRepositoryImpl implements ChatRepository {
 
         final ChatMessage chatMessage = message;
 
+        messageRepository.saveMessage(message, FROM_CHAT);
+        firebaseChat.setStatusReaded(online, chatMessage, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Log.d(TAG, "databaseError: " + databaseError);
+                } else {
+                    messageRepository.saveMessage(chatMessage, FROM_CHAT);
+                }
+            }
+        });
+
+        /*
         ChatDbHelper.saveMessage(message,
                 chat,
                 new Transaction.Success() {
@@ -367,7 +278,7 @@ public class ChatRepositoryImpl implements ChatRepository {
                     public void onError(Transaction transaction, Throwable error) {
                         Log.d(TAG, "onError: " + error);
                     }
-                });
+                });*/
 
     }
 
@@ -457,6 +368,54 @@ public class ChatRepositoryImpl implements ChatRepository {
 
     private void post(int type, List<ChatMessage> messages) {
         post(eventBus, type, null, null, null, null, messages);
+    }
+
+    private Chat getChat(Contact from, Contact to) {
+        String[] sort = StringUtils.sortAlphabetical(from.getUserKey(), to.getUserKey());
+        Chat chat = new Chat();
+
+        chat.setChatKey(sort[0] + "_" + sort[1]);
+        chat.load();
+
+        Contact emisor = chat.getEmisor();
+        Contact receptor = chat.getReceptor();
+
+        if (emisor != null && receptor != null) {
+            emisor.load();
+            receptor.load();
+        } else {
+            chat.setEmisor(from);
+            chat.setReceptor(to);
+
+            return chat;
+        }
+
+
+        chat.setEmisor(emisor);
+        chat.setReceptor(receptor);
+
+        return chat;
+    }
+
+    private Chat getChat(ChatMessage message) {
+        Contact emisor = message.getEmisor();
+        Contact receptor = message.getReceptor();
+
+
+        emisor.load();
+        receptor.load();
+
+
+        String[] sort = StringUtils.sortAlphabetical(emisor.getUserKey(), receptor.getUserKey());
+        String chatKey = sort[0] + "_" + sort[1];
+
+
+        Chat chat = new Chat();
+        chat.setChatKey(chatKey);
+        chat.setEmisor(emisor);
+        chat.setReceptor(receptor);
+        chat.setStateTimestamp(message.getTimestamp());
+        return chat;
     }
 
 

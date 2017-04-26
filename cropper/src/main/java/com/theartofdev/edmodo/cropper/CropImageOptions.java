@@ -26,7 +26,7 @@ import android.util.TypedValue;
  * All the possible options that can be set to customize crop image.<br>
  * Initialized with default values.
  */
-        public class CropImageOptions implements Parcelable {
+public class CropImageOptions implements Parcelable {
 
     public static final Creator<CropImageOptions> CREATOR = new Creator<CropImageOptions>() {
         @Override
@@ -254,14 +254,29 @@ import android.util.TypedValue;
     public boolean allowRotation;
 
     /**
+     * if to allow (all) flipping during cropping (activity)
+     */
+    public boolean allowFlipping;
+
+    /**
      * if to allow counter-clockwise rotation during cropping (activity)
      */
     public boolean allowCounterRotation;
 
     /**
-     * the amount of degreees to rotate clockwise or counter-clockwise
+     * the amount of degrees to rotate clockwise or counter-clockwise
      */
     public int rotationDegrees;
+
+    /**
+     * whether the image should be flipped horizontally
+     */
+    public boolean flipHorizontally;
+
+    /**
+     * whether the image should be flipped vertically
+     */
+    public boolean flipVertically;
 
     /**
      * Init options with defaults.
@@ -318,8 +333,11 @@ import android.util.TypedValue;
         initialCropWindowRectangle = null;
         initialRotation = -1;
         allowRotation = true;
+        allowFlipping = true;
         allowCounterRotation = false;
         rotationDegrees = 90;
+        flipHorizontally = false;
+        flipVertically = false;
     }
 
     /**
@@ -367,8 +385,11 @@ import android.util.TypedValue;
         initialCropWindowRectangle = in.readParcelable(Rect.class.getClassLoader());
         initialRotation = in.readInt();
         allowRotation = in.readByte() != 0;
+        allowFlipping = in.readByte() != 0;
         allowCounterRotation = in.readByte() != 0;
         rotationDegrees = in.readInt();
+        flipHorizontally = in.readByte() != 0;
+        flipVertically = in.readByte() != 0;
     }
 
     @Override
@@ -414,8 +435,11 @@ import android.util.TypedValue;
         dest.writeParcelable(initialCropWindowRectangle, flags);
         dest.writeInt(initialRotation);
         dest.writeByte((byte) (allowRotation ? 1 : 0));
+        dest.writeByte((byte) (allowFlipping ? 1 : 0));
         dest.writeByte((byte) (allowCounterRotation ? 1 : 0));
         dest.writeInt(rotationDegrees);
+        dest.writeByte((byte) (flipHorizontally ? 1 : 0));
+        dest.writeByte((byte) (flipVertically ? 1 : 0));
     }
 
     @Override

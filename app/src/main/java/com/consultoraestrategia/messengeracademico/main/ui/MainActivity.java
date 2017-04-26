@@ -18,6 +18,7 @@ import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
 import com.consultoraestrategia.messengeracademico.chatList.ui.ChatListFragment;
 import com.consultoraestrategia.messengeracademico.contactList.ui.ContactListFragment;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.loadProfile.ui.LoadProfileActivity;
 import com.consultoraestrategia.messengeracademico.main.ChatsFragment;
@@ -25,9 +26,13 @@ import com.consultoraestrategia.messengeracademico.main.MainPresenter;
 import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;
 import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapter;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity.PREF_PHONENUMBER;
 
 public class MainActivity extends AppCompatActivity implements MainView {
     public static final String PREF_STEP = "PREF_STEP";
@@ -48,16 +53,47 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private int currentItem = 1;
 
+    private static final String USER_TOPIC = "user_";
+    private static final String PREF_USERKEY = "PREF_USERKEY";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         forwardToStep();
         init();
+
+        String userKey = getUserKey();
+        Log.d(TAG, "userKey: " + userKey);
+        if (userKey != null) {
+            FirebaseMessaging.getInstance()
+                    .subscribeToTopic(USER_TOPIC + userKey);
+        }
+    }
+
+    public String getUserKey() {
+        String phoneNumber = getPhoneNumber();
+        if (phoneNumber != null) {
+            Contact contact = SQLite
+                    .select()
+                    .from(Contact.class)
+                    .where(Contact_Table.phoneNumber.eq(phoneNumber))
+                    .and(Contact_Table.userKey.isNotNull()).querySingle();
+            if (contact != null) {
+                return contact.getUserKey();
+            }
+        }
+        return null;
+    }
+
+    public String getPhoneNumber() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return preferences.getString(PREF_PHONENUMBER, null);
     }
 
     private void init() {
@@ -72,7 +108,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        presenter.onResume();
+        if (presenter != null) {
+            presenter.onResume();
+        }
     }
 
     @Override
@@ -143,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
 
     public void forwardToClass(Class clase) {
+        finish();
         Intent intent = new Intent(this, clase);
         intent
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

@@ -7,7 +7,7 @@ import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 /**
- * Created by Steve on 10/03/2017.
+ * Created by @stevecampos on 10/03/2017.
  */
 public class ChatInteractorImpl implements ChatInteractor {
     private static final String TAG = ChatInteractorImpl.class.getSimpleName();

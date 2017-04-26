@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Steve on 9/03/2017.
+ * Created by @stevecampos on 9/03/2017.
  */
 public class Connection {
     private boolean online;

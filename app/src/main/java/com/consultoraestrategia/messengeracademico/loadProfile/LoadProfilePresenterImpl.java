@@ -1,9 +1,12 @@
 package com.consultoraestrategia.messengeracademico.loadProfile;
 
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.util.Log;
 
+import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.entities.Profile;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
@@ -22,12 +25,14 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
     private LoadProfileView view;
     private LoadProfileInteractor interactor;
     private EventBus eventBus;
+    private Resources resources;
 
 
-    public LoadProfilePresenterImpl(LoadProfileView view) {
+    public LoadProfilePresenterImpl(LoadProfileView view, Context context) {
         this.view = view;
         this.interactor = new LoadProfileInteractorImpl();
         this.eventBus = new GreenRobotEventBus();
+        this.resources = context.getResources();
     }
 
     @Override
@@ -49,7 +54,15 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
         }
     }
 
+    @Override
+    public void updateProfile(Uri uriPhotoProfile, String mName, String mPhoneNumber) {
+        if (view != null) {
+            view.showProgress();
+        }
+        validateData(uriPhotoProfile, mName, mPhoneNumber);
+    }
 
+    /*
     @Override
     public void updateProfile(Uri uriPhotoProfile, String mName, String mPhoneNumber) {
         if (view != null) {
@@ -59,10 +72,27 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
             } else {
                 view.showProgress();
                 interactor.executeUpdateProfile(uriPhotoProfile, mName, mPhoneNumber);
-
             }
         }
+    }*/
+
+
+    private void validateData(Uri uri, String name, String mPhoneNumber) {
+        if (uri != null && name.isEmpty() || name.matches(" ") || name.trim().isEmpty()) {
+            view.onRegisterNewProfileError(resources.getString(R.string.load_profile_error));
+            view.hideProgress();
+            return;
+        }
+        if (uri == null && name != null || name.matches(" ") || name.trim().isEmpty()) {
+            Uri testing = Uri.parse(resources.getString(R.string.load_profile_user));
+            interactor.executeUpdateProfile(testing, name, mPhoneNumber);
+            return;
+        } else {
+            interactor.executeUpdateProfile(uri, name, mPhoneNumber);
+        }
+
     }
+
 
     @Override
     public void profileVerificated(String phoneNumber) {

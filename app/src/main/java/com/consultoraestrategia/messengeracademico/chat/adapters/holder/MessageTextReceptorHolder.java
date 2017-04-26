@@ -17,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Steve on 9/03/2017.
+ * Created by @stevecampos on 9/03/2017.
  */
 public class MessageTextReceptorHolder extends RecyclerView.ViewHolder {
     private static final String TAG = MessageTextReceptorHolder.class.getSimpleName();

@@ -23,6 +23,7 @@ import java.util.Date;
 
 public class MessengerAcademicoApp extends Application {
     private static Context context = null;
+
     @Override
     public void onCreate() {
         context = this;

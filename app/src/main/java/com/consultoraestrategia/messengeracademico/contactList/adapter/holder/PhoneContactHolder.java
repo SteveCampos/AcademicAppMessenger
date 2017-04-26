@@ -3,10 +3,13 @@ package com.consultoraestrategia.messengeracademico.contactList.adapter.holder;
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.contactList.listeners.ContactListener;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
@@ -38,13 +41,27 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(final Contact contact, Context context, final ContactListener listener) {
-        String name = contact.getName();
-        String phoneNumber = contact.getPhoneNumber();
-        if (phoneNumber != null) {
-            txtStatus.setText(phoneNumber);
-        }
 
-        txtName.setText(name != null ? name : phoneNumber);
+        String phoneNumber = null;
+        String title = null;
+        String uri = null;
+        if (contact != null) {
+            String name = contact.getName();
+            phoneNumber = contact.getPhoneNumber();
+            String uriProfile = contact.getPhotoUri();
+
+            title = !TextUtils.isEmpty(name) ? name : phoneNumber;
+            uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "https://image.flaticon.com/icons/png/512/21/21294.png";
+        }
+        /*String name = contact.getName();
+        String phoneNumber = contact.getPhoneNumber();
+        String uri = null;
+
+        if (phoneNumber != null) {
+        }*/
+
+        txtStatus.setText(phoneNumber);
+        txtName.setText(title);
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,5 +69,9 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
             }
         });
 
+        Glide.with(context)
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imgProfile);
     }
 }

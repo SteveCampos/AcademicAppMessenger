@@ -80,7 +80,7 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        //init();
+        init();
     }
 
     @Override

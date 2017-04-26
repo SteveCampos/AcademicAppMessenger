@@ -20,7 +20,7 @@
             android:maxWidth="280dp"
             android:paddingLeft="20dp"
             android:text="Hi dude what's up"
-            android:textColor="@color/md_grey_800"
+            android:textColor="@color/md_grey_900"
             android:textIsSelectable="true" />
 
 
@@ -35,7 +35,7 @@
             android:paddingBottom="5dp"
             android:paddingRight="10dp"
             android:text="06:66"
-            android:textColor="@color/md_grey_500"
+            android:textColor="@color/md_grey_600"
             android:textSize="12sp" />
 
     </RelativeLayout>

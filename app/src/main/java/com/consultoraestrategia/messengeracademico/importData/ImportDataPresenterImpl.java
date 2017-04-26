@@ -1,10 +1,7 @@
 package com.consultoraestrategia.messengeracademico.importData;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
-import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.entities.Person;
 import com.consultoraestrategia.messengeracademico.importData.events.ImportDataEvent;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataView;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
@@ -13,7 +10,7 @@ import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 /**
- * Created by Steve on 24/02/2017.
+ * Created by @stevecampos on 24/02/2017.
  */
 
 public class ImportDataPresenterImpl implements ImportDataPresenter {
@@ -22,7 +19,6 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
     private EventBus eventBus;
 
     private boolean importFinished = false;
-
 
     public ImportDataPresenterImpl(ImportDataView view, Context context) {
         this.view = view;
@@ -33,6 +29,7 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
     @Override
     public void onCreate() {
         eventBus.register(this);
+
     }
 
     @Override
@@ -77,17 +74,8 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
             case ImportDataEvent.OnImportError:
                 onImportError();
                 break;
-            case ImportDataEvent.OnProfileRetrieved:
-                onProfileRetrieved(event.getContact());
-                break;
         }
 
-    }
-
-    private void onProfileRetrieved(Contact contact) {
-        if (view != null) {
-            view.setProfile(contact);
-        }
     }
 
     private void onImportError() {

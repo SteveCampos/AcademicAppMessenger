@@ -6,6 +6,7 @@ import java.util.HashMap;
  * Created by kike on 11/04/2017.
  */
 
+
 public class Photo {
     private String url;
     private String height;

@@ -107,7 +107,8 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
         saveContact(contact);
     }
 
-    private void onFinish() {
+    @Override
+    public void onFinish() {
         post(ImportDataEvent.OnImportFinish);
     }
 }

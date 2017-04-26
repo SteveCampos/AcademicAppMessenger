@@ -1,14 +1,12 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * Created by kike on 27/02/2017.
+ * Created by kike on 11/04/2017.
  */
 
-public class Profile implements Serializable{
-
+public class Profile {
 
 
     private String mStatus;
@@ -60,14 +58,13 @@ public class Profile implements Serializable{
         this.photo = photo;
     }
 
-    public HashMap<String,Object> toMap(){
-        HashMap<String,Object> result = new HashMap<>();
-        result.put("photo",photo.toMap());//Entidad ToMap
-        result.put("status",mStatus);
+    public HashMap<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("photoUri", photo.getUrl());//Entidad ToMap
+        result.put("status", mStatus);
         result.put("phoneNumber", mPhoneNumber);
-        result.put("name",mName);
-        result.put("userKey",userKey);
+        result.put("name", mName);
+        result.put("userKey", userKey);
         return result;
     }
-
 }

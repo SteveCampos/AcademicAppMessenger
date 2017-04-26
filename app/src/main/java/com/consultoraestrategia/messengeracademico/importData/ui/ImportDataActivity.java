@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -17,10 +16,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.entities.Profile;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
-import com.consultoraestrategia.messengeracademico.entities.Person;
 import com.consultoraestrategia.messengeracademico.importData.ImportDataPresenterImpl;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 

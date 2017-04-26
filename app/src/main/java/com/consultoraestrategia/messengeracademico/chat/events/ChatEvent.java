@@ -7,7 +7,7 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 import java.util.List;
 
 /**
- * Created by Steve on 9/03/2017.
+ * Created by @stevecampos on 9/03/2017.
  */
 public class ChatEvent {
     public static final int TYPE_CONTACT_EMISOR = 100;

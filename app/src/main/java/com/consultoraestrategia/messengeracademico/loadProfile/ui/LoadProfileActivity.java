@@ -77,17 +77,15 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_profile);
         ButterKnife.bind(this);
-        //initViews();
         Log.d(TAG, "phone_number: " + getPhoneNumber());
         firebaseContactsHelper = new FirebaseContactsHelper();
-        presenter = new LoadProfilePresenterImpl(this);
+        presenter = new LoadProfilePresenterImpl(this, this);
         presenter.onCreate();
 
     }
 
     private void initViews() {
         edtName.setText("Yo");
-        //Glide.with(this).load("https://lh3.googleusercontent.com/-B42xVxBMpx0/AAAAAAAAAAI/AAAAAAAAEc8/aZ66s9K0gR4/s60-p-rw-no/photo.jpg").into(imgProfile);
     }
 
 
@@ -108,70 +106,11 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return preferences.getString(VerificationActivity.PREF_PHONENUMBER, null);
     }
-
-    /*
-        private void phoneNumberExists(final String phoneNumber) {
-            firebaseContactsHelper.existPhoneNumber(phoneNumber, new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot != null) {
-                        String key = dataSnapshot.getValue(String.class);
-                        if (key != null) {
-                            Contact contact = new Contact();
-                            contact.setUserKey(key);
-                            contact.setPhoneNumber(phoneNumber);
-                            contact.setName(edtName.getText().toString());
-                            contact.save();
-                            saveStep();
-                            forwardToImportData();
-                        } else {
-                            postPhoneNumber(phoneNumber);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    showError();
-                }
-            });
-        }
-
-        private void postPhoneNumber(final String phoneNumber) {
-            firebaseContactsHelper.postPhoneNumber(phoneNumber, new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    if (databaseError != null) {
-                        showError();
-                    } else {
-                        phoneNumberExists(phoneNumber);
-                    }
-                }
-            });
-        }
-    */
     @OnClick(R.id.btnGo)
     public void btnGo() {
-        // final String phoneNumber = getPhoneNumberFromPreferences();
-     /*   String mName = edtName.getText().toString();
-        onRegisterNewProfile(imageUri, mName, getPhoneNumber());*/
-
 
         String mName = edtName.getText().toString();
-        if(imageUri!=null){
-            onRegisterNewProfile(imageUri, mName, getPhoneNumber());
-        }else{
-            Uri myURI = Uri.parse(getActivity().getString(R.string.load_profile_user) +R.drawable.ic_user);
-            onRegisterNewProfile(myURI, mName, getPhoneNumber());
-        }
-
-       /* if (phoneNumber != null) {
-            phoneNumberExists(phoneNumber);
-
-
-        } else {
-            showError();
-        }*/
+        onRegisterNewProfile(imageUri, mName, getPhoneNumber());
     }
 
 
@@ -214,11 +153,13 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
 
     @Override
     public void showProgress() {
+        btnGo.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
+        btnGo.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
     }
 
@@ -272,16 +213,7 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         Log.d(TAG, "forwardToImportData");
         if (profile != null) {
             try {
-
-             /*   Contact contact = new Contact();
-                contact.setUserKey(profile.getUserKey());
-                contact.setPhoneNumber(profile.getmPhoneNumber());
-                contact.setName(profile.getmName());
-                contact.setPhotoUri(profile.getPhoto().getUrl());
-                contact.save();*/
-
                 saveStep();
-
             } catch (Exception ex) {
                 Log.d(TAG, "ex: " + ex);
                 onUpladProfileError(ex.getMessage());
@@ -312,8 +244,8 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     public void goToImport(Profile profile) {
         Intent intent = new Intent(this, ImportDataActivity.class);
         intent.putExtra(ImportDataActivity.EXTRA_NAME, profile.getmName());
-        intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER,getPhoneNumber());
-        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI,profile.getPhoto().getUrl());
+        intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER, getPhoneNumber());
+        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI, profile.getPhoto().getUrl());
         intent
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

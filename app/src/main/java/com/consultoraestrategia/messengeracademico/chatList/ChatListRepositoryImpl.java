@@ -74,13 +74,27 @@ public class ChatListRepositoryImpl implements ChatListRepository {
 
     @Override
     public void onChatClicked(Chat chat) {
-        String userKey1 = chat.getEmisor().getUserKey();
-        //String userKey2 = chat.getReceptor().getUserKey();
-        if (contact.getUserKey().equals(userKey1)) {
+        Log.d(TAG, "onChatClicked");
+        String phoneNumber = contact.getPhoneNumber();
+        if (contact.equals(chat.getEmisor())) {
             postToMain(chat.getReceptor());
-        } else {
+        } else if (contact.equals(chat.getReceptor())) {
             postToMain(chat.getEmisor());
         }
+        /*String emisorPhoneNumber = chat.getEmisor().getPhoneNumber();
+        String receptorPhoneNumber = chat.getReceptor().getPhoneNumber();
+
+        Log.d(TAG, "emisorPhoneNumber: " + emisorPhoneNumber);
+        Log.d(TAG, "receptorPhoneNumber: " + receptorPhoneNumber);
+        if (phoneNumber.equals(emisorPhoneNumber)) {
+            Log.d(TAG, "soy el emisor");
+            Log.d(TAG, "to chat: " + receptorPhoneNumber);
+            postToMain(chat.getReceptor());
+        } else if (phoneNumber.equals(receptorPhoneNumber)) {
+            Log.d(TAG, "soy el receptor");
+            Log.d(TAG, "to chat: " + emisorPhoneNumber);
+            postToMain(chat.getEmisor());
+        }*/
 
     }
 

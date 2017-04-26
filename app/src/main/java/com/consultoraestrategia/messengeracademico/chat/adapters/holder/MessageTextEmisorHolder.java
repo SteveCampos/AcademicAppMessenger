@@ -4,6 +4,7 @@ import android.content.Context;
 
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -20,10 +21,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Steve on 9/03/2017.
+ * Created by @stevecampos on 9/03/2017.
  */
 public class MessageTextEmisorHolder extends RecyclerView.ViewHolder {
 
+    private static final String TAG = MessageTextEmisorHolder.class.getSimpleName();
     @BindView(R.id.img_status)
     ImageView imgStatus;
     @BindView(R.id.txt_time)
@@ -44,7 +46,7 @@ public class MessageTextEmisorHolder extends RecyclerView.ViewHolder {
     public void bind(ChatMessage message, Context context, ChatMessageListener listener) {
         messageText.setText(message.getMessageText());
 
-        int drawableResStatus = R.drawable.ic_double_check;
+        int drawableResStatus = R.drawable.ic_access_time;
         int status = message.getMessageStatus();
         switch (status) {
             case ChatMessage.STATUS_WRITED:

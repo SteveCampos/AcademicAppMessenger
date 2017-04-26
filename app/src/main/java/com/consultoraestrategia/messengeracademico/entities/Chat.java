@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
 
+import android.database.Cursor;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
@@ -9,13 +10,16 @@ import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.Method;
+import com.raizlabs.android.dbflow.sql.language.OrderBy;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.sql.language.property.PropertyFactory;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.List;
 
 /**
- * Created by Steve on 14/03/2017.
+ * Created by @stevecampos on 14/03/2017.
  */
 @Table(database = MessengerAcademicoDatabase.class)
 public class Chat extends BaseModel {
@@ -24,9 +28,7 @@ public class Chat extends BaseModel {
 
     public static final int STATE_ACTIVE = 100;
     public static final int STATE_DELETED = 101;
-    private static final String TAG = Chat.class.getSimpleName();
-
-    private long id;
+    private static final String TAG = "ChatEntity";
 
     @Column
     @PrimaryKey
@@ -54,14 +56,6 @@ public class Chat extends BaseModel {
     private long timestamp;
 
     List<ChatMessage> messageList;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getIdEmisor() {
         return idEmisor;
@@ -124,14 +118,6 @@ public class Chat extends BaseModel {
         return emisor;
     }
 
-    /*@OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "chatReceptor")
-    public Contact getChatReceptor() {
-        return SQLite.select()
-                .from(Contact.class)
-                .where(Contact_Table.phoneNumber.eq(receptor.getPhoneNumber()))
-                .querySingle();
-    }*/
-
     public void setEmisor(Contact emisor) {
         this.emisor = emisor;
     }
@@ -155,9 +141,9 @@ public class Chat extends BaseModel {
         boolean equal = false;
         if (obj instanceof Chat) {
             Chat objChat = (Chat) obj;
-            Log.d(TAG, "id: " + getId());
-            Log.d(TAG, "objChat id: " + objChat.getId());
-            equal = this.getId() == objChat.getId();
+            Log.d(TAG, "chatKey: " + getChatKey());
+            Log.d(TAG, "objChat id: " + objChat.getChatKey());
+            equal = this.getChatKey().equals(objChat.getChatKey());
         }
         return equal;
     }
@@ -166,17 +152,31 @@ public class Chat extends BaseModel {
         return SQLite.select()
                 .from(ChatMessage.class)
                 .where(ChatMessage_Table.chatKey.eq(chatKey))
-                .and(ChatMessage_Table.timestamp.greaterThanOrEq(stateTimestamp))
+                //.and(ChatMessage_Table.timestamp.greaterThanOrEq(stateTimestamp))
+                .orderBy(OrderBy.fromProperty(ChatMessage_Table.timestamp).descending())
                 .querySingle();
     }
 
-    public long countMessagesNoReaded() {
-        return SQLite.select()
+    public long countMessagesNoReaded(String userKey) {
+        return SQLite.selectCountOf()
                 .from(ChatMessage.class)
                 .where(ChatMessage_Table.chatKey.eq(chatKey))
-                .and(ChatMessage_Table.timestamp.greaterThanOrEq(state))
-                .and(ChatMessage_Table.receptor_userKey.eq(receptor.getUserKey()))
-                .and(ChatMessage_Table.messageStatus.notEq(ChatMessage.STATUS_READED))
+                //.and(ChatMessage_Table.timestamp.greaterThanOrEq(state))
+                .and(ChatMessage_Table.messageStatus.eq(ChatMessage.STATUS_DELIVERED))
+                .and(ChatMessage_Table.emisor_userKey.notEq(userKey))
                 .count();
+    }
+
+    public long getLastTimeStamp() {
+        ChatMessage message = SQLite.select(Method.max(ChatMessage_Table.timestamp).as("timestamp"))
+                .from(ChatMessage.class)
+                .where(ChatMessage_Table.chatKey.eq(chatKey))
+                .querySingle();
+        long timestamp = 0;
+        if (message != null) {
+            timestamp = message.getTimestamp();
+        }
+        Log.d(TAG, "getLastTimeStamp timestamp: " + timestamp);
+        return timestamp;
     }
 }

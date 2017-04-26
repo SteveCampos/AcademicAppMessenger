@@ -17,67 +17,67 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    <android.support.v7.widget.AppCompatTextView
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/loadprofile.title"
-        android:textColor="@color/colorPrimary" />
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/loadprofile.title"
+            android:textColor="@color/colorPrimary" />
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/txtSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:gravity="center"
-        android:text="@string/loadprofile.subtitle" />
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/txtSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:gravity="center"
+            android:text="@string/loadprofile.subtitle" />
 
-    <RelativeLayout
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        >
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_alignParentStart="true"
-            android:id="@+id/imgProfile"
-            android:layout_centerVertical="true"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/common_google_signin_btn_icon_dark_disabled" />
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_marginStart="8dp"
-            android:id="@+id/tilName"
-            android:layout_toEndOf="@+id/imgProfile"
-            android:layout_toStartOf="@+id/imgEmoji"
-            android:layout_centerVertical="true"
+        <RelativeLayout
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:counterEnabled="true"
-            app:counterMaxLength="16">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_alignParentStart="true"
+                android:id="@+id/imgProfile"
+                android:layout_centerVertical="true"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/common_google_signin_btn_icon_dark_disabled" />
 
-            <android.support.v7.widget.AppCompatEditText
-                android:id="@+id/edtName"
+            <android.support.design.widget.TextInputLayout
+                android:layout_marginStart="8dp"
+                android:id="@+id/tilName"
+                android:layout_toEndOf="@+id/imgProfile"
+                android:layout_toStartOf="@+id/imgEmoji"
+                android:layout_centerVertical="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="text"
-                android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+                app:counterEnabled="true"
+                app:counterMaxLength="16">
 
-        <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/imgEmoji"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_tag_faces_black_24dp" />
-    </RelativeLayout>
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/edtName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/imgEmoji"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_tag_faces_black_24dp" />
+        </RelativeLayout>
 
     </android.support.v7.widget.LinearLayoutCompat>
 

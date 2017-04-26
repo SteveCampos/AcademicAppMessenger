@@ -64,7 +64,9 @@
     <string name="global_action_writing">escribiendo…</string>
     <string name="global_action_user_writing">%s está escribiendo…</string>
     <string name="global.img.description">Image Description</string>
+
     <string name="load.profile.user">android.resource://com.consultoraestrategia.messengeracademico/</string>
 
-
+    <string name="notification.summary.newmessages">%d nuevos mensajes</string>
+    <string name="load_profile_error">Revisar los campos</string>
 </resources>

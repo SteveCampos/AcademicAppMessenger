@@ -1,10 +1,9 @@
 package com.consultoraestrategia.messengeracademico.importData.ui;
 
 import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.entities.Person;
 
 /**
- * Created by Steve on 24/02/2017.
+ * Created by @stevecampos on 24/02/2017.
  */
 
 public interface ImportDataView {

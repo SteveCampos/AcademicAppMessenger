@@ -1,7 +1,7 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
 /**
- * Created by jairc on 20/03/2017.
+ * Created by @stevecampos on 20/03/2017.
  */
 
 public class Action {
