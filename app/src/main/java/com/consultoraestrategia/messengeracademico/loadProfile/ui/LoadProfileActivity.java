@@ -18,9 +18,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-
 import com.consultoraestrategia.messengeracademico.domain.FirebaseContactsHelper;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Profile;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenter;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenterImpl;
@@ -28,14 +26,8 @@ import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -114,6 +106,7 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     }
 
 
+
     private AppCompatActivity getActivity() {
         return this;
     }
@@ -137,7 +130,7 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
 
     @Override
     public void showLoadProfileViews() {
-        requestFocus(edtName);
+        //requestFocus(edtName);
         tilName.setVisibility(View.VISIBLE);
         imgEmoji.setVisibility(View.VISIBLE);
         btnGo.setVisibility(View.VISIBLE);
@@ -167,6 +160,9 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     @Override
     public void showDialog() {
         startCropImageActivity(null);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
     }
 
     @Override

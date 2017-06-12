@@ -1,9 +1,6 @@
 package com.consultoraestrategia.messengeracademico.loadProfile;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.domain.FirebaseLoadProfile;
@@ -13,12 +10,9 @@ import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.loadProfile.event.LoadProfileEvent;
 import com.consultoraestrategia.messengeracademico.loadProfile.listener.UploadProfileListener;
-import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-
-import static com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity.PREF_STEP_IMPORT_DATA;
 
 /**
  * Created by kike on 24/02/2017.
@@ -39,14 +33,30 @@ public class LoadProfileRepositoryImpl implements LoadProfileRepository {
     @Override
     public void updateProfile(final Uri mUri, final String mName, final String mPhoneNumber) {
         Log.d(TAG, "REpositoryuMyUri: " + mUri);
-
         Profile profile = new Profile();
+
         Photo photo = new Photo();
-        photo.setUrl(mUri.toString());
+
         profile.setPhoto(photo);
         profile.setmName(mName);
         profile.setmPhoneNumber(mPhoneNumber);
 
+        if (mUri == null) {
+            Log.d(TAG, "URINULL : " + mUri);
+            firebaseUploadProfile(profile, mUri, mName, mPhoneNumber);
+        } else {
+            photo.setUrl(mUri.toString());
+
+            String photoUrl = profile.getPhoto().getUrl();
+
+            Log.d(TAG, "PHOTO URL: " + photoUrl);
+            firebaseUploadProfile(profile, mUri, mName, mPhoneNumber);
+
+        }
+    }
+
+    //Upload LoadProfile
+    private void firebaseUploadProfile(Profile profile, final Uri mUri, final String mName, final String mPhoneNumber) {
         helper.uploadProfile(profile, new UploadProfileListener() {
             @Override
             public void onSucess(Profile profile) {
@@ -109,8 +119,17 @@ public class LoadProfileRepositoryImpl implements LoadProfileRepository {
 
     private Photo getPhotoProcess(Uri uri) {
         Photo photo = new Photo();
-        photo.setUrl(uri.toString());
+        validateUri(photo, uri);
+        //photo.setUrl(uri.toString());
         return photo;
+    }
+
+    private void validateUri(Photo photo, Uri uri) {
+        if (uri == null) {
+            photo.setUrl("");
+        } else {
+            photo.setUrl(uri.toString());
+        }
     }
 
 

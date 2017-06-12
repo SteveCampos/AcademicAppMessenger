@@ -62,35 +62,22 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
         validateData(uriPhotoProfile, mName, mPhoneNumber);
     }
 
-    /*
-    @Override
-    public void updateProfile(Uri uriPhotoProfile, String mName, String mPhoneNumber) {
-        if (view != null) {
-            Log.d(TAG, "uriPhotoProfile :" + uriPhotoProfile);
-            if (mName != null && mName.trim().equals("") && uriPhotoProfile != null) {
-                view.onRegisterNewProfileError("Llene los campos");
-            } else {
-                view.showProgress();
-                interactor.executeUpdateProfile(uriPhotoProfile, mName, mPhoneNumber);
-            }
-        }
-    }*/
+    private boolean isValideName(String name) {
+        return   name != null && !name.isEmpty()  && !name.trim().isEmpty();
+    }
 
 
     private void validateData(Uri uri, String name, String mPhoneNumber) {
-        if (uri != null && name.isEmpty() || name.matches(" ") || name.trim().isEmpty()) {
-            view.onRegisterNewProfileError(resources.getString(R.string.load_profile_error));
-            view.hideProgress();
+        if (!isValideName(name)) {
+            showFieldsError();
             return;
         }
-        if (uri == null && name != null || name.matches(" ") || name.trim().isEmpty()) {
-            Uri testing = Uri.parse(resources.getString(R.string.load_profile_user));
-            interactor.executeUpdateProfile(testing, name, mPhoneNumber);
-            return;
-        } else {
-            interactor.executeUpdateProfile(uri, name, mPhoneNumber);
-        }
+        interactor.executeUpdateProfile(uri, name, mPhoneNumber);
+    }
 
+    private void showFieldsError(){
+        view.onRegisterNewProfileError(resources.getString(R.string.load_profile_error_fields));
+        view.hideProgress();
     }
 
 
@@ -120,14 +107,6 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
 
     }
 
-
-   /* private void onProfileUploadSuccess(Uri mImageProfile) {
-        if (view != null) {
-            view.hideProgress();
-            view.forwardToImportData();
-        }
-    }*/
-
     private void onProfileUploadSuccess(Profile profile) {
         Log.d(TAG, "onProfileUploadSuccess");
         if (view != null) {
@@ -139,17 +118,11 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
     private void onProfileUploadError(String error) {
         Log.d(TAG, "onProfileUploadError");
         if (view != null) {
-            view.hideLoadProfileViews();
             view.onUpladProfileError(error);
             view.hideLoadProfileViews();
         }
     }
 
-   /* private void onProfileVerifacted(LoadProfileEvent event){
-        if(view !=null){
-           view.onProfileVerificated(event.getProfile());
-        }
-    }*/
 
 
 }

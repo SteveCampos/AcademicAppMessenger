@@ -50,38 +50,72 @@ public class FirebaseLoadProfile extends FirebaseHelper {
 
 
     public void uploadProfile(final Profile profile, final UploadProfileListener listener) {
-        helper.getUserKey(profile.getmPhoneNumber(), new ValueEventListener() {
-            @Override
-            public void onDataChange(final DataSnapshot dataSnapshot) {
-                Log.d(TAG, "dataSnapshot : " + dataSnapshot);
-                if (dataSnapshot != null) {
-                    String key = dataSnapshot.getValue(String.class);
-                    if (key != null) {
-                        Log.d(TAG, "key" + key);
-                        profile.setUserKey(key);
-                        uploadImage(profile, listener);
-                    } else {
-                        helper.postPhoneNumber(profile.getmPhoneNumber(), new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                if (databaseError == null) {
-                                    uploadProfile(profile, listener);
+            helper.getUserKey(profile.getmPhoneNumber(), new ValueEventListener() {
+                @Override
+                public void onDataChange(final DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "dataSnapshot : " + dataSnapshot);
+                    if (dataSnapshot != null) {
+                        String key = dataSnapshot.getValue(String.class);
+                        if (key != null) {
+                            Log.d(TAG, "key" + key);
+                            profile.setUserKey(key);
+                            validateUri(profile,listener);
+                        } else {
+                            helper.postPhoneNumber(profile.getmPhoneNumber(), new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                    if (databaseError == null) {
+                                        uploadProfile(profile, listener);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
-
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                listener.onError(databaseError.getMessage());
-            }
-        });
-
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onError(databaseError.getMessage());
+                }
+            });
 
     }
+
+
+
+
+
+   private void validateUri(final Profile profile, final UploadProfileListener listener) {
+        if(profile.getPhoto().getUrl()==null){
+            // uploadImage(profile, listener);
+            Photo photo = new Photo();
+            profile.setPhoto(photo);
+            Contact contact = new Contact();
+            contact.setUserKey(profile.getUserKey());
+            contact.setName(profile.getmName());
+            contact.setPhoneNumber(profile.getmPhoneNumber());
+            contact.save();
+
+
+            postProfile(profile, listener);
+          Log.d(TAG,"CUANDO EL URI ES NULL");
+         }else{
+             uploadImage(profile, listener);
+             Log.d(TAG,"CUANDO EL URI NO ES NULL");
+         }
+    }
+
+
+    private void saveContact(Profile profile, Uri uriPhoto, UploadProfileListener listener) {
+
+        Contact contact = new Contact();
+        contact.setUserKey(profile.getUserKey());
+        contact.setName(profile.getmName());
+        contact.setPhoneNumber(profile.getmPhoneNumber());
+        contact.setPhotoUri(uriPhoto.toString());
+        contact.save();
+        postProfile(profile, listener);
+    }
+
 
     private void uploadImage(final Profile profile, final UploadProfileListener listener) {
 
@@ -104,7 +138,7 @@ public class FirebaseLoadProfile extends FirebaseHelper {
                             Photo photo = new Photo();
                             photo.setUrl(uriPhoto.toString());
                             profile.setPhoto(photo);
-                            saveContact(profile,uriPhoto,listener);
+                            saveContact(profile, uriPhoto, listener);
                         }
                     }
                 })
@@ -115,16 +149,6 @@ public class FirebaseLoadProfile extends FirebaseHelper {
                     }
                 });
 
-    }
-
-    private void saveContact(Profile profile, Uri uriPhoto,UploadProfileListener listener) {
-        Contact contact = new Contact();
-        contact.setUserKey(profile.getUserKey());
-        contact.setName(profile.getmName());
-        contact.setPhoneNumber(profile.getmPhoneNumber());
-        contact.setPhotoUri(uriPhoto.toString());
-        contact.save();
-        postProfile(profile, listener);
     }
 
     private void postProfile(final Profile profile, final UploadProfileListener listener) {
