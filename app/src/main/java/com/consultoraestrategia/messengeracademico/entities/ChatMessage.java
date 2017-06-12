@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.firebase.database.Exclude;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
@@ -9,6 +10,8 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
+
+import org.parceler.Parcel;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.Map;
  */
 
 @Table(database = MessengerAcademicoDatabase.class)
+@Parcel(analyze = {ChatMessage.class})
 public class ChatMessage extends BaseModel {
 
     public static final int STATUS_WRITED = 2000;
@@ -32,36 +36,37 @@ public class ChatMessage extends BaseModel {
     public static final String TYPE_VIDEO = "VIDEO";
     public static final String TYPE_FILE = "FILE";
 
-    @ForeignKey(stubbedRelationship = true, saveForeignKeyModel = true)
-    private Contact emisor;
+    @ForeignKey(stubbedRelationship = true)
+    public Contact emisor;
 
-    @ForeignKey(stubbedRelationship = true, saveForeignKeyModel = true)
-    private Contact receptor;
 
-    @Column
-    private String messageText;
-    @Column
-    private int messageStatus;
-    @Column
-    private String messageType;
+    @ForeignKey(stubbedRelationship = true)
+    public Contact receptor;
 
     @Column
-    private long timestamp;
+    public String messageText;
     @Column
-    private String messageUri;
+    public int messageStatus;
+    @Column
+    public String messageType;
+
+    @Column
+    public long timestamp;
+    @Column
+    public String messageUri;
 
 
     @PrimaryKey
     @Exclude
-    private String keyMessage;
+    public String keyMessage;
 
     @Column
-    private String chatKey; //Foreign key xd
+    public String chatKey; //Foreign key xd
 
 
     @Exclude
     @Column
-    private int stateChatMessage;// VISIBLE, DELETED, ETC.
+    public int stateChatMessage;// VISIBLE, DELETED, ETC.
 
     public ChatMessage() {
     }
@@ -205,5 +210,22 @@ public class ChatMessage extends BaseModel {
                 .where(ChatMessage_Table.chatKey.eq(chatKey))
                 .and(ChatMessage_Table.messageStatus.eq(ChatMessage.STATUS_DELIVERED))
                 .queryList();
+    }
+
+    @Override
+    public String toString() {
+        return "emisor: " + emisor.getPhoneNumber() + "\n" +
+                "receptor: " + receptor.getPhoneNumber() + "\n" +
+                "messageText: " + messageText + "\n" +
+                "messageStatus: " + messageStatus + "\n" +
+                "messageType: " + messageType + "\n" +
+                "timestamp: " + timestamp + "\n" +
+                "keyMessage: " + keyMessage + "\n" +
+                "chatKey: " + chatKey + "\n" +
+                "messageUri: " + messageUri;
+    }
+
+    public String getId() {
+        return getKeyMessage();
     }
 }

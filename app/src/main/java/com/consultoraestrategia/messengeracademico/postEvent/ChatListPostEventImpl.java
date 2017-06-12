@@ -23,6 +23,10 @@ public class ChatListPostEventImpl implements ChatListPostEvent {
         this.eventBus = GreenRobotEventBus.getInstance();
     }
 
+    public ChatListPostEventImpl(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
+
     @Override
     public void post(Chat chat) {
         post(ChatListEvent.TYPE_CHAT, null, null, null, chat);

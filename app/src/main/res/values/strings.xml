@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Messenger Academico</string>
     <string name="action_settings">Settings</string>
+    <string name="action_import">Actualizar Contactos</string>
 
     <string name="verification.button.next">Sig.</string>
     <string name="verification.message.costwarning">Puede que tu operador te cobre por el SMS </string>

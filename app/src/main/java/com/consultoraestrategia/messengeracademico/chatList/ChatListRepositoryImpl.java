@@ -99,6 +99,7 @@ public class ChatListRepositoryImpl implements ChatListRepository {
     }
 
     private void postToMain(Contact contact) {
+        Log.d(TAG, "postToMain");
         EventBus eventBus = GreenRobotEventBus.getInstance();
         MainEvent event = new MainEvent();
         event.setType(MainEvent.TYPE_LAUNCH_CHAT);

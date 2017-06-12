@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chatList.holder.ChatItemHolder;
 import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListener;
-import com.consultoraestrategia.messengeracademico.contactList.adapter.holder.AcademicContactHolder;
-import com.consultoraestrategia.messengeracademico.contactList.adapter.holder.PhoneContactHolder;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 
@@ -101,7 +99,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setChats(List<Chat> chats) {
         if (chats != null && !chats.isEmpty()) {
-            this.chats = chats;
+            this.chats.clear();
+            this.chats.addAll(chats);
             notifyDataSetChanged();
         }
     }

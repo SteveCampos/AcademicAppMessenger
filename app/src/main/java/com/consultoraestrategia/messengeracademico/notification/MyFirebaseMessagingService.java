@@ -11,6 +11,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
+import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.NotificationInbox;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
 import com.consultoraestrategia.messengeracademico.utils.MapperHelper;
@@ -25,23 +26,15 @@ import static com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity.E
  * Created by jairc on 17/04/2017.
  */
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService implements NotificationService {
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFMService";
     private static final int MY_NOTIFICATION_ID = 2348;
-    private NotificationPresenter presenter;
 
 
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
-
-        presenter = new NotificationPresenterImpl(
-                this,
-                new MapperHelper(),
-                new DefaultSharedPreferencesHelper(PreferenceManager.getDefaultSharedPreferences(this)),
-                this);
-
         super.onCreate();
     }
 
@@ -53,11 +46,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.d(TAG, "onMessageReceived");
-        presenter.onMessageReceived(remoteMessage);
+        super.onMessageReceived(remoteMessage);
+        MapperHelper mapperHelper = new MapperHelper();
+        ChatMessage message = mapperHelper.mapToObject(remoteMessage.getData(), ChatMessage.class);
+        //createNotification(message);
     }
 
-    @Override
     public void createNotification(NotificationInbox notification, String phoneNumberTo) {
         Log.d(TAG, "createNotification");
 

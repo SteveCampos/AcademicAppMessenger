@@ -16,7 +16,6 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 import java.util.List;
 
-
 /**
  * Created by @stevecampos on 9/03/2017.
  */
@@ -31,17 +30,22 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private ChatMessageListener listener;
     private Context context;
     private Contact emisor;
+    private RecyclerView recyclerView;
 
     public ChatMessageAdapter(Contact emisor, List<ChatMessage> messages, ChatMessageListener listener, Context context) {
+        Log.d(TAG, "ChatMessageAdapter new Instance: " + this.hashCode());
         this.emisor = emisor;
         this.messages = messages;
         this.listener = listener;
         this.context = context;
     }
 
+    public void setRecyclerView(RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
+    }
+
     @Override
     public int getItemViewType(int position) {
-        Log.d(TAG, "getItemViewType");
         ChatMessage message = messages.get(position);
         if (message.getEmisor().equals(emisor)) {
             return TYPE_TEXT_EMISOR;
@@ -70,16 +74,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder");
         ChatMessage message = messages.get(position);
         switch (holder.getItemViewType()) {
             case TYPE_TEXT_EMISOR:
                 MessageTextEmisorHolder vh1 = (MessageTextEmisorHolder) holder;
-                vh1.bind(message, context, listener);
+                vh1.bind(message, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context));
                 break;
             case TYPE_TEXT_RECEPTOR:
                 MessageTextReceptorHolder vh2 = (MessageTextReceptorHolder) holder;
-                vh2.bind(message, context, listener);
+                vh2.bind(message, listener);
                 break;
         }
     }
@@ -90,23 +93,33 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void onMessageAdded(ChatMessage message) {
-        Log.d(TAG, "onMessageAdded");
         if (messages.contains(message)) {
-            onMessagedChanged(message);
+            updateMessage(message);
         } else {
-            messages.add(message);
-            notifyItemInserted(getItemCount());
+            addMessage(message);
         }
     }
 
+    private void addMessage(ChatMessage message) {
+        Log.d(TAG, this.hashCode() + ", addMessage message: " + message);
+        messages.add(message);
+        notifyItemInserted(getItemCount());
+        scrollToLastItem();
+    }
+
+    private void updateMessage(ChatMessage message) {
+        Log.d(TAG, this.hashCode() + ", updateMessage message: " + message);
+        int position = messages.indexOf(message);
+        messages.set(position, message);
+        notifyItemChanged(position);
+        scrollToLastItem();
+    }
+
     public void onMessagedChanged(ChatMessage message) {
-        Log.d(TAG, "onMessagedChanged");
         if (messages.contains(message)) {
-            int position = messages.indexOf(message);
-            messages.set(position, message);
-            notifyItemChanged(position);
+            updateMessage(message);
         } else {
-            onMessageAdded(message);
+            addMessage(message);
         }
 
     }
@@ -114,8 +127,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void addMessageList(List<ChatMessage> messages) {
         Log.d(TAG, "addMessageList");
         if (messages != null && !messages.isEmpty()) {
-            this.messages = messages;
+            this.messages.clear();
+            this.messages.addAll(messages);
             notifyDataSetChanged();
+            scrollToLastItem();
         }
+    }
+
+    private void scrollToLastItem() {
+        recyclerView.scrollToPosition(getItemCount() - 1);
     }
 }

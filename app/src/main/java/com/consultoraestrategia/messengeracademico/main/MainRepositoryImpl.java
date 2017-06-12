@@ -4,21 +4,17 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.domain.FirebaseUser;
-import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
-import com.consultoraestrategia.messengeracademico.messageRepository.MessageRepository;
-import com.consultoraestrategia.messengeracademico.messageRepository.MessageRepositoryImpl;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
-import static com.consultoraestrategia.messengeracademico.chat.ChatRepositoryImpl.FROM_USER_PATH;
 import static com.consultoraestrategia.messengeracademico.main.event.MainEvent.TYPE_CONTACT;
 import static com.consultoraestrategia.messengeracademico.main.event.MainEvent.TYPE_PHONENUMBER;
 
@@ -33,12 +29,10 @@ class MainRepositoryImpl implements MainRepository {
     private FirebaseUser firebaseUser;
     private int counter = 0;
     private Contact me;
-    private MessageRepository messageRepository;
 
     public MainRepositoryImpl() {
         this.eventBus = GreenRobotEventBus.getInstance();
         this.firebaseUser = new FirebaseUser();
-        this.messageRepository = new MessageRepositoryImpl();
     }
 
     @Override
@@ -52,7 +46,7 @@ class MainRepositoryImpl implements MainRepository {
                 getPhoneNumber(preferences);
             } else {
                 //Show error Retreiving phoneNumber!
-                Log.d(TAG, "Error getting phonenumber from preferences!");
+                Log.e(TAG, "Error getting phonenumber from preferences!");
             }
         }
     }
@@ -69,20 +63,14 @@ class MainRepositoryImpl implements MainRepository {
     }
 
     private void manageSnapshot(DataSnapshot dataSnapshot) {
-        if (dataSnapshot != null) {
-            ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
-            if (message != null) {
-                messageRepository.manageIncomingMessage(message, me, FROM_USER_PATH);
-            }
-        }
+        Log.d(TAG, "manageSnapshot dataSnapshot: " + dataSnapshot);
     }
 
     @Override
     public void listenForIncomingMessages(final Contact contact) {
-
         Log.d(TAG, "listenForIncomingMessages");
 
-        firebaseUser.listenToIncomingMessages(contact, new ChildEventListener() {
+        firebaseUser.listenForAllUserMessages(contact, new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 manageSnapshot(dataSnapshot);

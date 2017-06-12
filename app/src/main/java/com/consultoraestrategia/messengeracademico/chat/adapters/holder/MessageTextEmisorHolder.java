@@ -2,6 +2,7 @@ package com.consultoraestrategia.messengeracademico.chat.adapters.holder;
 
 import android.content.Context;
 
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,13 +28,13 @@ public class MessageTextEmisorHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = MessageTextEmisorHolder.class.getSimpleName();
     @BindView(R.id.img_status)
-    ImageView imgStatus;
+    public ImageView imgStatus;
     @BindView(R.id.txt_time)
-    TextView txtTime;
+    public TextView txtTime;
     @BindView(R.id.message_text)
-    TextView messageText;
+    public TextView messageText;
     @BindView(R.id.layout_bubble)
-    RelativeLayout layoutBubble;
+    public RelativeLayout layoutBubble;
 
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
@@ -43,11 +44,14 @@ public class MessageTextEmisorHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, view);
     }
 
-    public void bind(ChatMessage message, Context context, ChatMessageListener listener) {
+    public void bind(ChatMessage message, Drawable drawable) {
         messageText.setText(message.getMessageText());
+        imgStatus.setImageDrawable(drawable);
+        txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
+    }
 
+    public static Drawable getDrawableFromMessageStatus(int status, Context context) {
         int drawableResStatus = R.drawable.ic_access_time;
-        int status = message.getMessageStatus();
         switch (status) {
             case ChatMessage.STATUS_WRITED:
                 drawableResStatus = R.drawable.ic_access_time;
@@ -62,7 +66,6 @@ public class MessageTextEmisorHolder extends RecyclerView.ViewHolder {
                 drawableResStatus = R.drawable.ic_double_check_colored;
                 break;
         }
-        imgStatus.setImageDrawable(ContextCompat.getDrawable(context, drawableResStatus));
-        txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
+        return ContextCompat.getDrawable(context, drawableResStatus);
     }
 }

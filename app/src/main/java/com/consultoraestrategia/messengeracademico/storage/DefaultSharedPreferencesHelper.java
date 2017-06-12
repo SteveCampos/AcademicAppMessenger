@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.storage;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
@@ -13,6 +14,7 @@ import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 public class DefaultSharedPreferencesHelper implements SharedPreferencesHelper {
 
+    private static final String TAG = DefaultSharedPreferencesHelper.class.getSimpleName();
     private final String MY_SHARED_PREFERENCES = "com.consultoraestrategia.messengeracademico_sharedpreferences";
     //private final String KEY_PHONENUMBER = ".session.phonenumber";
     private final String KEY_PHONENUMBER = VerificationActivity.PREF_PHONENUMBER;
@@ -50,6 +52,7 @@ public class DefaultSharedPreferencesHelper implements SharedPreferencesHelper {
                     .and(Contact_Table.userKey.isNotNull())
                     .querySingle();
         }
+        Log.d(TAG, "getContact = null");
         return null;
     }
 

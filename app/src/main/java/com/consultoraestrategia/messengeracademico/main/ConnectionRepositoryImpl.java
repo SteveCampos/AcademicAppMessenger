@@ -9,6 +9,7 @@ import com.consultoraestrategia.messengeracademico.domain.FirebaseUser;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
+import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
@@ -21,8 +22,13 @@ import java.util.Date;
 public class ConnectionRepositoryImpl implements ConnectionRepository {
 
     private static final String TAG = ConnectionRepositoryImpl.class.getSimpleName();
+    private final FirebaseUser firebaseUser;
+    private final Contact mainContact;
 
-    public ConnectionRepositoryImpl() {
+
+    public ConnectionRepositoryImpl(FirebaseUser firebaseUser, Contact mainContact) {
+        this.firebaseUser = firebaseUser;
+        this.mainContact = mainContact;
     }
 
     @Override
@@ -40,23 +46,6 @@ public class ConnectionRepositoryImpl implements ConnectionRepository {
     private void setConnection(boolean online) {
         long timeStamp = new Date().getTime();
         Connection connection = new Connection(online, timeStamp);
-        FirebaseUser firebaseUser = new FirebaseUser();
-        firebaseUser.changeConnection(getMainContact(), connection);
-    }
-
-    private String getPhoneNumberFromPreferences() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MessengerAcademicoApp.getContext());
-        return preferences.getString(VerificationActivity.PREF_PHONENUMBER, null);
-    }
-
-    public Contact getMainContact() {
-        String phoneNumber = getPhoneNumberFromPreferences();
-        if (phoneNumber != null) {
-            return SQLite.select()
-                    .from(Contact.class)
-                    .where(Contact_Table.phoneNumber.eq(phoneNumber))
-                    .querySingle();
-        }
-        return null;
+        firebaseUser.changeConnection(mainContact, connection);
     }
 }

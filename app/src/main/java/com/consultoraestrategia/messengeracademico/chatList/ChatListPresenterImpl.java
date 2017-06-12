@@ -11,6 +11,7 @@ import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -72,7 +73,8 @@ public class ChatListPresenterImpl implements ChatListPresenter {
         interactor.getChats(contact);
     }
 
-    @Subscribe
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     @Override
     public void onEventMainThread(ChatListEvent event) {
         Log.d(TAG, "onEventMainThread event type: " + event.getType());
@@ -137,6 +139,7 @@ public class ChatListPresenterImpl implements ChatListPresenter {
 
     @Override
     public void onChatClicked(Chat chat) {
+        Log.d(TAG, "onChatClicked");
         interactor.onChatClicked(chat);
     }
 }

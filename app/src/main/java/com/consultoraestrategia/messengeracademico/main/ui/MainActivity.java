@@ -2,6 +2,7 @@ package com.consultoraestrategia.messengeracademico.main.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.consultoraestrategia.messengeracademico.MessengerAcademicoApp;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
 import com.consultoraestrategia.messengeracademico.chatList.ui.ChatListFragment;
@@ -25,9 +27,13 @@ import com.consultoraestrategia.messengeracademico.main.ChatsFragment;
 import com.consultoraestrategia.messengeracademico.main.MainPresenter;
 import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;
 import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapter;
+import com.consultoraestrategia.messengeracademico.main.di.MainComponent;
+import com.consultoraestrategia.messengeracademico.prueba.TestActivity;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,8 +45,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     public static final String PREF_STEP_COMPLETED = "PREF_STEP_COMPLETED";
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private MainPresenter presenter;
-
+    MainPresenter presenter;
     MyFragmentAdapter fragmentAdapter;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -56,102 +61,106 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private static final String USER_TOPIC = "user_";
     private static final String PREF_USERKEY = "PREF_USERKEY";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        forwardToStep();
-        init();
-
-        String userKey = getUserKey();
-        Log.d(TAG, "userKey: " + userKey);
-        if (userKey != null) {
-            FirebaseMessaging.getInstance()
-                    .subscribeToTopic(USER_TOPIC + userKey);
+        boolean isStepsCompleted = isProcessCompleted();
+        if (!isStepsCompleted) {
+            forwardToStep();
+            return;
         }
-    }
-
-    public String getUserKey() {
-        String phoneNumber = getPhoneNumber();
-        if (phoneNumber != null) {
-            Contact contact = SQLite
-                    .select()
-                    .from(Contact.class)
-                    .where(Contact_Table.phoneNumber.eq(phoneNumber))
-                    .and(Contact_Table.userKey.isNotNull()).querySingle();
-            if (contact != null) {
-                return contact.getUserKey();
-            }
-        }
-        return null;
-    }
-
-    public String getPhoneNumber() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return preferences.getString(PREF_PHONENUMBER, null);
-    }
-
-    private void init() {
+        setupInjection();
         setupViewPager();
-        presenter = new MainPresenterImpl(this);
-        presenter.onCreate();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        presenter.getPhoneNumber(preferences);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return presenter;
+    }
+
+
+    private void setupInjection() {
+        Log.d(TAG, "setupInjection");
+        presenter = (MainPresenter) getLastCustomNonConfigurationInstance();
+        if (presenter == null) {
+            Log.d(TAG, "presenter == null, setup injection...");
+            MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
+            MainComponent mainComponent = app.getMainComponent(getActivity(), getSupportFragmentManager(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+            presenter = mainComponent.getPresenter();
+            fragmentAdapter = mainComponent.getAdapter();
+        }
+
+        if (fragmentAdapter == null) {
+            Log.d(TAG, "adapter == == null, setup injection...");
+            MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
+            MainComponent mainComponent = app.getMainComponent(getActivity(), getSupportFragmentManager(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+            fragmentAdapter = mainComponent.getAdapter();
+        }
+
+        presenter.attachView(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        if (presenter != null) {
+            presenter.onBackPressed();
+        }
+        super.onBackPressed();
     }
 
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume");
-        super.onResume();
         if (presenter != null) {
             presenter.onResume();
         }
+        super.onResume();
     }
 
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
-        super.onPause();
         if (presenter != null) {
             presenter.onPause();
         }
+        super.onPause();
     }
 
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
-        super.onStop();
         if (presenter != null) {
-            presenter.onStop();
+            //presenter.onStop();
         }
+        super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
-        super.onDestroy();
         if (presenter != null) {
             presenter.onDestroy();
         }
+        super.onDestroy();
     }
 
     private void setupViewPager() {
         Log.d(TAG, "setupViewPager");
         viewpager.setOffscreenPageLimit(2);
-        fragmentAdapter = new MyFragmentAdapter(getSupportFragmentManager());
-
-        fragmentAdapter.addFragment(new ChatsFragment(), "Calls");
-        fragmentAdapter.addFragment(ChatListFragment.newInstance(), getString(R.string.fragment_chatlist_title));
-        fragmentAdapter.addFragment(ContactListFragment.newInstance(), getString(R.string.fragment_contacts_title));
-
         viewpager.setAdapter(fragmentAdapter);
         viewpager.setCurrentItem(currentItem);
         tabs.setupWithViewPager(viewpager);
+    }
+
+    public boolean isProcessCompleted() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String step = preferences.getString(PREF_STEP, VerificationActivity.PREF_STEP_VERIFICATION);
+        return step.equals(PREF_STEP_COMPLETED);
     }
 
     public void forwardToStep() {
@@ -219,8 +228,15 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public void startChat(Contact contact) {
+        Log.d(TAG, "startChat");
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra(ChatActivity.EXTRA_RECEPTOR_PHONENUMBER, contact.getPhoneNumber());
-        getActivity().startActivity(intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    @Override
+    public void setPresenter(MainPresenterImpl presenter) {
+
     }
 }

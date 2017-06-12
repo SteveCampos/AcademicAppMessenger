@@ -8,6 +8,8 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.parceler.Parcel;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,21 +18,25 @@ import java.util.Map;
  */
 
 @Table(database = MessengerAcademicoDatabase.class)
+@Parcel(analyze={Contact.class})
 public class Contact extends BaseModel {
 
+
     private static final String TAG = "ContactEntity";
-    @Column
-    private String photoUri;
-
-    @Column
-    private String name;
-
-    @Column
-    private String phoneNumber;
 
     @Column
     @PrimaryKey
-    private String userKey;
+    public String userKey;
+
+    @Column
+    public String phoneNumber;
+
+    @Column
+    public String name;
+
+    @Column
+    public String photoUri;
+
 
     public Contact() {
     }
@@ -38,6 +44,13 @@ public class Contact extends BaseModel {
     public Contact(String userKey) {
         this.userKey = userKey;
         this.load();
+    }
+
+    public Contact(String userKey, String phoneNumber, String name, String photoUri) {
+        this.userKey = userKey;
+        this.phoneNumber = phoneNumber;
+        this.name = name;
+        this.photoUri = photoUri;
     }
 
     public String getName() {

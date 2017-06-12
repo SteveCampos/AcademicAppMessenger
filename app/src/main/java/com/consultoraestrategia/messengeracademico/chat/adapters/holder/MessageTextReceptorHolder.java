@@ -20,11 +20,12 @@ import butterknife.ButterKnife;
  * Created by @stevecampos on 9/03/2017.
  */
 public class MessageTextReceptorHolder extends RecyclerView.ViewHolder {
+
     private static final String TAG = MessageTextReceptorHolder.class.getSimpleName();
     @BindView(R.id.txt_message)
-    TextView txtMessage;
+    public TextView txtMessage;
     @BindView(R.id.txt_time)
-    TextView txtTime;
+    public TextView txtTime;
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
@@ -33,7 +34,8 @@ public class MessageTextReceptorHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, view);
     }
 
-    public void bind(ChatMessage message, Context context, ChatMessageListener listener) {
+
+    public void bind(ChatMessage message, ChatMessageListener listener) {
         Log.d(TAG, "MessageTextReceptorHolder bind");
         txtMessage.setText(message.getMessageText());
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
@@ -42,4 +44,6 @@ public class MessageTextReceptorHolder extends RecyclerView.ViewHolder {
             listener.onMessageReaded(message);
         }
     }
+
+
 }

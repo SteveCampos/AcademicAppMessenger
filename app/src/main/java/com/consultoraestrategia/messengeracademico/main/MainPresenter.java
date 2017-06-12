@@ -2,6 +2,7 @@ package com.consultoraestrategia.messengeracademico.main;
 
 import android.content.SharedPreferences;
 
+import com.consultoraestrategia.messengeracademico.BasePresenter;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
 
@@ -9,8 +10,10 @@ import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
  * Created by jairc on 27/03/2017.
  */
 
-public interface MainPresenter {
+public interface MainPresenter extends BasePresenter {
 
+    void listenForMessages();
+    /*
     void onCreate();
 
     void onResume();
@@ -29,6 +32,6 @@ public interface MainPresenter {
 
     void listenForIncomingMessages(Contact contact);
 
-    void launchChat(Contact contact);
+    void launchChat(Contact contact);*/
 
 }

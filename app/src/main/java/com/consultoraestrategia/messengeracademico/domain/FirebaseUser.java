@@ -12,7 +12,6 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.consultoraestrategia.messengeracademico.chat.ChatRepositoryImpl.FROM_USER_PATH;
 
 /**
  * Created by @stevecampos on 16/03/2017.
@@ -26,10 +25,22 @@ public class FirebaseUser extends FirebaseHelper {
     public static final String CHILD_CONNECTION = "CONNECTION";
     private static final String CHILD_DEVICE = "DEVICE";
     public static final String CHILD_INCOMING_MESSAGES = "INCOMING_MESSAGES";
+    public static final String CHILD_ALL_MESSAGES = "ALL_MESSAGES";
     private static final String TAG = FirebaseUser.class.getSimpleName();
+    private static FirebaseUser instance;
+
+    private static FirebaseUser INSTANCE = null;
 
     public FirebaseUser() {
         super();
+    }
+
+
+    public static FirebaseUser getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new FirebaseUser();
+        }
+        return INSTANCE;
     }
 
 
@@ -45,57 +56,31 @@ public class FirebaseUser extends FirebaseHelper {
         }
     }
 
-    private ChildEventListener listenerIncomingMessages;
+    private ChildEventListener listenerAllMessages;
 
-    public void listenToIncomingMessages(Contact contact, ChildEventListener listener) {
-        Log.d(TAG, "listenToIncomingMessages");
-        this.listenerIncomingMessages = listener;
-        String keyUser = contact.getUserKey();
-        getDatabase().getReference()
-                .child(CHILD_USER)
-                .child(keyUser)
-                .child(CHILD_INCOMING_MESSAGES)
-                .addChildEventListener(listener);
-    }
-
-    public void removeMessage(int type, Contact user, ChatMessage message) {
-        Log.d(TAG, "removeMessage");
-        String userKey = user.getUserKey();
-        String keyMessage = message.getKeyMessage();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put(keyMessage, null);
-
-        String path = null;
-        if (type == FROM_USER_PATH) {
-            path = CHILD_USER + "/" + userKey + "/" + CHILD_INCOMING_MESSAGES;
-        } else {
-            path = CHILD_NOTIFICATIONS;
-        }
-
-        getDatabase().getReference()
-                .child(path)
-                .updateChildren(map, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        if (databaseError != null) {
-                            Log.d(TAG, "removeMessage databaseError: " + databaseError);
-                        } else {
-                            Log.d(TAG, "removeMessage success");
-                        }
-                    }
-                });
-    }
-
-    public void removeListenerToIncomingMessages(Contact contact) {
-        Log.d(TAG, "removeListenerToIncomingMessages");
-        if (listenerIncomingMessages != null) {
+    public void listenForAllUserMessages(Contact contact, ChildEventListener listener) {
+        Log.d(TAG, "listenForAllUserMessages");
+        this.listenerAllMessages = listener;
+        if (contact != null) {
             String keyUser = contact.getUserKey();
             getDatabase().getReference()
                     .child(CHILD_USER)
                     .child(keyUser)
-                    .child(CHILD_INCOMING_MESSAGES)
-                    .removeEventListener(listenerIncomingMessages);
+                    .child(CHILD_ALL_MESSAGES)
+                    .addChildEventListener(listener);
+        }
+    }
+
+
+    public void removeListenerAllMessages(Contact contact) {
+        Log.d(TAG, "removeListenerAllMessages");
+        if (listenerAllMessages != null) {
+            String keyUser = contact.getUserKey();
+            getDatabase().getReference()
+                    .child(CHILD_USER)
+                    .child(keyUser)
+                    .child(CHILD_ALL_MESSAGES)
+                    .removeEventListener(listenerAllMessages);
         }
     }
 }

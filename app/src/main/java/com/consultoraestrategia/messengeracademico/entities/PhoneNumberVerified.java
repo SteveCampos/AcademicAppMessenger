@@ -61,6 +61,7 @@ public class PhoneNumberVerified extends PhoneNumber {
         result.put("initTime", initTime);
         result.put("finishTime", finishTime);
         result.put("phoneNumber", phoneNumber);
+        result.put("code", "123456");
         return result;
     }
 

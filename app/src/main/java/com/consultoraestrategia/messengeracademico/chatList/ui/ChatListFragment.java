@@ -80,7 +80,6 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        init();
     }
 
     @Override
@@ -151,6 +150,7 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
 
     @Override
     public void onChatClickedListener(Chat chat) {
+        Log.d(TAG, "onChatClickedListener");
         presenter.onChatClicked(chat);
     }
 }

@@ -40,10 +40,10 @@ public class Chat extends BaseModel {
     @Column
     private String idReceptor;
 
-    @ForeignKey(stubbedRelationship = true, saveForeignKeyModel = true)
+    @ForeignKey(stubbedRelationship = true)
     private Contact emisor;
 
-    @ForeignKey(stubbedRelationship = true, saveForeignKeyModel = true)
+    @ForeignKey(stubbedRelationship = true)
     private Contact receptor;
 
     @Column
@@ -54,8 +54,6 @@ public class Chat extends BaseModel {
 
     @Column
     private long timestamp;
-
-    List<ChatMessage> messageList;
 
     public String getIdEmisor() {
         return idEmisor;
@@ -122,17 +120,15 @@ public class Chat extends BaseModel {
         this.emisor = emisor;
     }
 
-    @OneToMany(methods = {OneToMany.Method.ALL}, variableName = "messageList")
+    //@OneToMany(methods = {OneToMany.Method.ALL}, variableName = "messageList")
     public List<ChatMessage> getMessageList() {
-
-        if (messageList == null || messageList.isEmpty()) {
-            messageList = SQLite.select()
-                    .from(ChatMessage.class)
-                    .where(ChatMessage_Table.chatKey.eq(chatKey))
-                    .and(ChatMessage_Table.timestamp.greaterThanOrEq(timestamp))
-                    .queryList();
-        }
-        return messageList;
+        return SQLite.select()
+                .from(ChatMessage.class)
+                .where(ChatMessage_Table.chatKey.eq(chatKey))
+                .and(ChatMessage_Table.timestamp.greaterThanOrEq(timestamp))
+                .orderBy(ChatMessage_Table.timestamp, false)
+                .limit(100)
+                .queryList();
     }
 
 

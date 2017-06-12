@@ -10,62 +10,30 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.consultoraestrategia.messengeracademico.TestActivity"
+    tools:context="com.consultoraestrategia.messengeracademico.prueba.TestActivity"
     tools:showIn="@layout/activity_test">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical">
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Phone number">
-
-            <EditText
-                android:id="@+id/edt_phoneNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-
-        </android.support.design.widget.TextInputLayout>
-
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Phone number Receptor">
-
-            <EditText
-                android:id="@+id/edt_phoneNumber_receptor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-
-        </android.support.design.widget.TextInputLayout>
-
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Enter Message">
-
-            <EditText
-                android:id="@+id/edt_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-        </android.support.design.widget.TextInputLayout>
 
 
         <Button
-            android:id="@+id/btn"
+            android:id="@+id/btn.startservice"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Message" />
+            android:text="Start" />
 
+
+        <Button
+            android:id="@+id/btn.stopservice"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Destroy" />
     </LinearLayout>
 
 </RelativeLayout>
