@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/balloom_receptor">
+
+        <ImageView
+            android:id="@+id/imageview"
+            android:minHeight="196dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/txt_time"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageview"
+            android:layout_alignRight="@+id/imageview"
+            android:paddingBottom="4dp"
+            android:text="03:14"
+            android:textColor="@color/md_grey_200"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

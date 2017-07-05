@@ -21,9 +21,11 @@ public class ChatLocalDataSource implements ChatDataSource {
 
     private static final String TAG = ChatLocalDataSource.class.getSimpleName();
     private ChatStorage chatStorage;
+    private Contact mainUser;
 
-    public ChatLocalDataSource(ChatStorage chatStorage) {
+    public ChatLocalDataSource(ChatStorage chatStorage, Contact mainUser) {
         this.chatStorage = chatStorage;
+        this.mainUser = mainUser;
     }
 
     @Override
@@ -77,6 +79,14 @@ public class ChatLocalDataSource implements ChatDataSource {
         Log.d(TAG, "getMessages");
         if (chat != null) {
             callback.onMessagesLoaded(chat.getMessageList());
+        }
+    }
+
+    @Override
+    public void getMessagesNoReaded(Chat chat, GetMessageCallback callback) {
+        Log.d(TAG, "getMessagesNoReaded");
+        if (chat != null) {
+            callback.onMessagesLoaded(chat.getMessageNoReadedList(mainUser.getUserKey()));
         }
     }
 
@@ -135,6 +145,11 @@ public class ChatLocalDataSource implements ChatDataSource {
 
     @Override
     public void listenReceptorAction(Chat chat, ListenReceptorActionCallback callback) {
+
+    }
+
+    @Override
+    public void saveMessageOnLocal(ChatMessage message, Chat chat, ListenMessagesCallback callback) {
 
     }
 }

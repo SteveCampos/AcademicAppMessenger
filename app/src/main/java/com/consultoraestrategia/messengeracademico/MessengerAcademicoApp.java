@@ -12,6 +12,10 @@ import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageList
 import com.consultoraestrategia.messengeracademico.main.di.DaggerMainComponent;
 import com.consultoraestrategia.messengeracademico.main.di.MainComponent;
 import com.consultoraestrategia.messengeracademico.main.di.MainModule;
+import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingView;
+import com.consultoraestrategia.messengeracademico.notification.di.DaggerFirebaseMessagingComponent;
+import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingComponent;
+import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingModule;
 import com.google.firebase.FirebaseApp;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -25,8 +29,13 @@ public class MessengerAcademicoApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        initEmojis();
         initFirebase();
         initDb();
+    }
+
+    private void initEmojis() {
+
     }
 
     private void initDb() {
@@ -52,6 +61,15 @@ public class MessengerAcademicoApp extends Application {
         return DaggerMainComponent
                 .builder()
                 .mainModule(new MainModule(fragmentManager))
+                .messengerAcademicoAppModule(new MessengerAcademicoAppModule(context, preferences))
+                .build();
+    }
+
+
+    public FirebaseMessagingComponent getFirebaseMessagingComponent(FirebaseMessagingView view, Context context, SharedPreferences preferences) {
+        return DaggerFirebaseMessagingComponent
+                .builder()
+                .firebaseMessagingModule(new FirebaseMessagingModule(view))
                 .messengerAcademicoAppModule(new MessengerAcademicoAppModule(context, preferences))
                 .build();
     }

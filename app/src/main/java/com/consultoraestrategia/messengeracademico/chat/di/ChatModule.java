@@ -6,10 +6,12 @@ import com.consultoraestrategia.messengeracademico.UseCaseHandler;
 import com.consultoraestrategia.messengeracademico.chat.ChatPresenter;
 import com.consultoraestrategia.messengeracademico.chat.ChatPresenterImpl;
 import com.consultoraestrategia.messengeracademico.chat.adapters.ChatMessageAdapter;
+import com.consultoraestrategia.messengeracademico.chat.domain.usecase.GenerateMessageKey;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.data.ChatRepository;
 import com.consultoraestrategia.messengeracademico.data.ContactRepository;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseChat;
+import com.consultoraestrategia.messengeracademico.domain.FirebaseImageStorage;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
@@ -22,11 +24,14 @@ import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ListenRec
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.LoadMessages;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ReadMessage;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.SendMessage;
+import com.consultoraestrategia.messengeracademico.prueba.domain.usecase.UploadImage;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -63,10 +68,28 @@ public class ChatModule {
 
     @Provides
     @Singleton
-    ChatPresenter providePresenter(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor) {
-        return new ChatPresenterImpl(useCaseHandler, preferencesHelper, useCaseLoadMessages, useCaseGetContact, useCaseGetChat, useCaseSendMessage, useCaseReadMessage, useCaseChangeStateWriting, useCaseListenReceptorConnection, useCaseListenReceptorAction, eventBus, connectionInteractor);
+    ChatPresenter providePresenter(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage) {
+        return new ChatPresenterImpl(useCaseHandler, preferencesHelper, useCaseLoadMessages, useCaseGetContact, useCaseGetChat, useCaseSendMessage, useCaseReadMessage, useCaseChangeStateWriting, useCaseListenReceptorConnection, useCaseListenReceptorAction, eventBus, connectionInteractor, generateMessageKey, cacheDir, uploadImage);
     }
 
+    @Provides
+    @Singleton
+    UploadImage provideUploadImage(FirebaseImageStorage firebaseImageStorage) {
+        return new UploadImage(firebaseImageStorage);
+    }
+
+    @Provides
+    @Singleton
+    FirebaseImageStorage provideFirebaseImageStorage() {
+        return FirebaseImageStorage.getInstance();
+    }
+
+
+    @Provides
+    @Singleton
+    GenerateMessageKey provideGenerateMessageKey(FirebaseChat firebaseChat) {
+        return new GenerateMessageKey(firebaseChat);
+    }
 
     @Provides
     @Singleton

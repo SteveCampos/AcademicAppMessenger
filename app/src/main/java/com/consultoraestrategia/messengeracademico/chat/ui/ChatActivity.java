@@ -1,11 +1,16 @@
 package com.consultoraestrategia.messengeracademico.chat.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +19,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -30,6 +37,10 @@ import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageList
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.fullScreen.FullscreenActivity;
+import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -88,12 +99,21 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        edtMessage.addTextChangedListener(watcher);
+        setupViews();
         setupInjection();
         setupRecycler();
         initPresenter();
+    }
+
+    private void setupViews() {
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_24dp);
+        }
+        edtMessage.addTextChangedListener(watcher);
     }
 
     private void initPresenter() {
@@ -125,6 +145,29 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         super.onStart();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_send_image) {
+            presenter.pickImage();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onResume() {
@@ -231,6 +274,21 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         presenter.readMessage(message);
     }
 
+    @Override
+    public void onImageClick(ChatMessage message, View view) {
+        Log.d(TAG, "onImageClick uiri: " + message.getMessageUri());
+        startFullImageActivity(message, view);
+    }
+
+
+    private void startFullImageActivity(ChatMessage message, View imageView) {
+        Intent intent = new Intent(ChatActivity.this, FullscreenActivity.class);
+        intent.setData(Uri.parse(message.getMessageUri()));
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, imageView, ViewCompat.getTransitionName(imageView));
+        startActivity(intent, options.toBundle());
+    }
+
 
     @OnClick(R.id.btn_send)
     @Override
@@ -291,5 +349,25 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         String actionFormatted = getString(R.string.global_action_writing);
         txtConnection.setVisibility(View.VISIBLE);
         txtConnection.setText(actionFormatted);
+    }
+
+    @Override
+    public void startPickImageActivity() {
+        Log.d(TAG, "startPickImageActivity: ");
+        CropImage.activity(null)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setMultiTouchEnabled(true)
+                .start(this);
+    }
+
+    @Override
+    public void showError(String error) {
+        Snackbar.make(appbar, error, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 }

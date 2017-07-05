@@ -48,6 +48,11 @@ public class ChatRemoteDataSource implements ChatDataSource {
     }
 
     @Override
+    public void getMessagesNoReaded(Chat chat, GetMessageCallback callback) {
+
+    }
+
+    @Override
     public void saveMessage(final ChatMessage message, Chat chat, final ListenMessagesCallback callback) {
         Log.d(TAG, "saveMessage}");
         firebaseChat.saveMessage(true, message, new DatabaseReference.CompletionListener() {
@@ -167,10 +172,10 @@ public class ChatRemoteDataSource implements ChatDataSource {
         firebaseChat.listenReceptorAction(chat, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                try{
+                try {
                     String action = dataSnapshot.getValue(String.class);
                     callback.onReceptorActionChanged(chat.getReceptor(), action);
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     Log.e(TAG, "listenReceptorAction Exception: " + ex);
                 }
             }
@@ -180,6 +185,11 @@ public class ChatRemoteDataSource implements ChatDataSource {
 
             }
         });
+    }
+
+    @Override
+    public void saveMessageOnLocal(ChatMessage message, Chat chat, ListenMessagesCallback callback) {
+
     }
 
     private void parseAndFire(ListenMessagesCallback callback, DataSnapshot dataSnapshot) {

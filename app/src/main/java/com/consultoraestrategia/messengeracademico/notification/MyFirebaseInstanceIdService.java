@@ -17,7 +17,7 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
 
 
     private static final String TAG = "MyFirebaseIIDService";
-    private static final String USER_TOPIC = "user_";
+    public static final String USER_TOPIC = "user_";
     private static final String PREF_USERKEY = "PREF_USERKEY";
 
 

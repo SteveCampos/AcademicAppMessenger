@@ -131,6 +131,23 @@ public class Chat extends BaseModel {
                 .queryList();
     }
 
+    public List<ChatMessage> getMessageNoReadedList(String mainUserKey) {
+        Log.d(TAG, "getEmisor key: " + getEmisor().getUserKey());
+        Log.d(TAG, "getReceptor key: " + getReceptor().getUserKey());
+
+        List<ChatMessage> messages = SQLite.select()
+                .from(ChatMessage.class)
+                .where(ChatMessage_Table.chatKey.eq(chatKey))
+                .and(ChatMessage_Table.timestamp.greaterThanOrEq(timestamp))
+                .and(ChatMessage_Table.messageStatus.notEq(ChatMessage.STATUS_READED))
+                .and(ChatMessage_Table.emisor_userKey.notEq(mainUserKey))
+                .orderBy(ChatMessage_Table.timestamp, false)
+                .limit(100)
+                .queryList();
+        Log.d(TAG, "getMessageNoReadedList size: " + messages.size());
+        return messages;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -153,13 +170,13 @@ public class Chat extends BaseModel {
                 .querySingle();
     }
 
-    public long countMessagesNoReaded(String userKey) {
+    public long countMessagesNoReaded(String mainUserKey) {
         return SQLite.selectCountOf()
                 .from(ChatMessage.class)
                 .where(ChatMessage_Table.chatKey.eq(chatKey))
                 //.and(ChatMessage_Table.timestamp.greaterThanOrEq(state))
                 .and(ChatMessage_Table.messageStatus.eq(ChatMessage.STATUS_DELIVERED))
-                .and(ChatMessage_Table.emisor_userKey.notEq(userKey))
+                .and(ChatMessage_Table.emisor_userKey.notEq(mainUserKey))
                 .count();
     }
 

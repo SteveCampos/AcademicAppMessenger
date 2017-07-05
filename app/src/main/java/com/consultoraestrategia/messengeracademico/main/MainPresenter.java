@@ -13,6 +13,8 @@ import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
 public interface MainPresenter extends BasePresenter {
 
     void listenForMessages();
+
+    void suscribeToNotifications(Contact mainContact);
     /*
     void onCreate();
 

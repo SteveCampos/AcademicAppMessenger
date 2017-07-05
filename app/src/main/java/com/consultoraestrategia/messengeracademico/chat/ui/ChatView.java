@@ -30,4 +30,8 @@ public interface ChatView extends BaseView<ChatPresenter> {
     void showConnection(Connection connection);
 
     void showReceptorAction(Contact receptor, String action);
+
+    void startPickImageActivity();
+
+    void showError(String error);
 }

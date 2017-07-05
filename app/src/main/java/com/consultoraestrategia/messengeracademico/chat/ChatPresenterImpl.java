@@ -1,10 +1,15 @@
 package com.consultoraestrategia.messengeracademico.chat;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.BaseView;
 import com.consultoraestrategia.messengeracademico.UseCase;
 import com.consultoraestrategia.messengeracademico.UseCaseHandler;
+import com.consultoraestrategia.messengeracademico.chat.domain.usecase.GenerateMessageKey;
+import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
 import com.consultoraestrategia.messengeracademico.chat.events.ChatEvent;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatView;
 import com.consultoraestrategia.messengeracademico.entities.Action;
@@ -22,11 +27,14 @@ import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ListenRec
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.LoadMessages;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ReadMessage;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.SendMessage;
+import com.consultoraestrategia.messengeracademico.prueba.domain.usecase.UploadImage;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -50,6 +58,9 @@ public class ChatPresenterImpl implements ChatPresenter {
     private final ListenReceptorAction useCaseListenReceptorAction;
     private final EventBus eventBus;
     private final ConnectionInteractor connectionInteractor;
+    private final GenerateMessageKey generateMessageKey;
+    private final File cacheDir;
+    private final UploadImage uploadImage;
 
 
     private Contact emisor;
@@ -57,7 +68,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     private Chat chat;
 
 
-    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor) {
+    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage) {
         this.useCaseHandler = useCaseHandler;
         this.preferencesHelper = preferencesHelper;
         this.useCaseLoadMessages = useCaseLoadMessages;
@@ -70,6 +81,9 @@ public class ChatPresenterImpl implements ChatPresenter {
         this.useCaseListenReceptorAction = useCaseListenReceptorAction;
         this.eventBus = eventBus;
         this.connectionInteractor = connectionInteractor;
+        this.generateMessageKey = generateMessageKey;
+        this.cacheDir = cacheDir;
+        this.uploadImage = uploadImage;
     }
 
     @Override
@@ -90,6 +104,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     }
 
     private boolean forwardToAnotherActivity;
+
     @Override
     public void onResume() {
         Log.d(TAG, "onResume");
@@ -220,6 +235,11 @@ public class ChatPresenterImpl implements ChatPresenter {
         message.setTimestamp(new Date().getTime());
         message.setChatKey(chat.getChatKey());
 
+        sendMessage(message);
+    }
+
+    private void sendMessage(ChatMessage message) {
+
         boolean online = false;
         if (lastConnection != null) {
             online = lastConnection.isOnline();
@@ -338,6 +358,137 @@ public class ChatPresenterImpl implements ChatPresenter {
         }
     }
 
+    @Override
+    public void pickImage() {
+        if (view != null) {
+            view.startPickImageActivity();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == Activity.RESULT_OK) {
+
+                Uri resultUri = result.getUri();
+                beginToUploadMessageImage(resultUri);
+
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+                showErrorPickingImage(error);
+            }
+        }
+    }
+
+    private void showErrorPickingImage(Exception error) {
+        if (view != null) {
+            view.showError(error.getLocalizedMessage());
+        }
+    }
+
+    private void beginToUploadMessageImage(final Uri imageUri) {
+        Log.d(TAG, "beginToUploadMessageImage");
+        useCaseHandler.execute(
+                generateMessageKey,
+                new GenerateMessageKey.RequestValues(emisor, receptor),
+                new UseCase.UseCaseCallback<GenerateMessageKey.ResponseValue>() {
+                    @Override
+                    public void onSuccess(GenerateMessageKey.ResponseValue response) {
+                        final String keyMessage = response.getKey();
+                        Log.d(TAG, "generateMessageKey onSuccess keyMessage:" + keyMessage);
+
+                        ImageCompression imageCompression = new ImageCompression(cacheDir) {
+                            @Override
+                            protected void onPostExecute(Uri compressedUri) {
+                                Log.d(TAG, "imageCompression path: " + compressedUri);
+                                // image here is compressed & ready to be sent to the server
+                                ChatMessage message = composeMessageImage(keyMessage, compressedUri);
+                                onMessageChanged(message);
+                                uploadImage(message);
+                            }
+                        };
+                        imageCompression.execute(imageUri);// imagePath as a string
+
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+    }
+
+    private void uploadImage(ChatMessage message) {
+        if (view != null) {
+            useCaseHandler.execute(
+                    uploadImage,
+                    new UploadImage.RequestValues(message),
+                    new UseCase.UseCaseCallback<UploadImage.ResponseValue>() {
+                        @Override
+                        public void onSuccess(UploadImage.ResponseValue response) {
+                            int type = response.getType();
+                            Log.d(TAG, "type: " + type);
+                            switch (type) {
+                                case UploadImage.SUCCESS:
+                                    onImageUploadSucess(response.getMessage());
+                                    break;
+                                case UploadImage.PROGRESS:
+                                    Log.d(TAG, "UploadImage.PROGRESS : " + response.getPercent());
+                                    //onImageUploadProgress(response.getPercent());
+                                    break;
+                                case UploadImage.ERROR:
+                                    onImageUploadFailure(response.getMessage(), response.getError());
+                                    break;
+
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+                            showError(new Exception("UseCaseHandler error!"));
+                        }
+                    }
+            );
+        }
+    }
+
+    private void onImageUploadFailure(ChatMessage message, String error) {
+        Log.d(TAG, "onImageUploadFailure");
+    }
+
+    private void onImageUploadSucess(ChatMessage message) {
+        Log.d(TAG, "onImageUploadSuccess");
+        sendMessage(message);
+    }
+
+    private void showError(Exception ex) {
+        if (view != null) {
+            view.showError(ex.getLocalizedMessage());
+        }
+    }
+
+
+    private ChatMessage composeMessageImage(String keyMessage, Uri imageUri) {
+        ChatMessage message = new ChatMessage();
+        message.setKeyMessage(keyMessage);
+        message.setEmisor(emisor);
+        message.setReceptor(receptor);
+        message.setMessageText("");
+        message.setMessageStatus(ChatMessage.STATUS_WRITED);
+        message.setMessageType(ChatMessage.TYPE_IMAGE);
+        message.setMessageUri(imageUri.toString());
+        message.setTimestamp(new Date().getTime());
+        message.setChatKey(chat.getChatKey());
+
+        boolean online = false;
+        if (lastConnection != null) {
+            online = lastConnection.isOnline();
+        }
+        return message;
+    }
+
     private void onReceptorActionChanged(String action) {
         Log.d(TAG, "onReceptorActionChanged");
         if (view != null && receptor != null) {
@@ -398,9 +549,6 @@ public class ChatPresenterImpl implements ChatPresenter {
             if (chat != null && chat.getChatKey().equals(message.getChatKey())) {
                 view.addMessage(message);
             }
-
-        } else {
-            Log.d(TAG, "view = null !!!");
         }
     }
 

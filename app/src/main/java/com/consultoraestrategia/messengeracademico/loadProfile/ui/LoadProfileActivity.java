@@ -124,7 +124,6 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .setMultiTouchEnabled(true)
                 .setAspectRatio(1, 1).start(this);
-
     }
 
 

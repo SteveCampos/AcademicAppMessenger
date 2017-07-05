@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 
 public class Notification {
     private static final String TAG = "NotificationEntity";
+    private String action;
     private String contentTitle;
     private String contentText;
     private Bitmap largeIcon;
@@ -53,18 +54,9 @@ public class Notification {
         this.contentText = contentText;
     }
 
-    public Bitmap getLargeIcon(Context context) {
-        try {
-            return Glide.with(context.getApplicationContext())
-                    .load(largeIconUri)
-                    .asBitmap()
-                    .centerCrop()
-                    .into(256, 256)
-                    .get();
-        } catch (Exception ex) {
-            Log.d(TAG, "ex: " + ex);
-            return null;
-        }
+
+    public Bitmap getLargeIcon() {
+        return largeIcon;
     }
 
     public void setLargeIcon(Bitmap largeIcon) {
@@ -85,5 +77,13 @@ public class Notification {
 
     public void setLargeIconUri(String largeIconUri) {
         this.largeIconUri = largeIconUri;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 }

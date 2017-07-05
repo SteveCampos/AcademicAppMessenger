@@ -12,7 +12,11 @@ import com.consultoraestrategia.messengeracademico.main.domain.usecase.ListenFor
 import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
 import com.consultoraestrategia.messengeracademico.main.ui.MainView;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import org.greenrobot.eventbus.Subscribe;
+
+import static com.consultoraestrategia.messengeracademico.notification.MyFirebaseInstanceIdService.USER_TOPIC;
 
 /**
  * Created by jairc on 27/03/2017.
@@ -102,6 +106,15 @@ public class MainPresenterImpl implements MainPresenter {
                         }
                     });
         }
+        suscribeToNotifications(mainContact);
+    }
+
+    @Override
+    public void suscribeToNotifications(Contact mainContact) {
+        Log.d(TAG, "suscribeToNotifications");
+        FirebaseMessaging.getInstance()
+                .subscribeToTopic(USER_TOPIC + mainContact.getUserKey());
+
     }
 
     @Subscribe

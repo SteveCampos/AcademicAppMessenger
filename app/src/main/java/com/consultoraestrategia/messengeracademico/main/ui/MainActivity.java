@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setupViewPager();
     }
 
+
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
         return presenter;

@@ -197,6 +197,31 @@ public class ChatRepository implements ChatDataSource {
 
     }
 
+    @Override
+    public void getMessagesNoReaded(final Chat chat, final GetMessageCallback callback) {
+        // Query the local storage if available. If not, query the network.
+        Log.d(TAG, "getMessages from chatLocalDataSource");
+        chatLocalDataSource.getMessagesNoReaded(chat, new GetMessageCallback() {
+            @Override
+            public void onMessagesLoaded(List<ChatMessage> messages) {
+                Log.d(TAG, "onMessagesLoaded");
+                Collections.sort(messages, new Comparator<ChatMessage>() {
+                    @Override
+                    public int compare(ChatMessage o1, ChatMessage o2) {
+                        return Long.valueOf(o1.getTimestamp()).compareTo(o2.getTimestamp());
+                    }
+                });
+                //refreshCache(messages);
+                callback.onMessagesLoaded(messages);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                chatRemoteDataSource.getMessages(chat, callback);
+            }
+        });
+    }
+
 
     /**
      * Send Message, save message to local and remote data source.
@@ -229,8 +254,8 @@ public class ChatRepository implements ChatDataSource {
         }
     }
 
-
-    private void save(ChatMessage message, Chat chat, final ListenMessagesCallback callback) {
+    private void saveMessageLocal(ChatMessage message, Chat chat, final ListenMessagesCallback callback) {
+        message.setMessageStatus(ChatMessage.STATUS_DELIVERED);
         chatLocalDataSource.saveMessage(message, chat, new ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
@@ -243,6 +268,11 @@ public class ChatRepository implements ChatDataSource {
                 callback.onError(error);
             }
         });
+    }
+
+
+    private void save(ChatMessage message, Chat chat, final ListenMessagesCallback callback) {
+        saveMessageLocal(message, chat, callback);
         chatRemoteDataSource.saveMessage(message, chat, new ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
@@ -670,6 +700,22 @@ public class ChatRepository implements ChatDataSource {
         chatRemoteDataSource.listenReceptorAction(chat, callback);
     }
 
+    @Override
+    public void saveMessageOnLocal(final ChatMessage message, final Chat chat, final ListenMessagesCallback callback) {
+        getChat(message.getChatKey(), new GetChatCallback() {
+            @Override
+            public void onChatLoaded(Chat chat) {
+                if (chat != null) {
+                    saveMessageLocal(message, chat, callback);
+                }
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                Log.d(TAG, "save Message failed!");
+            }
+        });
+    }
 
 
     private boolean iAmEmisor(ChatMessage message) {

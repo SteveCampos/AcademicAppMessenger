@@ -85,6 +85,16 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
                 case ChatMessage.TYPE_TEXT:
                     message = lastMessage.getMessageText();
                     break;
+                case ChatMessage.TYPE_IMAGE:
+                    message = context.getString(R.string.txt_global_photo);
+                    break;
+                case ChatMessage.TYPE_AUDIO:
+                    message = context.getString(R.string.txt_global_audio);
+                    break;
+                case ChatMessage.TYPE_VIDEO:
+                    message = context.getString(R.string.txt_global_video);
+                    break;
+
             }
             txtMessage.setText(message);
 

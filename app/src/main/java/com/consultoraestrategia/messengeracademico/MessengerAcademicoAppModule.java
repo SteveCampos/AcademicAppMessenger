@@ -24,6 +24,9 @@ import com.consultoraestrategia.messengeracademico.postEvent.ChatPostEventImpl;
 import com.consultoraestrategia.messengeracademico.storage.ChatDbFlowStorage;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
 
+import java.io.File;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -78,6 +81,20 @@ public class MessengerAcademicoAppModule {
 
     @Provides
     @Singleton
+    File provideCacheDir() {
+        return this.context.getCacheDir();
+    }
+
+    @Provides
+    @Named("package_name")
+    @Singleton
+    String providePackageName() {
+        return this.context.getPackageName();
+    }
+
+    @Provides
+    @Named("main_phonenumber")
+    @Singleton
     String provideMainPhoneNumber(DefaultSharedPreferencesHelper preferencesHelper) {
         return preferencesHelper.getDefaultPhoneNumber();
     }
@@ -120,8 +137,8 @@ public class MessengerAcademicoAppModule {
 
     @Provides
     @Singleton
-    ChatLocalDataSource provideChatLocalDataSource(ChatDbFlowStorage chatDbFlowStorage) {
-        return new ChatLocalDataSource(chatDbFlowStorage);
+    ChatLocalDataSource provideChatLocalDataSource(ChatDbFlowStorage chatDbFlowStorage, Contact mainContact) {
+        return new ChatLocalDataSource(chatDbFlowStorage, mainContact);
     }
 
     @Provides

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -38,8 +39,9 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
     RecyclerView myRecyclerView;
     Unbinder unbinder;
 
-    private ChatListAdapter adapter;
+    private DividerItemDecoration mDividerItemDecoration;
 
+    private ChatListAdapter adapter;
     private ChatListPresenter presenter;
 
     private String phoneNumber;
@@ -107,6 +109,9 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         myRecyclerView.setLayoutManager(linearLayoutManager);
         adapter = new ChatListAdapter(getActivity(), contact, new ArrayList<Chat>(), this);
+        mDividerItemDecoration = new DividerItemDecoration(myRecyclerView.getContext(),
+                linearLayoutManager.getOrientation());
+        //myRecyclerView.addItemDecoration(mDividerItemDecoration);
         myRecyclerView.setAdapter(adapter);
     }
 

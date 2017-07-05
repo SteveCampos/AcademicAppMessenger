@@ -1,5 +1,7 @@
 package com.consultoraestrategia.messengeracademico.chat.listener;
 
+import android.view.View;
+
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 
 /**
@@ -7,4 +9,6 @@ import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
  */
 public interface ChatMessageListener {
     void onMessageReaded(ChatMessage message);
+
+    void onImageClick(ChatMessage message, View view);
 }

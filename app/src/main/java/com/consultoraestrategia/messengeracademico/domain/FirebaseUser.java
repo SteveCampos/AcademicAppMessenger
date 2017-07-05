@@ -67,6 +67,7 @@ public class FirebaseUser extends FirebaseHelper {
                     .child(CHILD_USER)
                     .child(keyUser)
                     .child(CHILD_ALL_MESSAGES)
+                    .limitToLast(100)
                     .addChildEventListener(listener);
         }
     }

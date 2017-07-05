@@ -53,6 +53,8 @@ public interface ChatDataSource {
 
     void getMessages(Chat chat, GetMessageCallback callback);
 
+    void getMessagesNoReaded(Chat chat, GetMessageCallback callback);
+
     void saveMessage(ChatMessage message, Chat chat, ListenMessagesCallback callback);
 
     void saveMessageWithStatusWrited(ChatMessage message, boolean receptorOnline, Chat chat, ListenMessagesCallback callback);
@@ -69,5 +71,8 @@ public interface ChatDataSource {
     void listenConnection(Chat chat, ListenConnectionCallback callback);
 
     void listenReceptorAction(Chat chat, ListenReceptorActionCallback callback);
+
+
+    void saveMessageOnLocal(ChatMessage message, Chat chat, ListenMessagesCallback callback);
 
 }
