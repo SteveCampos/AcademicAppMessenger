@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/scrool_view_margin_top"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.consultoraestrategia.messengeracademico.customNotification.CustomNotificationActivity"
+    tools:showIn="@layout/activity_custom_notification">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/relative.one"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/rel.notif.custom"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/relative_view_size"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/notif.custom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Notif. personalizadas"
+                    android:textColor="@color/md_grey_900"
+                    android:textSize="15sp" />
+
+                <android.support.v7.widget.AppCompatCheckBox
+                    android:id="@+id/checkbox_notif_custom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/notif.custom"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/scrool_view_margin_top" />
+
+
+            </RelativeLayout>
+
+
+            <TextView
+                android:id="@+id/txt.custom.notification"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/md_keylines"
+                android:layout_marginTop="@dimen/relative_view_size"
+                android:text="Notificaciones mensaje"
+                android:textColor="@color/colorPrimary" />
+
+
+            <RelativeLayout
+                android:id="@+id/rel.tono.notification"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/relative_view_size"
+                android:layout_below="@id/txt.custom.notification"
+                android:background="?android:attr/selectableItemBackground"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/txt.tono.notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Tono de notificación"
+                    android:textColor="@color/md_grey_900"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt.tono.notifications"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Sonido predeterminado"
+                    android:textColor="@color/md_grey_500"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+
+
+            <View
+                android:id="@+id/view.profile"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_below="@+id/rel.tono.notification"
+                android:background="@color/md_grey_200" />
+
+
+            <RelativeLayout
+                android:enabled="true"
+                android:id="@+id/rel.vibrate.notification"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/relative_view_size"
+                android:layout_below="@id/rel.tono.notification"
+                android:background="?android:attr/selectableItemBackground"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/txt.vibrate.notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Vibración"
+                    android:textColor="@color/md_grey_900"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt.vibrate.notifications"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Predeterminada"
+                    android:textColor="@color/md_grey_500"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_below="@+id/rel.vibrate.notification"
+                android:background="@color/md_grey_200" />
+
+            <RelativeLayout
+                android:id="@+id/rel.emergent.notification"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/relative_view_size"
+                android:layout_below="@id/rel.vibrate.notification"
+                android:background="?android:attr/selectableItemBackground"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/txt.emergent.notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Notifación Emergente"
+                    android:textColor="@color/md_grey_900"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt.emergent.notifications"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Nunca mostrar ventana emergente"
+                    android:textColor="@color/md_grey_500"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_below="@+id/rel.emergent.notification"
+                android:background="@color/md_grey_200" />
+
+
+            <RelativeLayout
+                android:id="@+id/rel.luz.notification"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/relative_view_size"
+                android:layout_below="@id/rel.emergent.notification"
+                android:background="?android:attr/selectableItemBackground"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/txt.luz.notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Luz"
+                    android:textColor="@color/md_grey_900"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt.luz.notifications"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Blanco"
+                    android:textColor="@color/md_grey_500"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txt.recordatorio.notification"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/md_keylines"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_below="@+id/rel.luz.notification"
+                android:text="Recordatorio"
+                android:textColor="@color/colorPrimary" />
+
+
+
+            <RelativeLayout
+                android:id="@+id/rel.recordatorio.notification"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/relative_view_size"
+                android:layout_below="@id/txt.recordatorio.notification"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/txt.recordatorio.notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Alarma"
+                    android:textColor="@color/md_grey_900"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/recor.horario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt.recordatorio.notifications"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/md_keylines"
+                    android:text="Listado de alarma"
+                    android:textColor="@color/md_grey_500"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+
+
+    </RelativeLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

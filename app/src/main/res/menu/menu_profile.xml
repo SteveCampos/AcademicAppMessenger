@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity">
+    <!--<item-->
+        <!--android:id="@+id/menu_compartir"-->
+        <!--android:title="Compartir" />-->
+
+    <item
+        android:id="@+id/menu_editar"
+        android:title="@string/menu_options_profile_edit" />
+
+    <item
+        android:id="@+id/menu_contactos"
+        android:title="@string/menu_options_profile_view" />
+
+</menu>

@@ -86,4 +86,10 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+
+    <style name="StyleWhite" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
 </resources>

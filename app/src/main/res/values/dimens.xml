@@ -8,4 +8,10 @@
     <dimen name="fab_size_normal">56dp</dimen>
     <dimen name="fab_margin">8dp</dimen>
     <dimen name="md_keylines">16dp</dimen>
+
+    <!-- New Items. -->
+    <dimen name="header_collapsing_size">400dp</dimen>
+    <dimen name="scrool_view_margin_top">10dp</dimen>
+    <dimen name="relative_view_size">60dp</dimen>
+    <dimen name="view_margin_top_5dp">5dp</dimen>
 </resources>

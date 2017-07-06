@@ -39,6 +39,7 @@ import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.fullScreen.FullscreenActivity;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
+import com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -93,6 +94,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     ChatMessageAdapter adapter;
     @Inject
     ChatPresenter presenter;
+
+    Contact contact;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -250,6 +254,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     public void showReceptor(Contact receptor) {
         txtName.setText(receptor.getName());
         Glide.with(this).load(receptor.getPhotoUri()).into(imgProfile);
+         contact = receptor;
+
     }
 
     @Override
@@ -370,4 +376,17 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
         presenter.onActivityResult(requestCode, resultCode, data);
     }
+    /*Editado OnbackPressed y entrar Profile*/
+    @OnClick(R.id.linear_StartProfile)
+    public void onContactReceptorSelected() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI,contact.getPhotoUri());
+        intent.putExtra(ImportDataActivity.EXTRA_NAME,contact.getName());
+        intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER,contact.getPhoneNumber());
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+       /* intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);*/
+        startActivity(intent);
+    }
+
 }

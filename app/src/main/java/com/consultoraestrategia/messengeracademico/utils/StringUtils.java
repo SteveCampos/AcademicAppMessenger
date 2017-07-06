@@ -1,5 +1,10 @@
 package com.consultoraestrategia.messengeracademico.utils;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Steve on 21/02/2017.
  */
@@ -29,5 +34,27 @@ public class StringUtils {
             key1 = temp;
         }
         return new String[]{key1, key2};
+    }
+
+    public static boolean isSuccessful(JSONObject jsonObject) {
+        boolean s = false;
+        try {
+            s = jsonObject.getBoolean("Successful");
+            Log.d("JSON RESULT", "" + jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
+    public static String getJsonObResult(JSONObject jsonObject) {
+        String s = "";
+        try {
+            s = jsonObject.getJSONObject("Value").toString();
+            Log.d("JSON RESULT", "" + jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return s;
     }
 }

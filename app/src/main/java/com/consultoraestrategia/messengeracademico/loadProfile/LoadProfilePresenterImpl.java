@@ -63,7 +63,7 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
     }
 
     private boolean isValideName(String name) {
-        return   name != null && !name.isEmpty()  && !name.trim().isEmpty();
+        return   name != null && !name.isEmpty()  && !name.trim().isEmpty() && !(name.length() >16);
     }
 
 
@@ -122,6 +122,7 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
             view.hideLoadProfileViews();
         }
     }
+
 
 
 

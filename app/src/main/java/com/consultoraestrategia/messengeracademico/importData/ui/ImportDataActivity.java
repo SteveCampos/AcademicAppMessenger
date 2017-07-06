@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.consultoraestrategia.messengeracademico.importData.DatosGeneralesAsyntask;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
@@ -107,6 +108,7 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
     @NeedsPermission({Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS})
     public void importData() {
         presenter.handleClick(getPhoneNumberFromPreferences());
+        new DatosGeneralesAsyntask().execute(getPhoneNumberFromPreferences());
     }
 
     private String getPhoneNumberFromPreferences() {

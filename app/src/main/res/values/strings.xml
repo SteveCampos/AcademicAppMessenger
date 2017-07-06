@@ -81,5 +81,10 @@
     <string name="txt_global_audio">*Audio*</string>
     <string name="txt_global_video">*Video*</string>
 
+    <!--New Items-->
+
+    <string name="menu_options_profile_edit">Editar</string>
+    <string name="menu_options_profile_view">Ver en lista de contactos</string>
+
 
 </resources>

@@ -28,7 +28,6 @@ import com.consultoraestrategia.messengeracademico.main.MainPresenter;
 import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;
 import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapter;
 import com.consultoraestrategia.messengeracademico.main.di.MainComponent;
-import com.consultoraestrategia.messengeracademico.prueba.TestActivity;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
