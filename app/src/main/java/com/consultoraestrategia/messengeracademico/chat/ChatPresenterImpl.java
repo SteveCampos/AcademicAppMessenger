@@ -288,11 +288,26 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void changeWritingState(String text) {
         Log.d(TAG, "changeWritingState");
         if (text.length() == 0) {
+            showVoiceIcon();
             saveNoWritingState();
         } else {
+            showSendIcon();
             saveWritingState();
         }
     }
+
+    private void showVoiceIcon() {
+        if (view != null) {
+            view.showVoiceIcon();
+        }
+    }
+
+    private void showSendIcon() {
+        if (view != null) {
+            view.showSendIcon();
+        }
+    }
+
 
     @Override
     public void listenReceptorConnection() {
@@ -510,6 +525,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     }
 
     private void saveWritingState() {
+
         if (!isWriting) {
             isWriting = true;
             changeWritingState(true);

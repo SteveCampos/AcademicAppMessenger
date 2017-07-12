@@ -1,18 +1,28 @@
 package com.consultoraestrategia.messengeracademico.chat.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Px;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +32,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -42,6 +55,16 @@ import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActiv
 import com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+import com.vanniktech.emoji.EmojiEditText;
+import com.vanniktech.emoji.EmojiImageView;
+import com.vanniktech.emoji.EmojiPopup;
+import com.vanniktech.emoji.emoji.Emoji;
+import com.vanniktech.emoji.listeners.OnEmojiBackspaceClickListener;
+import com.vanniktech.emoji.listeners.OnEmojiClickListener;
+import com.vanniktech.emoji.listeners.OnEmojiPopupDismissListener;
+import com.vanniktech.emoji.listeners.OnEmojiPopupShownListener;
+import com.vanniktech.emoji.listeners.OnSoftKeyboardCloseListener;
+import com.vanniktech.emoji.listeners.OnSoftKeyboardOpenListener;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -52,6 +75,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.codetail.animation.ViewAnimationUtils;
 
 
 /**
@@ -76,16 +100,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     AppBarLayout appbar;
     @BindView(R.id.recycler)
     RecyclerView recycler;
-    @BindView(R.id.btn_emoji)
-    ImageView btnEmoji;
-    @BindView(R.id.edt_message)
-    AppCompatEditText edtMessage;
     @BindView(R.id.input_layout_message)
     TextInputLayout inputLayoutMessage;
     @BindView(R.id.layout_bottom)
     RelativeLayout layoutBottom;
     @BindView(R.id.btn_send)
-    FloatingActionButton btnSend;
+    FloatingActionButton fab;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
@@ -98,11 +118,39 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     Contact contact;
 
 
+    private boolean hidden = true;
+    @BindView(R.id.gallery_img_btn)
+    ImageButton galleryImgBtn;
+    @BindView(R.id.photo_img_btn)
+    ImageButton photoImgBtn;
+    @BindView(R.id.video_img_btn)
+    ImageButton videoImgBtn;
+    @BindView(R.id.audio_img_btn)
+    ImageButton audioImgBtn;
+    @BindView(R.id.location_img_btn)
+    ImageButton locationImgBtn;
+    @BindView(R.id.contact_img_btn)
+    ImageButton contactImgBtn;
+    @BindView(R.id.reveal_items)
+    CardView mRevealView;
+
+
+    EmojiPopup emojiPopup;
+
+    @BindView(R.id.coordinatorLayout)
+    CoordinatorLayout rootView;
+
+    @BindView(R.id.btn_emoji)
+    ImageView emojiButton;
+    @BindView(R.id.edt_message)
+    EmojiEditText edtMessage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        ButterKnife.bind(this);
         setupViews();
         setupInjection();
         setupRecycler();
@@ -118,6 +166,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_24dp);
         }
         edtMessage.addTextChangedListener(watcher);
+        emojiButton.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
+        emojiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                emojiPopup.toggle();
+            }
+        });
+        setUpEmojiPopup();
     }
 
     private void initPresenter() {
@@ -135,7 +191,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed");
-        if (presenter != null) {
+        if (emojiPopup != null && emojiPopup.isShowing()) {
+            emojiPopup.dismiss();
+        } else {
             presenter.onBackPressed();
         }
         super.onBackPressed();
@@ -169,6 +227,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
             presenter.pickImage();
             return true;
         }
+        if (id == R.id.action_clip) {
+            int cx = mRevealView.getRight();
+            int cy = mRevealView.getTop();
+            makeEffect(mRevealView, cx, cy);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -190,6 +254,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
+        if (emojiPopup != null) {
+            emojiPopup.dismiss();
+        }
         super.onStop();
     }
 
@@ -253,9 +320,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     public void showReceptor(Contact receptor) {
         txtName.setText(receptor.getName());
-        Glide.with(this).load(receptor.getPhotoUri()).into(imgProfile);
-         contact = receptor;
-
+        Glide
+                .with(this)
+                .load(receptor.getPhotoUri())
+                .error(R.drawable.ic_users)
+                .into(imgProfile);
+        contact = receptor;
     }
 
     @Override
@@ -372,21 +442,161 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
     @Override
+    public void showVoiceIcon() {
+        fab.setImageResource(R.drawable.ic_keyboard_voice_white_24dp);
+    }
+
+    @Override
+    public void showSendIcon() {
+        fab.setImageResource(R.drawable.ic_send_24dp);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
         presenter.onActivityResult(requestCode, resultCode, data);
     }
+
     /*Editado OnbackPressed y entrar Profile*/
     @OnClick(R.id.linear_StartProfile)
     public void onContactReceptorSelected() {
         Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI,contact.getPhotoUri());
-        intent.putExtra(ImportDataActivity.EXTRA_NAME,contact.getName());
-        intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER,contact.getPhoneNumber());
+        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI, contact.getPhotoUri());
+        intent.putExtra(ImportDataActivity.EXTRA_NAME, contact.getName());
+        intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER, contact.getPhoneNumber());
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-       /* intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);*/
         startActivity(intent);
     }
 
+    @OnClick({R.id.gallery_img_btn, R.id.photo_img_btn, R.id.video_img_btn, R.id.audio_img_btn, R.id.location_img_btn, R.id.contact_img_btn})
+    public void onViewClicked(View view) {
+        hideRevealView();
+        switch (view.getId()) {
+            case R.id.gallery_img_btn:
+                showSnackbar("gallery_img_btn");
+                break;
+            case R.id.photo_img_btn:
+                showSnackbar("photo_img_btn");
+                break;
+            case R.id.video_img_btn:
+                showSnackbar("video_img_btn");
+                break;
+            case R.id.audio_img_btn:
+                showSnackbar("audio_img_btn");
+                break;
+            case R.id.location_img_btn:
+                showSnackbar("location_img_btn");
+                break;
+            case R.id.contact_img_btn:
+                showSnackbar("contact_img_btn");
+                break;
+        }
+    }
+
+    private void showSnackbar(String message) {
+        Snackbar.make(toolbar, message, Snackbar.LENGTH_LONG).show();
+    }
+
+
+    private void hideRevealView() {
+        if (mRevealView.getVisibility() == View.VISIBLE) {
+            mRevealView.setVisibility(View.GONE);
+            hidden = true;
+        }
+    }
+
+    private void makeEffect(final View layout, int cx, int cy) {
+        Log.d(TAG, "makeEffect");
+        int radius = Math.max(layout.getWidth(), layout.getHeight());
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+
+            Animator animator =
+                    ViewAnimationUtils.createCircularReveal(layout, cx, cy, 0, radius);
+            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+            animator.setDuration(700);
+
+            if (hidden) {
+                layout.setVisibility(View.VISIBLE);
+                animator.start();
+                hidden = false;
+            } else {
+
+                Animator anim = ViewAnimationUtils.createCircularReveal(layout, cx, cy, radius, 0);
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        layout.setVisibility(View.INVISIBLE);
+                        hidden = true;
+                    }
+                });
+                anim.start();
+
+            }
+        } else {
+            if (hidden) {
+                Log.d(TAG, "anim.start()...");
+                Animator anim = android.view.ViewAnimationUtils.createCircularReveal(layout, cx, cy, 0, radius);
+                layout.setVisibility(View.VISIBLE);
+                anim.start();
+                hidden = false;
+            } else {
+                Log.d(TAG, "anim.start()...");
+                Animator anim = android.view.ViewAnimationUtils.createCircularReveal(layout, cx, cy, radius, 0);
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        layout.setVisibility(View.INVISIBLE);
+                        hidden = true;
+                    }
+                });
+                anim.start();
+
+            }
+        }
+    }
+
+
+    private void setUpEmojiPopup() {
+        emojiPopup = EmojiPopup.Builder.fromRootView(rootView)
+                .setOnEmojiBackspaceClickListener(new OnEmojiBackspaceClickListener() {
+                    @Override
+                    public void onEmojiBackspaceClick(final View v) {
+                        Log.d(TAG, "Clicked on Backspace");
+                    }
+                })
+                .setOnEmojiClickListener(new OnEmojiClickListener() {
+                    @Override
+                    public void onEmojiClick(@NonNull final EmojiImageView imageView, @NonNull final Emoji emoji) {
+                        Log.d(TAG, "Clicked on emoji");
+                    }
+                })
+                .setOnEmojiPopupShownListener(new OnEmojiPopupShownListener() {
+                    @Override
+                    public void onEmojiPopupShown() {
+                        emojiButton.setImageResource(R.drawable.ic_keyboard);
+                    }
+                })
+                .setOnSoftKeyboardOpenListener(new OnSoftKeyboardOpenListener() {
+                    @Override
+                    public void onKeyboardOpen(@Px final int keyBoardHeight) {
+                        Log.d(TAG, "Opened soft keyboard");
+                    }
+                })
+                .setOnEmojiPopupDismissListener(new OnEmojiPopupDismissListener() {
+                    @Override
+                    public void onEmojiPopupDismiss() {
+                        emojiButton.setImageResource(R.drawable.emoji_ios_category_people);
+                    }
+                })
+                .setOnSoftKeyboardCloseListener(new OnSoftKeyboardCloseListener() {
+                    @Override
+                    public void onKeyboardClose() {
+                        Log.d(TAG, "Closed soft keyboard");
+                    }
+                })
+                .build(edtMessage);
+    }
 }

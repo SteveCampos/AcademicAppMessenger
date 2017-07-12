@@ -34,4 +34,7 @@ public interface ChatView extends BaseView<ChatPresenter> {
     void startPickImageActivity();
 
     void showError(String error);
+
+    void showVoiceIcon();
+    void showSendIcon();
 }

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_marginTop="@dimen/scrool_view_margin_top"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.consultoraestrategia.messengeracademico.profile.profile.ProfileActivity"
+    tools:context="com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity"
     tools:showIn="@layout/activity_profile">
 
     <RelativeLayout
@@ -34,6 +34,7 @@
                     <!--android:textSize="15sp"-->
                     <TextView
                         android:id="@+id/silenciar"
+                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
@@ -41,9 +42,7 @@
                         android:layout_marginStart="@dimen/md_keylines"
                         android:text="Silenciar"
                         android:textColor="@color/md_grey_900"
-                        android:textSize="15sp"
-                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-                        />
+                        android:textSize="15sp" />
 
                     <android.support.v7.widget.SwitchCompat
                         android:layout_width="wrap_content"
@@ -76,14 +75,14 @@
 
                     <TextView
                         android:id="@+id/txt.notifications"
+                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="@dimen/md_keylines"
                         android:text="Notificaciones personalizadas"
                         android:textColor="@color/md_grey_900"
-                        android:textSize="15sp"
-                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle" />
+                        android:textSize="15sp" />
 
                 </RelativeLayout>
 
@@ -122,22 +121,22 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/md_keylines"
                         android:layout_marginTop="@dimen/view_margin_top_5dp"
-                        android:textSize="15sp"
                         android:text="Info y número de teléfono"
-                        android:textColor="@color/colorPrimary" />
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="15sp" />
 
 
                     <TextView
                         android:id="@+id/txt.status2"
+                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignStart="@+id/txt.inf.telf"
                         android:layout_below="@+id/txt.inf.telf"
                         android:layout_marginTop="@dimen/view_margin_top_5dp"
                         android:text="This is awesome!"
-                        android:textSize="15sp"
                         android:textColor="@color/md_grey_900"
-                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/txt.date"
@@ -175,14 +174,14 @@
 
                     <TextView
                         android:id="@+id/txt.phoneNumber"
+                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="@dimen/scrool_view_margin_top"
                         android:text="+51 963 108 545"
-                        android:textSize="15sp"
                         android:textColor="@color/md_grey_900"
-                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -220,7 +219,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:background="@drawable/ic_call_black_24dp"
+                        android:background="@drawable/ic_local_phone_24dp"
                         android:contentDescription="@string/action_change_background" />
 
                 </RelativeLayout>

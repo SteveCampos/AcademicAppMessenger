@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.consultoraestrategia.messengeracademico.main.ui.MainActivity">
 
+
+    <item
+        android:id="@+id/action_clip"
+        android:icon="@drawable/ic_attach_file_24dp"
+        android:title="Media"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/action_send_image"
         android:orderInCategory="100"

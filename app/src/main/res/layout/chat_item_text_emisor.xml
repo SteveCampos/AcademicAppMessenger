@@ -15,7 +15,7 @@
         android:background="@drawable/balloom_emisor">
 
 
-        <TextView
+        <com.vanniktech.emoji.EmojiTextView
             android:id="@+id/message_text"
             style="@style/chat_text_message_style"
             android:layout_width="wrap_content"

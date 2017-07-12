@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/balloom_receptor">
 
-        <TextView
+        <com.vanniktech.emoji.EmojiTextView
             android:id="@+id/txt_message"
             style="@style/chat_text_message_style"
             android:layout_width="wrap_content"

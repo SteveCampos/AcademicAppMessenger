@@ -51,14 +51,9 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
             String uriProfile = contact.getPhotoUri();
 
             title = !TextUtils.isEmpty(name) ? name : phoneNumber;
-            uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "https://image.flaticon.com/icons/png/512/21/21294.png";
+            uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "";
         }
-        /*String name = contact.getName();
-        String phoneNumber = contact.getPhoneNumber();
-        String uri = null;
 
-        if (phoneNumber != null) {
-        }*/
 
         txtStatus.setText(phoneNumber);
         txtName.setText(title);
@@ -71,6 +66,7 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
 
         Glide.with(context)
                 .load(uri)
+                .error(R.drawable.ic_users)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgProfile);
     }

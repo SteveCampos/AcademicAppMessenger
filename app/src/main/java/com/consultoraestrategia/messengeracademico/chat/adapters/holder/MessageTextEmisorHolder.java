@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
+import com.vanniktech.emoji.EmojiTextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -32,7 +33,7 @@ public class MessageTextEmisorHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.txt_time)
     public TextView txtTime;
     @BindView(R.id.message_text)
-    public TextView messageText;
+    public EmojiTextView messageText;
     @BindView(R.id.layout_bubble)
     public RelativeLayout layoutBubble;
 

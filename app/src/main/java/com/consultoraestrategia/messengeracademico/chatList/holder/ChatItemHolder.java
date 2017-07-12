@@ -16,6 +16,7 @@ import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListene
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.vanniktech.emoji.EmojiTextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -43,7 +44,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.txt_time)
     AppCompatTextView txtTime;
     @BindView(R.id.txt_message)
-    AppCompatTextView txtMessage;
+    EmojiTextView txtMessage;
     @BindView(R.id.txt_counter)
     AppCompatTextView txtCounter;
 

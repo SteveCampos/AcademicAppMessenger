@@ -19,6 +19,8 @@ import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessa
 import com.google.firebase.FirebaseApp;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
+import com.vanniktech.emoji.EmojiManager;
+import com.vanniktech.emoji.ios.IosEmojiProvider;
 
 /**
  * Created by Steve on 16/02/2017.
@@ -35,7 +37,7 @@ public class MessengerAcademicoApp extends Application {
     }
 
     private void initEmojis() {
-
+        EmojiManager.install(new IosEmojiProvider()); // This line needs to be executed before any usage of EmojiTextView, EmojiEditText or EmojiButton.
     }
 
     private void initDb() {

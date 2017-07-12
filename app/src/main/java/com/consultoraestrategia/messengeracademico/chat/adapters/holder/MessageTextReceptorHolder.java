@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
+import com.vanniktech.emoji.EmojiTextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -23,7 +24,7 @@ public class MessageTextReceptorHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = MessageTextReceptorHolder.class.getSimpleName();
     @BindView(R.id.txt_message)
-    public TextView txtMessage;
+    public EmojiTextView txtMessage;
     @BindView(R.id.txt_time)
     public TextView txtTime;
 
