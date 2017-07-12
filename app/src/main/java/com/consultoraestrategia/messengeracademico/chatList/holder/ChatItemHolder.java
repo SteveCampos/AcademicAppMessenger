@@ -36,7 +36,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
     private static final String TAG = ChatItemHolder.class.getSimpleName();
     @BindView(R.id.layout)
     RelativeLayout layout;
-    @BindView(R.id.img_profile)
+    public @BindView(R.id.img_profile)
     CircleImageView imgProfile;
     @BindView(R.id.txt_name)
     AppCompatTextView txtName;
@@ -59,7 +59,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, view);
     }
 
-    private void setReceptorProfile(Contact contact, Context context) {
+    private void setReceptorProfile(final Contact contact, Context context, final ChatListener listener) {
         String title = null;
         String uri = null;
         if (contact != null) {
@@ -73,6 +73,12 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
 
         txtName.setText(title);
         Glide.with(context).load(uri).into(imgProfile);
+        imgProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onImageClickdListener(contact);
+            }
+        });
     }
 
     private void setLastMessage(Contact receptor, ChatMessage lastMessage, Context context) {
@@ -139,7 +145,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
             }
 
 
-            setReceptorProfile(receptor, context);
+            setReceptorProfile(receptor, context,listener);
 
 
             ChatMessage lastMessage = chat.getLastMessage();

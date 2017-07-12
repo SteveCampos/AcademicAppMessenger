@@ -60,7 +60,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case VIEW_TYPE_CHAT:
                 ChatItemHolder chatItemHolder = (ChatItemHolder) holder;
                 chatItemHolder.bind(me, chat, context, listener);
-                break;
+            break;
         }
     }
 

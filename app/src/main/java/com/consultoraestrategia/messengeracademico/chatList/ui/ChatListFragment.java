@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import com.consultoraestrategia.messengeracademico.chatList.ChatListPresenter;
 import com.consultoraestrategia.messengeracademico.chatList.ChatListPresenterImpl;
 import com.consultoraestrategia.messengeracademico.chatList.adapter.ChatListAdapter;
 import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListener;
+import com.consultoraestrategia.messengeracademico.dialogProfile.DialogProfile;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 
@@ -46,6 +48,7 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
 
     private String phoneNumber;
     private Contact me;
+    FragmentManager fm = getFragmentManager();
 
     public ChatListFragment() {
     }
@@ -157,5 +160,21 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
     public void onChatClickedListener(Chat chat) {
         Log.d(TAG, "onChatClickedListener");
         presenter.onChatClicked(chat);
+    }
+
+    @Override
+    public void onImageClickdListener(Contact contact) {
+        /*DialogProfile newFragment = new DialogProfile();
+        newFragment.show(getFragmentManager(), "datePicker");
+        Toast.makeText(getActivity(),"Contact: "+contact.getPhoneNumber(),Toast.LENGTH_LONG).show();
+            */
+
+        Bundle args = new Bundle();
+        args.putString("imageUri", contact.getPhotoUri());
+        args.putString("nameContact", contact.getName());
+        args.putString("phoneNumber",contact.getPhoneNumber());
+        DialogProfile newFragment = new DialogProfile();
+        newFragment.setArguments(args);
+        newFragment.show(getFragmentManager(), "TAG");
     }
 }

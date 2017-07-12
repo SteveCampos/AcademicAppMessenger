@@ -34,7 +34,7 @@
 
             <ImageView
                 android:visibility="gone"
-                android:background="@drawable/ic_users"
+                android:src="@drawable/ic_users"
                 android:layout_gravity="center"
                 android:id="@+id/imageProfileNull"
                 android:layout_width="160dp"
