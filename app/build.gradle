@@ -104,7 +104,7 @@ dependencies {
 
 
 
-    compile 'com.vanniktech:emoji-ios:0.5.1'
+    compile 'com.vanniktech:emoji-one:0.6.0-SNAPSHOT'
     compile 'jp.wasabeef:glide-transformations:2.0.2'
     compile "com.davemorrissey.labs:subsampling-scale-image-view:$rootProject.ext.scaleImageViewLibraryVersion"
     compile "com.github.hotchemi:permissionsdispatcher:$rootProject.ext.permissionsdispatcher"

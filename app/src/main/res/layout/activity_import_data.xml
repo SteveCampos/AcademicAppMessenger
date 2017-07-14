@@ -22,10 +22,9 @@
             style="@style/TextAppearance.AppCompat.Display1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/importdata.title"
-            android:textColor="@color/colorAccent"
             android:gravity="center"
-            />
+            android:text="@string/importdata.title"
+            android:textColor="@color/colorAccent" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgProfile"
@@ -41,7 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:text="@string/importdata.subtitle"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="@color/colorPrimaryDark"
+            android:visibility="invisible" />
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/txtContent"
@@ -81,11 +81,11 @@
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/txtNotice"
-        android:gravity="center"
         style="@style/TextAppearance.AppCompat.Notification.Info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
 
 </RelativeLayout>

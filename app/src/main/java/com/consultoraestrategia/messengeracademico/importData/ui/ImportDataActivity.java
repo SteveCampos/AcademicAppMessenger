@@ -15,12 +15,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.importData.DatosGeneralesAsyntask;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.importData.ImportDataPresenterImpl;
+import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,6 +92,13 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
             contact.setPhoneNumber(phoneNumber);
 
             setProfile(contact);
+        } else {
+            DefaultSharedPreferencesHelper helper = new DefaultSharedPreferencesHelper(PreferenceManager.getDefaultSharedPreferences(this));
+
+            Contact mainContact = helper.getContact();
+            if (mainContact != null) {
+                setProfile(mainContact);
+            }
         }
     }
 
@@ -124,7 +134,11 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
     public void setProfile(Contact contact) {
         String title = String.format(getString(R.string.importdata_title), contact.getName());
         txtTitle.setText(title);
-        Glide.with(this).load(contact.getPhotoUri()).into(imgProfile);
+        Glide
+                .with(this)
+                .load(contact.getPhotoUri())
+                .error(R.drawable.ic_users)
+                .into(imgProfile);
     }
 
     @Override

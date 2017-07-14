@@ -17,6 +17,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
@@ -47,6 +48,7 @@ import com.consultoraestrategia.messengeracademico.chat.ChatPresenter;
 import com.consultoraestrategia.messengeracademico.chat.adapters.ChatMessageAdapter;
 import com.consultoraestrategia.messengeracademico.chat.di.ChatComponent;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
+import com.consultoraestrategia.messengeracademico.dialogProfile.DialogProfile;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
@@ -468,29 +470,36 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         startActivity(intent);
     }
 
-    @OnClick({R.id.gallery_img_btn, R.id.photo_img_btn, R.id.video_img_btn, R.id.audio_img_btn, R.id.location_img_btn, R.id.contact_img_btn})
+    @OnClick({R.id.gallery_img_btn, R.id.photo_img_btn, R.id.video_img_btn, R.id.audio_img_btn, R.id.location_img_btn, R.id.contact_img_btn, R.id.img_camera})
     public void onViewClicked(View view) {
         hideRevealView();
         switch (view.getId()) {
             case R.id.gallery_img_btn:
-                showSnackbar("gallery_img_btn");
+                presenter.pickImage();
                 break;
             case R.id.photo_img_btn:
-                showSnackbar("photo_img_btn");
+                showNotImplementedView();
                 break;
             case R.id.video_img_btn:
-                showSnackbar("video_img_btn");
+                showNotImplementedView();
                 break;
             case R.id.audio_img_btn:
-                showSnackbar("audio_img_btn");
+                showNotImplementedView();
                 break;
             case R.id.location_img_btn:
-                showSnackbar("location_img_btn");
+                showNotImplementedView();
                 break;
             case R.id.contact_img_btn:
-                showSnackbar("contact_img_btn");
+                showNotImplementedView();
+                break;
+            case R.id.img_camera:
+                showNotImplementedView();
                 break;
         }
+    }
+
+    private void showNotImplementedView() {
+        showSnackbar("No implementado aún");
     }
 
     private void showSnackbar(String message) {
@@ -588,7 +597,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
                 .setOnEmojiPopupDismissListener(new OnEmojiPopupDismissListener() {
                     @Override
                     public void onEmojiPopupDismiss() {
-                        emojiButton.setImageResource(R.drawable.emoji_ios_category_people);
+                        emojiButton.setImageResource(R.drawable.emoji_one_category_people);
                     }
                 })
                 .setOnSoftKeyboardCloseListener(new OnSoftKeyboardCloseListener() {

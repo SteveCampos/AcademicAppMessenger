@@ -37,7 +37,8 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
     private static final String TAG = ChatItemHolder.class.getSimpleName();
     @BindView(R.id.layout)
     RelativeLayout layout;
-    public @BindView(R.id.img_profile)
+    public
+    @BindView(R.id.img_profile)
     CircleImageView imgProfile;
     @BindView(R.id.txt_name)
     AppCompatTextView txtName;
@@ -69,11 +70,15 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
             String uriProfile = contact.getPhotoUri();
 
             title = !TextUtils.isEmpty(name) ? name : phoneNumber;
-            uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "https://image.flaticon.com/icons/png/512/21/21294.png";
+            uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "";
         }
 
         txtName.setText(title);
-        Glide.with(context).load(uri).into(imgProfile);
+        Glide
+                .with(context)
+                .load(uri)
+                .error(R.drawable.ic_users)
+                .into(imgProfile);
         imgProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,8 +150,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
 
             }
 
-
-            setReceptorProfile(receptor, context,listener);
+            setReceptorProfile(receptor, context, listener);
 
 
             ChatMessage lastMessage = chat.getLastMessage();

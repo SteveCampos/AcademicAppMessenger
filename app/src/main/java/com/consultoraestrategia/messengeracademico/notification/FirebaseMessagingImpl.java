@@ -3,6 +3,7 @@ package com.consultoraestrategia.messengeracademico.notification;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.R;
@@ -152,9 +153,13 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
 
     private void constructNotification() {
         Log.d(TAG, "constructNotification");
-        if (message == null || emisor == null || messagesNoReaded == null || bitmap == null) {
+        if (message == null || emisor == null || messagesNoReaded == null) {
             Log.e(TAG, "message == null || emisor == null || messagesNoReaded == null");
             return;
+        }
+
+        if (bitmap == null) {
+            bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_users);
         }
 
 

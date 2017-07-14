@@ -25,7 +25,7 @@ import com.consultoraestrategia.messengeracademico.entities.Rol;
 import com.consultoraestrategia.messengeracademico.entities.Seccion;
 import com.consultoraestrategia.messengeracademico.entities.Tipo;
 
-import com.consultoraestrategia.messengeracademico.restApi.RestAPI;
+import com.consultoraestrategia.messengeracademico.importData.rest.RestAPI;
 import com.consultoraestrategia.messengeracademico.utils.StringUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
+import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.raizlabs.android.dbflow.config.DatabaseDefinition;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
@@ -46,8 +47,13 @@ public class ChatDbFlowStorage implements ChatStorage {
         Transaction transaction = databaseDefinition.beginTransactionAsync(new ITransaction() {
             @Override
             public void execute(DatabaseWrapper databaseWrapper) {
-                chat.save();
                 message.save();
+                chat.save();
+                if (!chat.getEmisor().exists()) {
+                    Log.d(TAG, "save emisor: " + chat.getEmisor().getPhoneNumber());
+                    message.getEmisor().setType(Contact.TYPE_NOT_ADDED);
+                    message.getEmisor().save();
+                }
             }
         })
                 .success(success)

@@ -18,7 +18,7 @@ import java.util.Map;
  */
 
 @Table(database = MessengerAcademicoDatabase.class)
-@Parcel(analyze={Contact.class})
+@Parcel(analyze = {Contact.class})
 public class Contact extends BaseModel {
 
 
@@ -36,6 +36,13 @@ public class Contact extends BaseModel {
 
     @Column
     public String photoUri;
+
+    @Column
+    public int type;
+
+    public static final int TYPE_MAIN_CONTACT = 100;
+    public static final int TYPE_NOT_ADDED = 1;
+    public static final int TYPE_ADDED_AND_VISIBLE = 2;
 
 
     public Contact() {
@@ -89,6 +96,13 @@ public class Contact extends BaseModel {
         this.photoUri = photoUri;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     @Override
     public boolean equals(Object obj) {

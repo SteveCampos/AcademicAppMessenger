@@ -43,6 +43,11 @@ public class ChatRemoteDataSource implements ChatDataSource {
     }
 
     @Override
+    public void getChat(ChatMessage message, GetChatCallback callback) {
+
+    }
+
+    @Override
     public void getMessages(Chat chat, GetMessageCallback callback) {
 
     }

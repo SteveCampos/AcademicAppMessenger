@@ -15,6 +15,6 @@
     <dimen name="relative_view_size">60dp</dimen>
     <dimen name="view_margin_top_5dp">5dp</dimen>
 
-    <dimen name="dialog_profile_width">320dp</dimen>
-    <dimen name="dialog_profile_height">320dp</dimen>
+    <dimen name="dialog_profile_width">272dp</dimen>
+    <dimen name="dialog_profile_height">272dp</dimen>
 </resources>

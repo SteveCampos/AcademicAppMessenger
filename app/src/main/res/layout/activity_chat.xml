@@ -118,7 +118,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/emoji_ios_category_people"
+                android:src="@drawable/emoji_one_category_people"
                 tools:ignore="ContentDescription" />
 
             <android.support.design.widget.TextInputLayout
@@ -147,6 +147,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <ImageView
+                android:id="@+id/img_camera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

@@ -72,6 +72,18 @@ public class ChatLocalDataSource implements ChatDataSource {
         chat.setEmisor(emisor);
         chat.setReceptor(receptor);
         callback.onChatLoaded(chat);
+
+    }
+
+    @Override
+    public void getChat(final ChatMessage message, final GetChatCallback callback) {
+        Log.d(TAG, "getChat from message");
+        Chat chat = new Chat();
+        chat.setChatKey(message.getChatKey());
+        chat.setEmisor(message.getEmisor());
+        chat.setReceptor(message.getReceptor());
+        chat.setTimestamp(message.getTimestamp());
+        callback.onChatLoaded(chat);
     }
 
     @Override

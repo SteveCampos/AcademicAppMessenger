@@ -29,6 +29,7 @@ public class ContactListRepositoryImpl implements ContactListRepository {
                 .select()
                 .from(Contact.class)
                 .where(Contact_Table.userKey.isNotNull())
+                .and(Contact_Table.type.eq(Contact.TYPE_ADDED_AND_VISIBLE))
                 .orderBy(Contact_Table.name, true)
                 .async()
                 .queryResultCallback(new QueryTransaction.QueryResultCallback<Contact>() {

@@ -51,6 +51,8 @@ public interface ChatDataSource {
 
     void getChat(String keyChat, GetChatCallback callback);
 
+    void getChat(ChatMessage message, GetChatCallback callback);
+
     void getMessages(Chat chat, GetMessageCallback callback);
 
     void getMessagesNoReaded(Chat chat, GetMessageCallback callback);

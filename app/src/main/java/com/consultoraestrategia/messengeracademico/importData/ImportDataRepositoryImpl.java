@@ -52,6 +52,7 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
         Transaction transaction = database.beginTransactionAsync(new ITransaction() {
             @Override
             public void execute(DatabaseWrapper databaseWrapper) {
+                c.setType(Contact.TYPE_ADDED_AND_VISIBLE);
                 c.save();
             }
         }).success(new Transaction.Success() {
