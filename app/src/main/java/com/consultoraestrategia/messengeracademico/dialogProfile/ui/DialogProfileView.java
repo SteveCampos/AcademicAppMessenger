@@ -10,6 +10,8 @@ public interface DialogProfileView {
     void onImageUriNull();
     void onVerificatedProfileDialogError(String error);
     void initView();
+    void onFullImageActivity(String uriParse);
+    void onFullImageNull();
 //    void startChat();
 //    void startProfileInfo();
 }

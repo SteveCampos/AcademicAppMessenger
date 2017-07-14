@@ -8,4 +8,5 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 public interface ContactListener {
     void onContactSelected(Contact contact);
+    void onImageClickdListener(Contact contact);
 }

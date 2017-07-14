@@ -42,4 +42,13 @@ public class DialogProfilePresenterImpl implements DialogProfilePresenter {
         }
     }
 
+    @Override
+    public void validateFullImageActivity(String uriParse) {
+        if (uriParse!=null){
+            view.onFullImageActivity(uriParse);
+        }else{
+            view.onFullImageNull();
+        }
+    }
+
 }

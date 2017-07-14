@@ -20,6 +20,7 @@ import com.consultoraestrategia.messengeracademico.contactList.ContactListPresen
 import com.consultoraestrategia.messengeracademico.contactList.ContactListView;
 import com.consultoraestrategia.messengeracademico.contactList.adapter.ContactListAdapter;
 import com.consultoraestrategia.messengeracademico.contactList.listeners.ContactListener;
+import com.consultoraestrategia.messengeracademico.dialogProfile.DialogProfile;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
@@ -156,6 +157,17 @@ public class ContactListFragment extends Fragment implements ContactListView, Co
         intent.putExtra(ChatActivity.EXTRA_EMISOR_PHONENUMBER, me.getUserKey());
         intent.putExtra(ChatActivity.EXTRA_RECEPTOR_PHONENUMBER, contact.getUserKey());
         getActivity().startActivity(intent);*/
+    }
+
+    @Override
+    public void onImageClickdListener(Contact contact) {
+        Bundle args = new Bundle();
+        args.putString("imageUri", contact.getPhotoUri());
+        args.putString("nameContact", contact.getName());
+        args.putString("phoneNumber",contact.getPhoneNumber());
+        DialogProfile newFragment = new DialogProfile();
+        newFragment.setArguments(args);
+        newFragment.show(getFragmentManager(), "TAG");
     }
 
     private String getPhoneNumberFromPreferences() {

@@ -26,14 +26,11 @@ task clean(type: Delete) {
 
 // Define versions in a single place
 ext{
-
     // Sdk and tools
     compileSdkVersion = 26
     buildToolsVersion = '26.0.0'
     minSdkVersion = 18
     targetSdkVersion = 26
-
-
     // App dependencies
     supportLibraryVersion = '26.0.0-alpha1'
     junitVersion = '4.12'

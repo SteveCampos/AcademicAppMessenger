@@ -69,5 +69,12 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
                 .error(R.drawable.ic_users)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgProfile);
+
+        imgProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onImageClickdListener(contact);
+            }
+        });
     }
 }

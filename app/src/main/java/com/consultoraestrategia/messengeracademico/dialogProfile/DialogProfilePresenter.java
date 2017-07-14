@@ -9,4 +9,5 @@ public interface DialogProfilePresenter {
     void onCreate();
     void verificatedDialogProfile(String name , String phoneNumber);
     void validImageUri (String imageUri);
+    void validateFullImageActivity(String uriParse);
 }
