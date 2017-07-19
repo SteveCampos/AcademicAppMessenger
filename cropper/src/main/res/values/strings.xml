@@ -2,13 +2,13 @@
 <resources>
 
     <string name="crop_image_activity_title"></string>
-    <string name="crop_image_menu_rotate_left">Rotate counter clockwise</string>
-    <string name="crop_image_menu_rotate_right">Rotate</string>
-    <string name="crop_image_menu_crop">Crop</string>
-    <string name="crop_image_menu_flip">Flip</string>
-    <string name="crop_image_menu_flip_horizontally">Flip horizontally</string>
-    <string name="crop_image_menu_flip_vertically">Flip vertically</string>
+    <string name="crop_image_menu_rotate_left">Girar en sentido antihorario</string>
+    <string name="crop_image_menu_rotate_right">Girar</string>
+    <string name="crop_image_menu_crop">Recortar</string>
+    <string name="crop_image_menu_flip">Dar la vuelta</string>
+    <string name="crop_image_menu_flip_horizontally">Voltear horizontalmente</string>
+    <string name="crop_image_menu_flip_vertically">Voltear verticalmente</string>
 
-    <string name="pick_image_intent_chooser_title">Select source</string>
+    <string name="pick_image_intent_chooser_title">Seleccionar fuente</string>
 
 </resources>

@@ -32,7 +32,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import id.zelory.compressor.Compressor;
+
 
 /**
  * Created by @stevecampos on 17/05/2017.
@@ -99,12 +99,6 @@ public class MessengerAcademicoAppModule {
     @Singleton
     String providePackageName() {
         return this.context.getPackageName();
-    }
-
-    @Provides
-    @Singleton
-    Compressor provideCompressor() {
-        return new Compressor(this.context);
     }
 
 

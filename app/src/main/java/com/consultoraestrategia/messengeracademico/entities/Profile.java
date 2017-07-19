@@ -18,6 +18,14 @@ public class Profile {
     public Profile() {
     }
 
+    public Profile(String mStatus, String mPhoneNumber, String mName, String userKey, Photo photo) {
+        this.mStatus = mStatus;
+        this.mPhoneNumber = mPhoneNumber;
+        this.mName = mName;
+        this.userKey = userKey;
+        this.photo = photo;
+    }
+
     public String getmStatus() {
         return mStatus;
     }

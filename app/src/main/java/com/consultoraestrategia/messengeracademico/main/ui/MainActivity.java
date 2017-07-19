@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.main.ui;
 
+import android.content.Context;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +33,7 @@ import com.consultoraestrategia.messengeracademico.main.MainPresenter;
 import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;
 import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapter;
 import com.consultoraestrategia.messengeracademico.main.di.MainComponent;
+import com.consultoraestrategia.messengeracademico.profileEditImage.ui.ProfileEditImageActivity;
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingPresenter;
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingView;
 import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingComponent;
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        getSharedPreferences();
         boolean isStepsCompleted = isProcessCompleted();
         if (!isStepsCompleted) {
             forwardToStep();
@@ -244,6 +247,11 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, ImportDataActivity.class));
             return true;
+        }else if (id == R.id.action_profile){
+            Intent intent = new Intent(this, ProfileEditImageActivity.class);
+            intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER, getPhoneNumberFromPreferences());
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -252,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
     public AppCompatActivity getActivity() {
         return this;
     }
-
+    Contact contacts;
     @Override
     public void startChat(Contact contact) {
         Log.d(TAG, "startChat");
@@ -260,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         intent.putExtra(ChatActivity.EXTRA_RECEPTOR_PHONENUMBER, contact.getPhoneNumber());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        contacts = contact;
     }
 
     @Override
@@ -282,6 +291,23 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
     @Override
     public void setPresenter(MainPresenterImpl presenter) {
 
+    }
+    String phoneNumber;
+    private void getSharedPreferences (){
+      /*  SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        phoneNumber = settings.getString(MainActivity.PREF_STEP, "");
+        */
+
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        phoneNumber = sharedPref.getString(VerificationActivity.PREF_PHONENUMBER, "+51993061806");
+        Log.d(TAG, " phoneNumber : "+phoneNumber);
+    }
+
+
+    private String getPhoneNumberFromPreferences() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return preferences.getString(VerificationActivity.PREF_PHONENUMBER, "+51993061806");
     }
 
     @Override

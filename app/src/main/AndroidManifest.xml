@@ -88,6 +88,10 @@
                 android:value="com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity" />
         </activity>
         <activity android:name=".profile.ui.ProfileActivity"></activity>
+        <activity android:name=".customNotification.CustomNotificationActivity"/>
+        <activity android:name=".profileEditImage.ui.ProfileEditImageActivity"></activity>
+        <activity android:name=".profileEditName.ui.ProfileEditNameActivity"
+            android:windowSoftInputMode="adjustResize"></activity>
         <activity android:name=".customNotification.CustomNotificationActivity" />
 
         <provider

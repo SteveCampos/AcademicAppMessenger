@@ -42,7 +42,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import id.zelory.compressor.Compressor;
+
 
 /**
  * Created by @stevecampos on 10/03/2017.
@@ -68,14 +68,14 @@ public class ChatPresenterImpl implements ChatPresenter {
     private final File cacheDir;
     private final UploadImage uploadImage;
     private final ContentResolver contentResolver;
-    private final Compressor compressor;
+
 
 
     private Contact emisor;
     private Contact receptor;
     private Chat chat;
 
-    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Compressor compressor) {
+    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver) {
         this.useCaseHandler = useCaseHandler;
         this.preferencesHelper = preferencesHelper;
         this.useCaseLoadMessages = useCaseLoadMessages;
@@ -92,7 +92,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         this.cacheDir = cacheDir;
         this.uploadImage = uploadImage;
         this.contentResolver = contentResolver;
-        this.compressor = compressor;
+
     }
 
     @Override

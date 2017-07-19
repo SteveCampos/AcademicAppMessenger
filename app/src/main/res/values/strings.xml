@@ -93,4 +93,7 @@
     <string name="time_days">días</string>
 
 
+    <string name="profile.notice">"Esto no es un nombre de usuario ni un pin. \n""Este nombre será visible para tus contactos de Messenger Academico."</string>
+
+
 </resources>
