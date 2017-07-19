@@ -40,6 +40,7 @@ public class FirebaseMessagingModule {
     }
 
     @Provides
+    @Singleton
     FirebaseMessagingPresenter provideFirebaseMessagingPresenterImpl(Resources resources, FirebaseMessagingView view, UseCaseHandler useCaseHandler, EventBus eventBus, SaveMessageOnLocal saveMessageOnLocal, GetContact getContact, GetMessagesNoReaded getMessagesNoReaded, GetBitmap getBitmap, Context context) {
         return new FirebaseMessagingImpl(resources, view, useCaseHandler, eventBus, saveMessageOnLocal, getContact, getMessagesNoReaded, getBitmap, context);
     }

@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico;
 
 import android.os.Handler;
+import android.util.Log;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
@@ -16,9 +17,10 @@ import java.util.concurrent.TimeUnit;
 
 public class UseCaseThreadPoolScheduler implements UseCaseScheduler {
 
+    private static final String TAG = UseCaseThreadPoolScheduler.class.getSimpleName();
     private final Handler mHandler = new Handler();
 
-    public static final int POOL_SIZE = Runtime.getRuntime().availableProcessors() - 1 ;
+    public static final int POOL_SIZE = (Runtime.getRuntime().availableProcessors() - 1 > 0) ? Runtime.getRuntime().availableProcessors() - 1 : 1;
 
     public static final int MAX_POOL_SIZE = 128;
 
@@ -28,7 +30,8 @@ public class UseCaseThreadPoolScheduler implements UseCaseScheduler {
     ThreadPoolExecutor mThreadPoolExecutor;
 
     public UseCaseThreadPoolScheduler() {
-        mThreadPoolExecutor = new ThreadPoolExecutor(POOL_SIZE, Integer.MAX_VALUE, TIMEOUT,
+        Log.d(TAG, "POOL_SIZE: " + POOL_SIZE);
+        mThreadPoolExecutor = new ThreadPoolExecutor(POOL_SIZE, MAX_POOL_SIZE, TIMEOUT,
                 TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(POOL_SIZE));
     }
 

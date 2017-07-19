@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.notification;
 
+import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.google.firebase.messaging.RemoteMessage;
 
 /**
@@ -8,4 +9,5 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public interface FirebaseMessagingPresenter {
     void onMessageReceived(RemoteMessage remoteMessage);
+    void onMessageReceived(ChatMessage message);
 }

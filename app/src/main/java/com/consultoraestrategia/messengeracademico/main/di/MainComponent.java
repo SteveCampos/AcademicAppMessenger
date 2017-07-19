@@ -14,7 +14,7 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = {MainModule.class, MessengerAcademicoAppModule.class})
+@Component(modules = {MainModule.class, MessengerAcademicoAppModule.class/*, FirebaseMessagingModule.class*/})
 public interface MainComponent {
     void inject(MainActivity activity);
 

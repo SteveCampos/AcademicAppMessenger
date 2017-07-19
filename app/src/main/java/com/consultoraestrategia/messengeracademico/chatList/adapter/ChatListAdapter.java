@@ -12,6 +12,7 @@ import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListene
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case VIEW_TYPE_CHAT:
                 ChatItemHolder chatItemHolder = (ChatItemHolder) holder;
                 chatItemHolder.bind(me, chat, context, listener);
-            break;
+                break;
         }
     }
 
@@ -74,7 +75,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             onChatChanged(chat);
         } else {
             chats.add(chat);
-            notifyItemInserted(getItemCount());
+            notifyItemInserted(0);
+            notifyItemRangeChanged(0, chats.size());
         }
     }
 
@@ -83,10 +85,28 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             int position = chats.indexOf(chat);
             chats.set(position, chat);
             notifyItemChanged(position);
+
+            /*Collections.swap(this.chats, position, 0);
+            notifyItemMoved(position, 0);*/
+
+            //swapItems(position, 0);
+
         } else {
             onChatAdded(chat);
         }
     }
+
+    // Swap itemA with itemB
+    public void swapItems(int itemAIndex, int itemBIndex) {
+        //make sure to check if dataset is null and if itemA and itemB are valid indexes.
+        Chat itemA = chats.get(itemAIndex);
+        Chat itemB = chats.get(itemBIndex);
+        chats.set(itemAIndex, itemB);
+        chats.set(itemBIndex, itemA);
+
+        notifyDataSetChanged(); //This will trigger onBindViewHolder method from the adapter.
+    }
+
 
     public void onChatDeleted(Chat chat) {
         if (chats.contains(chat)) {

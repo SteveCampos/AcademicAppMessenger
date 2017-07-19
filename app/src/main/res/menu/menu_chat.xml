@@ -10,12 +10,12 @@
         android:title="Media"
         app:showAsAction="ifRoom" />
 
+    <!--
     <item
         android:id="@+id/action_send_image"
         android:orderInCategory="100"
         android:title="@string/chat_send_image"
-        app:showAsAction="never" />
-    <!--
+        app:showAsAction="never" />-->
     <item
         android:id="@+id/action_call"
         android:icon="@drawable/ic_local_phone_24dp"
@@ -74,6 +74,6 @@
                 android:title="@string/action_shorcut"
                 app:showAsAction="never" />
         </menu>
-    </item>-->
+    </item>
 
 </menu>

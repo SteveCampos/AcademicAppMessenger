@@ -7,6 +7,10 @@ import com.consultoraestrategia.messengeracademico.data.source.remote.ChatRemote
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.lib.EventBus;
+import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
+import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
+import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingPresenter;
 import com.consultoraestrategia.messengeracademico.postEvent.ChatListPostEvent;
 import com.consultoraestrategia.messengeracademico.postEvent.ChatPostEvent;
 import com.consultoraestrategia.messengeracademico.utils.StringUtils;
@@ -51,7 +55,6 @@ public class ChatRepository implements ChatDataSource {
      */
     boolean mCacheIsDirty = false;
 
-
     // Prevent direct instantiation.
     private ChatRepository(ChatLocalDataSource chatLocalDataSource, ChatRemoteDataSource chatRemoteDataSource, ChatListPostEvent chatListPostEvent, ChatPostEvent chatPostEvent, Contact mainUser) {
         this.chatLocalDataSource = chatLocalDataSource;
@@ -86,6 +89,7 @@ public class ChatRepository implements ChatDataSource {
     public static void destroyInstance() {
         INSTANCE = null;
     }
+
 
     @Override
     public void getChat(final Contact emisor, final Contact receptor, final GetChatCallback callback) {
@@ -136,7 +140,7 @@ public class ChatRepository implements ChatDataSource {
             chatLocalDataSource.getChat(keyChat, new GetChatCallback() {
                 @Override
                 public void onChatLoaded(Chat chatLoaded) {
-                    chat = chatLoaded;
+                    //chat = chatLoaded;
                     addChatToCache(chatLoaded);
                     callback.onChatLoaded(chatLoaded);
                 }
@@ -157,6 +161,7 @@ public class ChatRepository implements ChatDataSource {
         getChat(message.getChatKey(), new GetChatCallback() {
             @Override
             public void onChatLoaded(Chat chat) {
+                addChatToCache(chat);
                 callback.onChatLoaded(chat);
             }
 
@@ -414,26 +419,6 @@ public class ChatRepository implements ChatDataSource {
 
     }
 
-    private void callbackMessage(ChatMessage message, ListenMessagesCallback callback) {
-        if (isMessageInCache(message)) {
-            //update
-            if (!isMessageWithSameStatusInCache(message)) {
-                Log.d(TAG, "Message in cached with diferent status! FIRE!: " + message);
-                updateMessageToCache(message);
-                callback.onMessageChanged(message);
-                fireMessage(message);
-            } else {
-                Log.d(TAG, "Message with same status cached! NOT FIRE!: " + message);
-            }
-        } else {
-
-            Log.d(TAG, "New message added cached, FIRE!: " + message);
-            addMessageToCache(message);
-            callback.onMessageChanged(message);
-            fireMessage(message);
-        }
-    }
-
     private void fireMessage(ChatMessage message) {
         Log.d(TAG, "fireMessage");
         post(message);
@@ -464,11 +449,15 @@ public class ChatRepository implements ChatDataSource {
 
     /*METHOD TO UPDATE MESSAGES CACHED*/
 
-    private void refreshCache(List<ChatMessage> messages) {
+    private void clearCache() {
         if (mCachedMessages == null) {
             mCachedMessages = new LinkedHashMap<>();
         }
         mCachedMessages.clear();
+    }
+
+    private void refreshCache(List<ChatMessage> messages) {
+        clearCache();
         for (ChatMessage message : messages) {
             mCachedMessages.put(message.getId(), message);
         }
@@ -480,15 +469,42 @@ public class ChatRepository implements ChatDataSource {
         if (mCachedMessages == null) {
             mCachedMessages = new LinkedHashMap<>();
         }
-        mCachedMessages.put(message.getId(), message);
+        if (chat != null && message != null && chat.getChatKey().equals(message.getChatKey())) {
+            mCachedMessages.put(message.getId(), message);
+        } else {
+            //is a message   from another chat, fire a notification!
+            Log.d(TAG, "is a message from another chat, fire a notification!");
+            fireNotification(message);
+        }
     }
 
-    private void updateMessageToCache(ChatMessage message) {
-        if (mCachedMessages == null) {
-            mCachedMessages = new LinkedHashMap<>();
+    private Map<String, Integer> mCachedNotifications;
+
+    private void addNotificationToCache(ChatMessage message) {
+        // Do in memory cache update to keep the app UI up to date
+        if (mCachedNotifications == null) {
+            mCachedNotifications = new LinkedHashMap<>();
         }
-        mCachedMessages.remove(message.getId());
-        mCachedMessages.put(message.getId(), message);
+        mCachedNotifications.put(message.getId(), 1);
+    }
+
+    private boolean isNotificationInCache(ChatMessage message) {
+        return mCachedNotifications != null && mCachedNotifications.containsKey(message.getId());
+    }
+
+    private void fireNotification(ChatMessage message) {
+        if (!isNotificationInCache(message)) {
+            addNotificationToCache(message);
+            fireMessageToMainEvent(message);
+        }
+    }
+
+    private void fireMessageToMainEvent(ChatMessage message) {
+        Log.d(TAG, "fireMessageToMainEvent: " + message.getId());
+        MainEvent event = new MainEvent();
+        event.setType(MainEvent.TYPE_FIRE_NOTIFICATION);
+        event.setMessage(message);
+        GreenRobotEventBus.getInstance().post(event);
     }
 
     private boolean isMessageInCache(ChatMessage message) {
@@ -498,19 +514,6 @@ public class ChatRepository implements ChatDataSource {
         } else {
             ChatMessage cachedMessage = mCachedMessages.get(message.getId());
             if (cachedMessage != null) {
-                isInCache = true;
-            }
-        }
-        return isInCache;
-    }
-
-    private boolean isMessageWithSameStatusInCache(ChatMessage message) {
-        boolean isInCache = false;
-        if (mCachedMessages == null || mCachedMessages.isEmpty()) {
-            isInCache = false;
-        } else {
-            ChatMessage cachedMessage = mCachedMessages.get(message.getId());
-            if (cachedMessage != null && message.getMessageStatus() == cachedMessage.getMessageStatus()) {
                 isInCache = true;
             }
         }

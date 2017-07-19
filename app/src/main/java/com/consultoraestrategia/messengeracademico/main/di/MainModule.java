@@ -23,6 +23,8 @@ import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapt
 import com.consultoraestrategia.messengeracademico.main.domain.usecase.ListenForUserMessages;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
 
+import java.util.Date;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -79,8 +81,14 @@ public class MainModule {
 
     @Provides
     @Singleton
-    MainPresenter provideMainPresenter(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, ListenForUserMessages listenForMessages, EventBus eventBus, ConnectionInteractor connectionInteractor) {
-        return new MainPresenterImpl(useCaseHandler, preferencesHelper, listenForMessages, eventBus, connectionInteractor);
+    MainPresenter provideMainPresenter(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, ListenForUserMessages listenForMessages, EventBus eventBus, ConnectionInteractor connectionInteractor, Long timestamp) {
+        return new MainPresenterImpl(useCaseHandler, preferencesHelper, listenForMessages, eventBus, connectionInteractor, timestamp);
+    }
+
+    @Provides
+    @Singleton
+    Long provideTimeStamp() {
+        return new Date().getTime();
     }
 
 

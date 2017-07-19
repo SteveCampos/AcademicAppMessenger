@@ -60,9 +60,18 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
     @Override
     public void onMessageReceived(final RemoteMessage remoteMessage) {
         Log.d(TAG, "onMessageReceived");
-
         MapperHelper mapperHelper = new MapperHelper();
         message = mapperHelper.mapToObject(remoteMessage.getData(), ChatMessage.class);
+        onMessageReceived(message);
+    }
+
+    @Override
+    public void onMessageReceived(final ChatMessage message) {
+        Log.d(TAG, "onMessageReceived: " + message);
+        this.emisor = null;
+        this.messagesNoReaded = null;
+        this.bitmap = null;
+        this.message = message;
 
         useCaseHandler.execute(
                 getContact,
@@ -84,7 +93,8 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
 
                                     @Override
                                     public void onError() {
-
+                                        Log.d(TAG, "GetContact error!");
+                                        emisor = message.getEmisor();
                                     }
                                 }
                         );

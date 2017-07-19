@@ -16,6 +16,8 @@ public interface BasePresenter<T extends BaseView> {
 
     void onPause();
 
+    void onStop();
+
     void onDestroy();
 
     void onBackPressed();

@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -31,6 +32,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import id.zelory.compressor.Compressor;
 
 /**
  * Created by @stevecampos on 17/05/2017.
@@ -85,12 +87,26 @@ public class MessengerAcademicoAppModule {
         return this.context.getCacheDir();
     }
 
+
+    @Provides
+    @Singleton
+    ContentResolver provideContentResolver() {
+        return this.context.getContentResolver();
+    }
+
     @Provides
     @Named("package_name")
     @Singleton
     String providePackageName() {
         return this.context.getPackageName();
     }
+
+    @Provides
+    @Singleton
+    Compressor provideCompressor() {
+        return new Compressor(this.context);
+    }
+
 
     @Provides
     @Named("main_phonenumber")

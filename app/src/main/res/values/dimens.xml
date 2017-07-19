@@ -17,4 +17,5 @@
 
     <dimen name="dialog_profile_width">272dp</dimen>
     <dimen name="dialog_profile_height">272dp</dimen>
+    <dimen name="grid_expected_size">120dp</dimen>
 </resources>

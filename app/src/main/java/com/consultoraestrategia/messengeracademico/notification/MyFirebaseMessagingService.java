@@ -43,7 +43,7 @@ import static com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity.E
 public class MyFirebaseMessagingService extends FirebaseMessagingService implements FirebaseMessagingView {
 
     private static final String TAG = "MyFMService";
-    private static final int MY_NOTIFICATION_ID = 2348;
+    public static final int MY_NOTIFICATION_ID = 2348;
 
     private FirebaseMessagingPresenter presenter;
 

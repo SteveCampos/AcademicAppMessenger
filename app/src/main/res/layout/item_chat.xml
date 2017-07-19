@@ -9,7 +9,9 @@
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="16dp">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -34,7 +36,10 @@
         android:maxLines="1"
         android:text="Default name"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_marginLeft="4dp"
+        android:layout_toRightOf="@+id/img_profile"
+        android:layout_toLeftOf="@+id/txt_time" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/txt_time"
@@ -45,7 +50,8 @@
         android:layout_alignTop="@+id/txt_name"
         android:text="00:00 PM"
         android:textAllCaps="true"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorAccent"
+        android:layout_alignParentRight="true" />
 
     <View
         android:id="@+id/view_pivot"
@@ -53,7 +59,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/txt_message"
         android:layout_alignStart="@+id/txt_name"
-        android:layout_below="@+id/txt_name" />
+        android:layout_below="@+id/txt_name"
+        android:layout_alignLeft="@+id/txt_name" />
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/img_status_message"
@@ -64,7 +71,8 @@
         android:layout_toEndOf="@+id/view_pivot"
         android:contentDescription="@string/global.img.description"
         android:src="@drawable/ic_double_check_colored"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:layout_toRightOf="@+id/view_pivot" />
 
 
     <com.vanniktech.emoji.EmojiTextView
@@ -77,7 +85,9 @@
         android:layout_toEndOf="@+id/img_status_message"
         android:layout_toStartOf="@+id/img_notification_state"
         android:maxLines="1"
-        android:text="@string/contactlist.message.status.default" />
+        android:text="@string/contactlist.message.status.default"
+        android:layout_toRightOf="@+id/img_status_message"
+        android:layout_toLeftOf="@+id/img_notification_state" />
 
 
     <android.support.v7.widget.AppCompatImageView
@@ -88,7 +98,8 @@
         android:layout_toStartOf="@+id/txt_counter"
         android:contentDescription="@string/global.img.description"
         android:src="@drawable/ic_notifications_off"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_toLeftOf="@+id/txt_counter" />
 
 
     <android.support.v7.widget.AppCompatTextView
@@ -106,7 +117,8 @@
         android:textColor="@color/white"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:layout_alignParentRight="true" />
 
     <View
         android:layout_width="match_parent"
@@ -114,5 +126,7 @@
         android:layout_alignEnd="@+id/txt_time"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/txt_name"
-        android:background="@color/md_grey_200" />
+        android:background="@color/md_grey_200"
+        android:layout_alignRight="@+id/txt_time"
+        android:layout_alignLeft="@+id/txt_name" />
 </RelativeLayout>

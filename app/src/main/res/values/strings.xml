@@ -85,6 +85,12 @@
 
     <string name="menu_options_profile_edit">Editar</string>
     <string name="menu_options_profile_view">Ver en lista de contactos</string>
+    <string name="last_connection">Última vez hace %1$d %2$s</string>
+    <string name="last_message_time">Hace %1$d %2$s</string>
+    <string name="time_seconds">segundos</string>
+    <string name="time_minutes">minutos</string>
+    <string name="time_hours">horas</string>
+    <string name="time_days">días</string>
 
 
 </resources>

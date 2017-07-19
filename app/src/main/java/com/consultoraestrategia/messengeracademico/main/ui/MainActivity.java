@@ -1,12 +1,18 @@
 package com.consultoraestrategia.messengeracademico.main.ui;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,29 +23,29 @@ import android.view.MenuItem;
 import com.consultoraestrategia.messengeracademico.MessengerAcademicoApp;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
-import com.consultoraestrategia.messengeracademico.chatList.ui.ChatListFragment;
-import com.consultoraestrategia.messengeracademico.contactList.ui.ContactListFragment;
+import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
+import com.consultoraestrategia.messengeracademico.entities.NotificationInbox;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.loadProfile.ui.LoadProfileActivity;
-import com.consultoraestrategia.messengeracademico.main.ChatsFragment;
 import com.consultoraestrategia.messengeracademico.main.MainPresenter;
 import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;
 import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapter;
 import com.consultoraestrategia.messengeracademico.main.di.MainComponent;
+import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingPresenter;
+import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingView;
+import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingComponent;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.raizlabs.android.dbflow.sql.language.SQLite;
 
-import javax.inject.Inject;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity.PREF_PHONENUMBER;
+import static com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity.EXTRA_RECEPTOR_PHONENUMBER;
+import static com.consultoraestrategia.messengeracademico.notification.MyFirebaseMessagingService.MY_NOTIFICATION_ID;
 
-public class MainActivity extends AppCompatActivity implements MainView {
+public class MainActivity extends AppCompatActivity implements MainView, FirebaseMessagingView {
     public static final String PREF_STEP = "PREF_STEP";
     public static final String PREF_STEP_COMPLETED = "PREF_STEP_COMPLETED";
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -83,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
 
+    private FirebaseMessagingPresenter notificationPresenter;
+
     private void setupInjection() {
         Log.d(TAG, "setupInjection");
         presenter = (MainPresenter) getLastCustomNonConfigurationInstance();
@@ -102,6 +110,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
 
         presenter.attachView(this);
+        presenter.onCreate();
+        setupNotificationInjection();
+    }
+
+    private void setupNotificationInjection() {
+        MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
+        FirebaseMessagingComponent component = app.getFirebaseMessagingComponent(
+                this,
+                getApplicationContext(),
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+        notificationPresenter = component.getPresenter();
     }
 
     @Override
@@ -135,9 +154,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onStop() {
         Log.d(TAG, "onStop");
         if (presenter != null) {
-            //presenter.onStop();
+            presenter.onStop();
         }
         super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        if (presenter != null) {
+            presenter.onStart();
+        }
+        super.onStart();
     }
 
     @Override
@@ -236,7 +263,87 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
+    public void fireNotification(ChatMessage message) {
+        Log.d(TAG, "fireNotification");
+        /*try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            r.play();
+        } catch (Exception ex) {
+            Log.e(TAG, "ex: " + ex);
+            //e.printStackTrace();
+        }*/
+
+        if (notificationPresenter != null) {
+            notificationPresenter.onMessageReceived(message);
+        }
+    }
+
+    @Override
     public void setPresenter(MainPresenterImpl presenter) {
 
+    }
+
+    @Override
+    public void createNotification(NotificationInbox notification) {
+        Log.d(TAG, "createNotification");
+
+        String action = notification.getAction();
+        String bigContentTitle = notification.getBigContentTitle();
+        String summaryText = notification.getSummaryText();
+        String largeIconUri = notification.getLargeIconUri();
+        int smallIcon = notification.getSmallIcon();
+        Bitmap largeIcon = notification.getLargeIcon();
+        List<String> lines = notification.getLines();
+
+        Log.d(TAG, "bigContentTitle: " + bigContentTitle);
+        Log.d(TAG, "largeIconUri: " + largeIconUri);
+        Log.d(TAG, "action: " + action);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentTitle(bigContentTitle);
+        builder.setContentText(summaryText);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+
+
+        if (bigContentTitle != null) {
+            inboxStyle.setBigContentTitle(bigContentTitle);
+        }
+        if (summaryText != null) {
+            inboxStyle.setSummaryText(summaryText);
+        }
+        if (lines != null && !lines.isEmpty()) {
+            for (String line : lines) {
+                inboxStyle.addLine(line);
+            }
+        }
+
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        intent.putExtra(EXTRA_RECEPTOR_PHONENUMBER, action);
+
+        intent.setAction(action);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (smallIcon > 0) {
+            builder.setSmallIcon(smallIcon);
+        }
+
+        if (largeIcon != null) {
+            builder.setLargeIcon(largeIcon);
+        }
+
+        builder.setSound(defaultSoundUri);
+        builder.setAutoCancel(true);
+        builder.setContentIntent(pendingIntent);
+        builder.setStyle(inboxStyle);
+
+        NotificationManagerCompat.from(this).notify(MY_NOTIFICATION_ID, builder.build());
     }
 }

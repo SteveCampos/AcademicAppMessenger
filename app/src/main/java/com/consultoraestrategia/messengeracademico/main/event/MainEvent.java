@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.main.event;
 
+import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 /**
@@ -11,11 +12,13 @@ public class MainEvent {
     public static final int TYPE_CONTACT = 100;
     public static final int TYPE_PHONENUMBER = 101;
     public static final int TYPE_LAUNCH_CHAT = 102;
+    public static final int TYPE_FIRE_NOTIFICATION = 103;
 
 
     private int type;
     private Contact contact;
     private String phoneNumber;
+    private ChatMessage message;
 
     public int getType() {
         return type;
@@ -39,5 +42,13 @@ public class MainEvent {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public ChatMessage getMessage() {
+        return message;
+    }
+
+    public void setMessage(ChatMessage message) {
+        this.message = message;
     }
 }

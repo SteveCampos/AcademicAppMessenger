@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.chatList.holder;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -16,9 +17,11 @@ import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListene
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
 import com.vanniktech.emoji.EmojiTextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -31,8 +34,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatItemHolder extends RecyclerView.ViewHolder {
 
-
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
     private static final String TAG = ChatItemHolder.class.getSimpleName();
     @BindView(R.id.layout)
@@ -113,7 +114,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
             int statusMessage = lastMessage.getMessageStatus();
             setStatusMessage(receptor, messageSender, imgStatusMessage, statusMessage, context);
             long timeStamp = lastMessage.getTimestamp();
-            setTime(txtTime, timeStamp);
+            setTime(txtTime, timeStamp, context.getResources());
 
         }
 
@@ -174,8 +175,8 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
 
     }
 
-    private void setTime(AppCompatTextView txtTime, long timeStamp) {
-        txtTime.setText(SIMPLE_DATE_FORMAT.format(timeStamp));
+    private void setTime(AppCompatTextView txtTime, long timeStamp, Resources resources) {
+        txtTime.setText(TimeUtils.lastMessageTime(timeStamp, new Date().getTime(), resources));
     }
 
     private void setNotificationState(AppCompatImageView imgNotificationState) {

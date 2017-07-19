@@ -12,6 +12,8 @@ import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
 import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
 import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
 
+import dagger.BindsOptionalOf;
+
 /**
  * Created by @stevecampos on 24/04/2017.
  */
@@ -49,8 +51,11 @@ public class ChatDbFlowStorage implements ChatStorage {
             public void execute(DatabaseWrapper databaseWrapper) {
                 message.save();
                 chat.save();
-                if (!chat.getEmisor().exists()) {
-                    Log.d(TAG, "save emisor: " + chat.getEmisor().getPhoneNumber());
+                Log.d(TAG, "chat.getEmisor().getPhoneNumber(): " + message.getEmisor().getPhoneNumber());
+                boolean existsEmisor = message.getEmisor().exists();
+                Log.d(TAG, "existsEmisor: " + existsEmisor);
+                if (!message.getEmisor().exists()) {
+                    Log.d(TAG, "save emisor: " + message.getEmisor().getPhoneNumber());
                     message.getEmisor().setType(Contact.TYPE_NOT_ADDED);
                     message.getEmisor().save();
                 }

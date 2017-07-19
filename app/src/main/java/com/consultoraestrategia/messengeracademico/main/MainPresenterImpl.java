@@ -6,6 +6,7 @@ import android.util.Log;
 import com.consultoraestrategia.messengeracademico.BaseView;
 import com.consultoraestrategia.messengeracademico.UseCase;
 import com.consultoraestrategia.messengeracademico.UseCaseHandler;
+import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.main.domain.usecase.ListenForUserMessages;
@@ -32,15 +33,17 @@ public class MainPresenterImpl implements MainPresenter {
     private final ListenForUserMessages listenForUserMessages;
     private final EventBus eventBus;
     private final ConnectionInteractor connectionInteractor;
+    private final Long timestamp;
 
     private boolean forwardToAnotherActivity = false;
 
-    public MainPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, ListenForUserMessages listenForUserMessages, EventBus eventBus, ConnectionInteractor connectionInteractor) {
+    public MainPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, ListenForUserMessages listenForUserMessages, EventBus eventBus, ConnectionInteractor connectionInteractor, Long timestamp) {
         this.useCaseHandler = useCaseHandler;
         this.preferencesHelper = preferencesHelper;
         this.listenForUserMessages = listenForUserMessages;
         this.eventBus = eventBus;
         this.connectionInteractor = connectionInteractor;
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -52,6 +55,7 @@ public class MainPresenterImpl implements MainPresenter {
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
+        eventBus.register(this);
     }
 
     @Override
@@ -63,22 +67,27 @@ public class MainPresenterImpl implements MainPresenter {
     public void onResume() {
         Log.d(TAG, "onResume");
         forwardToAnotherActivity = false;
-        eventBus.register(this);
         connectionInteractor.setOnline();
     }
 
     @Override
     public void onPause() {
         Log.d(TAG, "onPause");
-        eventBus.unregister(this);
         if (!forwardToAnotherActivity) {
             connectionInteractor.setOffline();
         }
     }
 
     @Override
+    public void onStop() {
+        Log.d(TAG, "onStop");
+    }
+
+
+    @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
+        eventBus.unregister(this);
         view = null;
     }
 
@@ -124,7 +133,24 @@ public class MainPresenterImpl implements MainPresenter {
             case MainEvent.TYPE_LAUNCH_CHAT:
                 launchChat(event.getContact());
                 break;
+            case MainEvent.TYPE_FIRE_NOTIFICATION:
+                fireNotification(event.getMessage());
+                break;
         }
+    }
+
+    private void fireNotification(ChatMessage message) {
+        Log.d(TAG, "fireNotification");
+        if (view != null) {
+            int retval = timestamp.compareTo(message.getTimestamp());
+            Log.d(TAG, "retveal: " + retval);
+            if (retval <= 0) {
+                //The messages timestamp is greather than the timestamp when the presenter was created!
+                //then the message needs to convert into a notification fire!
+                view.fireNotification(message);
+            }
+        }
+
     }
 
     private void launchChat(Contact contact) {
@@ -134,95 +160,4 @@ public class MainPresenterImpl implements MainPresenter {
             view.startChat(contact);
         }
     }
-    /*
-    private static final String TAG = MainPresenterImpl.class.getSimpleName();
-    private EventBus eventBus;
-    private MainView view;
-    private MainInteractor interactor;
-    private ConnectionInteractor connectionInteractor;
-
-    private boolean forwardToAnotherActivity = false;
-
-    public MainPresenterImpl(MainView view, SharedPreferences preferences) {
-        this.view = view;
-        this.eventBus = GreenRobotEventBus.getInstance();
-        this.interactor = new MainInteractorImpl();
-        this.connectionInteractor = new ConnectionInteractorImpl(preferences);
-    }
-
-
-    @Override
-    public void onCreate() {
-        Log.d(TAG, "onCreate");
-        eventBus.register(this);
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(TAG, "onPause");
-        if (!forwardToAnotherActivity) {
-            connectionInteractor.setOffline();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        Log.d(TAG, "onStop");
-    }
-
-    @Override
-    public void onResume() {
-        Log.d(TAG, "onResume");
-        forwardToAnotherActivity = false;
-        connectionInteractor.setOnline();
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        eventBus.unregister(this);
-    }
-
-    @Override
-    public void getPhoneNumber(SharedPreferences preferences) {
-        Log.d(TAG, "getPhoneNumber");
-        interactor.getPhoneNumber(preferences);
-    }
-
-    @Override
-    public void getContact(String phoneNumber) {
-        Log.d(TAG, "getContact");
-        interactor.getContact(phoneNumber);
-    }
-
-    @Subscribe
-    @Override
-    public void onEventMainThread(MainEvent event) {
-        Log.d(TAG, "onEventMainThread");
-        switch (event.getType()) {
-            case MainEvent.TYPE_CONTACT:
-                listenForIncomingMessages(event.getContact());
-                break;
-            case MainEvent.TYPE_PHONENUMBER:
-                getContact(event.getPhoneNumber());
-                break;
-            case MainEvent.TYPE_LAUNCH_CHAT:
-                launchChat(event.getContact());
-                break;
-        }
-    }
-
-    @Override
-    public void listenForIncomingMessages(Contact contact) {
-        Log.d(TAG, "listenForIncomingMessages");
-        interactor.listenForIncomingMessages(contact);
-    }
-
-    @Override
-    public void launchChat(Contact contact) {
-        forwardToAnotherActivity = true;
-        if (view != null) {
-            view.startChat(contact);
-        }
-    }*/
 }

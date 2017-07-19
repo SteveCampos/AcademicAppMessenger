@@ -88,7 +88,17 @@
                 android:value="com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity" />
         </activity>
         <activity android:name=".profile.ui.ProfileActivity"></activity>
-        <activity android:name=".customNotification.CustomNotificationActivity"/>
+        <activity android:name=".customNotification.CustomNotificationActivity" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.consultoraestrategia.messengeracademico.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths_public"></meta-data>
+        </provider>
     </application>
 
 </manifest>

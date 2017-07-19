@@ -1,8 +1,11 @@
 package com.consultoraestrategia.messengeracademico.chat.ui;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -35,6 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -55,6 +59,7 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.fullScreen.FullscreenActivity;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity;
+import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 import com.vanniktech.emoji.EmojiEditText;
@@ -67,8 +72,14 @@ import com.vanniktech.emoji.listeners.OnEmojiPopupDismissListener;
 import com.vanniktech.emoji.listeners.OnEmojiPopupShownListener;
 import com.vanniktech.emoji.listeners.OnSoftKeyboardCloseListener;
 import com.vanniktech.emoji.listeners.OnSoftKeyboardOpenListener;
+import com.zhihu.matisse.Matisse;
+import com.zhihu.matisse.MimeType;
+import com.zhihu.matisse.engine.impl.GlideEngine;
+import com.zhihu.matisse.filter.Filter;
+import com.zhihu.matisse.internal.entity.CaptureStrategy;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -78,17 +89,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.codetail.animation.ViewAnimationUtils;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 
 
 /**
  * Created by @stevecampos on 9/03/2017.
  */
 
-
+@RuntimePermissions
 public class ChatActivity extends AppCompatActivity implements ChatView, ChatMessageListener {
 
     private static final String TAG = ChatActivity.class.getSimpleName();
     public static final String EXTRA_RECEPTOR_PHONENUMBER = "EXTRA_RECEPTOR_PHONENUMBER";
+    public static final int REQUEST_CODE_CHOOSE_IMAGE = 100;
 
     @BindView(R.id.img_profile)
     ImageView imgProfile;
@@ -102,10 +116,11 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     AppBarLayout appbar;
     @BindView(R.id.recycler)
     RecyclerView recycler;
+    /*
     @BindView(R.id.input_layout_message)
-    TextInputLayout inputLayoutMessage;
+    TextInputLayout inputLayoutMessage;*/
     @BindView(R.id.layout_bottom)
-    RelativeLayout layoutBottom;
+    CardView layoutBottom;
     @BindView(R.id.btn_send)
     FloatingActionButton fab;
     @BindView(R.id.progressBar)
@@ -176,6 +191,20 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
             }
         });
         setUpEmojiPopup();
+        edtMessage.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                Log.d(TAG, "hasFocus: " + hasFocus);
+                if (hasFocus) {
+                    hideRevealView();
+                }
+            }
+        });
+    }
+
+    @OnClick(R.id.recycler)
+    public void onRecyclerClick() {
+        hideRevealView();
     }
 
     private void initPresenter() {
@@ -225,19 +254,20 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+
+        /*
         if (id == R.id.action_send_image) {
             presenter.pickImage();
             return true;
-        }
+        }*/
         if (id == R.id.action_clip) {
-            int cx = mRevealView.getRight();
-            int cy = mRevealView.getTop();
-            makeEffect(mRevealView, cx, cy);
+            toggleMenuWithEffect();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     protected void onResume() {
@@ -256,6 +286,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
+        presenter.onStop();
         if (emojiPopup != null) {
             emojiPopup.dismiss();
         }
@@ -272,6 +303,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
         return presenter;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        ChatActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     private void setupInjection() {
@@ -375,9 +413,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         if (text.isEmpty()) {
             return;
         }
+        if (emojiPopup.isShowing()) {
+            emojiPopup.dismiss();
+        }
 
+        edtMessage.requestFocus();
         edtMessage.setText("");
         presenter.sendMessageText(text);
+
     }
 
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
@@ -397,7 +440,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         if (online) {
             connectionText = getString(R.string.global_notice_online);
         } else {
-            connectionText = String.format(getString(R.string.chat_info_connection_lastseen), SIMPLE_DATE_FORMAT.format(lastConnection));
+            //connectionText = String.format(getString(R.string.chat_info_connection_lastseen), SIMPLE_DATE_FORMAT.format(lastConnection));
+            connectionText = TimeUtils.calculateLastConnection(lastConnection, new Date().getTime(), getResources());
         }
         txtConnection.setVisibility(View.VISIBLE);
         txtConnection.setText(connectionText);
@@ -429,13 +473,35 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         txtConnection.setText(actionFormatted);
     }
 
+    private void checkPickImagePermissions() {
+        ChatActivityPermissionsDispatcher.pickImageWithCheck(this);
+    }
+
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public void pickImage() {
+        presenter.pickImage();
+    }
+
     @Override
     public void startPickImageActivity() {
         Log.d(TAG, "startPickImageActivity: ");
-        CropImage.activity(null)
+        /*CropImage.activity(null)
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .setMultiTouchEnabled(true)
-                .start(this);
+                .start(this);*/
+        Matisse.from(ChatActivity.this)
+                .choose(MimeType.ofAll())
+                .countable(true)
+                .capture(true)
+                .captureStrategy(
+                        new CaptureStrategy(true, "com.consultoraestrategia.messengeracademico.fileprovider"))
+                .maxSelectable(1)
+                .gridExpectedSize(
+                        getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                .thumbnailScale(0.85f)
+                .imageEngine(new GlideEngine())
+                .forResult(REQUEST_CODE_CHOOSE_IMAGE);
     }
 
     @Override
@@ -451,6 +517,29 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     public void showSendIcon() {
         fab.setImageResource(R.drawable.ic_send_24dp);
+    }
+
+    @Override
+    public void hideKeboard() {
+        // Check if no view has focus:
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    public void showKeyboard() {
+
+    }
+
+    @Override
+    public void toggleMenuWithEffect() {
+        int cx = mRevealView.getRight();
+        int cy = mRevealView.getTop();
+        hideKeboard();
+        makeEffect(mRevealView, cx, cy);
     }
 
     @Override
@@ -475,10 +564,10 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         hideRevealView();
         switch (view.getId()) {
             case R.id.gallery_img_btn:
-                presenter.pickImage();
+                checkPickImagePermissions();
                 break;
             case R.id.photo_img_btn:
-                showNotImplementedView();
+                checkPickImagePermissions();
                 break;
             case R.id.video_img_btn:
                 showNotImplementedView();
@@ -493,13 +582,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
                 showNotImplementedView();
                 break;
             case R.id.img_camera:
-                showNotImplementedView();
+                checkPickImagePermissions();
                 break;
         }
     }
 
+
     private void showNotImplementedView() {
-        showSnackbar("No implementado aún");
+        //showSnackbar("No implementado aún");
     }
 
     private void showSnackbar(String message) {
@@ -528,6 +618,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
             if (hidden) {
                 layout.setVisibility(View.VISIBLE);
                 animator.start();
+                edtMessage.clearFocus();
+                mRevealView.requestFocus();
                 hidden = false;
             } else {
 
@@ -549,6 +641,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
                 Animator anim = android.view.ViewAnimationUtils.createCircularReveal(layout, cx, cy, 0, radius);
                 layout.setVisibility(View.VISIBLE);
                 anim.start();
+
+                edtMessage.clearFocus();
+                mRevealView.requestFocus();
                 hidden = false;
             } else {
                 Log.d(TAG, "anim.start()...");

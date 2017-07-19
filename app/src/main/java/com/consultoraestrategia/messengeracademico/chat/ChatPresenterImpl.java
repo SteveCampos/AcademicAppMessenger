@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.chat;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -11,6 +12,7 @@ import com.consultoraestrategia.messengeracademico.UseCaseHandler;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.GenerateMessageKey;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
 import com.consultoraestrategia.messengeracademico.chat.events.ChatEvent;
+import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatView;
 import com.consultoraestrategia.messengeracademico.entities.Action;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
@@ -29,7 +31,9 @@ import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ReadMessa
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.SendMessage;
 import com.consultoraestrategia.messengeracademico.prueba.domain.usecase.UploadImage;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
+import com.consultoraestrategia.messengeracademico.utils.StringUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.zhihu.matisse.Matisse;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -37,6 +41,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+
+import id.zelory.compressor.Compressor;
 
 /**
  * Created by @stevecampos on 10/03/2017.
@@ -61,14 +67,15 @@ public class ChatPresenterImpl implements ChatPresenter {
     private final GenerateMessageKey generateMessageKey;
     private final File cacheDir;
     private final UploadImage uploadImage;
+    private final ContentResolver contentResolver;
+    private final Compressor compressor;
 
 
     private Contact emisor;
     private Contact receptor;
     private Chat chat;
 
-
-    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage) {
+    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Compressor compressor) {
         this.useCaseHandler = useCaseHandler;
         this.preferencesHelper = preferencesHelper;
         this.useCaseLoadMessages = useCaseLoadMessages;
@@ -84,6 +91,8 @@ public class ChatPresenterImpl implements ChatPresenter {
         this.generateMessageKey = generateMessageKey;
         this.cacheDir = cacheDir;
         this.uploadImage = uploadImage;
+        this.contentResolver = contentResolver;
+        this.compressor = compressor;
     }
 
     @Override
@@ -120,6 +129,11 @@ public class ChatPresenterImpl implements ChatPresenter {
         if (!forwardToAnotherActivity) {
             connectionInteractor.setOffline();
         }
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop");
     }
 
     @Override
@@ -224,18 +238,21 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void sendMessageText(String text) {
         Log.d(TAG, "sendMessageText");
+        text = text.trim();
+        if (!text.isEmpty()) {
+            ChatMessage message = new ChatMessage();
+            message.setEmisor(emisor);
+            message.setReceptor(receptor);
+            message.setMessageText(text);
+            message.setMessageStatus(ChatMessage.STATUS_WRITED);
+            message.setMessageType(ChatMessage.TYPE_TEXT);
+            message.setMessageUri("");
+            message.setTimestamp(new Date().getTime());
+            message.setChatKey(chat.getChatKey());
 
-        ChatMessage message = new ChatMessage();
-        message.setEmisor(emisor);
-        message.setReceptor(receptor);
-        message.setMessageText(text);
-        message.setMessageStatus(ChatMessage.STATUS_WRITED);
-        message.setMessageType(ChatMessage.TYPE_TEXT);
-        message.setMessageUri("");
-        message.setTimestamp(new Date().getTime());
-        message.setChatKey(chat.getChatKey());
+            sendMessage(message);
+        }
 
-        sendMessage(message);
     }
 
     private void sendMessage(ChatMessage message) {
@@ -382,18 +399,19 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == Activity.RESULT_OK) {
-
-                Uri resultUri = result.getUri();
-                beginToUploadMessageImage(resultUri);
-
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
-                showErrorPickingImage(error);
+        Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode + ", data: " + data);
+        if (requestCode == ChatActivity.REQUEST_CODE_CHOOSE_IMAGE && data != null) {
+            List<Uri> uris = Matisse.obtainResult(data);
+            //Log.d(TAG, "uri's size: " + uris.size());
+            for (Uri uri : uris) {
+                Log.d(TAG, "uri: " + uri);
+                if (!uri.equals(Uri.EMPTY)) {
+                    beginToUploadMessageImage(uri);
+                    break;
+                }
             }
+        } else {
+            showErrorPickingImage(new Exception("Error Seleccinando Imagen!"));
         }
     }
 
@@ -414,7 +432,7 @@ public class ChatPresenterImpl implements ChatPresenter {
                         final String keyMessage = response.getKey();
                         Log.d(TAG, "generateMessageKey onSuccess keyMessage:" + keyMessage);
 
-                        ImageCompression imageCompression = new ImageCompression(cacheDir) {
+                        ImageCompression imageCompression = new ImageCompression(cacheDir, contentResolver) {
                             @Override
                             protected void onPostExecute(Uri compressedUri) {
                                 Log.d(TAG, "imageCompression path: " + compressedUri);

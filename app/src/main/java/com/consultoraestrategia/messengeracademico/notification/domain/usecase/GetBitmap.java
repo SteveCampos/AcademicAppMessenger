@@ -34,7 +34,8 @@ public class GetBitmap extends UseCase<GetBitmap.RequestValues, GetBitmap.Respon
                 onError(e);
             }
         } else {
-            onError(new Exception("context can't be null!!!"));
+//            onError(new Exception("context can't be null!!!"));
+            onSucess(null);
         }
     }
 

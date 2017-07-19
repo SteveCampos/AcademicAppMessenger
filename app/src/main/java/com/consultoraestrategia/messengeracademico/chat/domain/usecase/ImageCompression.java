@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.chat.domain.usecase;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,12 +12,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
@@ -26,9 +31,11 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
     private static final float maxWidth = 1280.0f;
 
     private File cacheDir;
+    private ContentResolver resolver;
 
-    public ImageCompression(File cacheDir) {
+    public ImageCompression(File cacheDir, ContentResolver resolver) {
         this.cacheDir = cacheDir;
+        this.resolver = resolver;
     }
 
     @Override
@@ -43,6 +50,14 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
         // imagePath is path of new compressed image.
     }
 
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                resolver.openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
+    }
 
     public Uri compressImage(Uri uri) {
 
@@ -53,7 +68,24 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        Bitmap bmp = BitmapFactory.decodeFile(imagePath, options);
+
+        Bitmap bmp = null;
+        ParcelFileDescriptor parcelFileDescriptor =
+                null;
+        try {
+            parcelFileDescriptor = resolver.openFileDescriptor(uri, "r");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        //Bitmap bmp = BitmapFactory.decodeFile(imagePath, options);
+        bmp = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+
+        try {
+            bmp = getBitmapFromUri(uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         int actualHeight = options.outHeight;
         int actualWidth = options.outWidth;
@@ -85,9 +117,10 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
         options.inTempStorage = new byte[16 * 1024];
 
         try {
-            bmp = BitmapFactory.decodeFile(imagePath, options);
+            //bmp = BitmapFactory.decodeFile(imagePath, options);
+            bmp = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
             printBitmapSize(bmp);
-        } catch (OutOfMemoryError exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
         }
         try {
