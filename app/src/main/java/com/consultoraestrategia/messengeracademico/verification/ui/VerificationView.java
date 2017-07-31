@@ -38,4 +38,7 @@ public interface VerificationView {
 
     void onMessageReceived(String sender, String messageText);
 
+    /*Check Google Services*/
+    boolean  checkGooglePlayServicesAvailable();
+
 }

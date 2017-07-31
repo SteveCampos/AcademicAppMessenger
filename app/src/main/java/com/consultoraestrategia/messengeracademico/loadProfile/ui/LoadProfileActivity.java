@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+
+import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseContactsHelper;
 import com.consultoraestrategia.messengeracademico.entities.Profile;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenter;
@@ -102,7 +104,7 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     public void btnGo() {
 
         String mName = edtName.getText().toString();
-        onRegisterNewProfile(imageUri, mName, getPhoneNumber());
+        onRegisterNewProfile(compreUri, mName, getPhoneNumber());
     }
 
 
@@ -169,6 +171,18 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         showSnackbar(error);
     }
 
+    Uri compreUri;
+    private void compressImage(Uri imageUri) {
+        ImageCompression imageCompression = new ImageCompression(this.getCacheDir(), this.getContentResolver()) {
+            @Override
+            protected void onPostExecute(Uri compressedUri) {
+                Log.d(TAG, "imageCompression path: " + compressedUri);
+                // image here is compressed & ready to be sent to the server
+                compreUri = compressedUri;
+            }
+        };
+        imageCompression.execute(imageUri);// imagePath as a string
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

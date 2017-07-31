@@ -1,10 +1,12 @@
 package com.consultoraestrategia.messengeracademico.verification.ui;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -35,6 +37,8 @@ import com.consultoraestrategia.messengeracademico.verification.VerificationPres
 import com.consultoraestrategia.messengeracademico.verification.VerificationPresenterImpl;
 import com.consultoraestrategia.messengeracademico.verification.sms.SmsListener;
 import com.consultoraestrategia.messengeracademico.verification.sms.SmsReceiver;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.lamudi.phonefield.PhoneInputLayout;
 
 import butterknife.BindView;
@@ -108,6 +112,12 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
     protected void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.onResume();
     }
 
     @OnClick(R.id.btn_next)
@@ -312,6 +322,22 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
         presenter.onMessageReceived(phoneNumber, messageText);
     }
 
+    @Override
+    public boolean checkGooglePlayServicesAvailable() {
+        final int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+        if (status == ConnectionResult.SUCCESS) {
+            return true;
+        }
+        if (GooglePlayServicesUtil.isUserRecoverableError(status)) {
+            final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(status, this, 1);
+            if (errorDialog != null) {
+                inflateDialog();
+            }
+
+        }
+        return false;
+    }
+
     private void forwardToLoadProfile(String phoneNumber) {
         Intent intent = new Intent(this, LoadProfileActivity.class);
         intent.putExtra(EXTRA_PHONENUMBER, phoneNumber);
@@ -338,5 +364,33 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
+    }
+
+
+    private void inflateDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Google Play Services");
+        builder.setMessage("Necesita actualizar los paquetes de Google Play Services para continuar");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.gms")));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.gms")));
+                }
+                dialog.dismiss();
+                checkGooglePlayServicesAvailable();
+            }
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        });
+
+        AlertDialog alert11 = builder.create();
+        alert11.setCancelable(false);
+        alert11.show();
     }
 }

@@ -177,11 +177,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     private void setupViews() {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_24dp);
-        }
         edtMessage.addTextChangedListener(watcher);
         emojiButton.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
         emojiButton.setOnClickListener(new View.OnClickListener() {
@@ -229,6 +224,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         }
         super.onBackPressed();
     }
+
+    @OnClick(R.id.layout_profile)
+    public void onClickBackPressed(){
+        presenter.onBackPressed();
+        super.onBackPressed();
+    }
+
 
 
     @Override

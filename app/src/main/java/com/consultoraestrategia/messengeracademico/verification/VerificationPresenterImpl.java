@@ -39,6 +39,7 @@ public class VerificationPresenterImpl implements VerificationPresenter {
         if (view != null) {
             view.showVerificationViews();
             view.hideWatingViews();
+            view.checkGooglePlayServicesAvailable();
         }
     }
 
@@ -46,6 +47,13 @@ public class VerificationPresenterImpl implements VerificationPresenter {
     public void onDestroy() {
         view = null;
         eventBus.unregister(this);
+    }
+
+    @Override
+    public void onResume() {
+        if (view!=null){
+            view.checkGooglePlayServicesAvailable();
+        }
     }
 
 

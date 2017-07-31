@@ -10,6 +10,7 @@ import com.lamudi.phonefield.PhoneInputLayout;
 public interface VerificationPresenter {
     void onCreate();
     void onDestroy();
+    void onResume();
 
     void initVerificationViews();
     void validatePhoneNumber(PhoneInputLayout phoneInputLayout);

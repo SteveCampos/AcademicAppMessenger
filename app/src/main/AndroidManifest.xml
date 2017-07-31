@@ -39,7 +39,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".loadProfile.ui.LoadProfileActivity" />
+        <activity android:name=".loadProfile.ui.LoadProfileActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".importData.ui.ImportDataActivity" />
         <activity
             android:name=".prueba.PruebaActivity"
