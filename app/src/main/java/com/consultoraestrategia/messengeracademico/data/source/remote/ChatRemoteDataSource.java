@@ -59,7 +59,7 @@ public class ChatRemoteDataSource implements ChatDataSource {
 
     @Override
     public void saveMessage(final ChatMessage message, Chat chat, final ListenMessagesCallback callback) {
-        Log.d(TAG, "saveMessage}");
+        Log.d(TAG, "saveMessage");
         firebaseChat.saveMessage(true, message, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {

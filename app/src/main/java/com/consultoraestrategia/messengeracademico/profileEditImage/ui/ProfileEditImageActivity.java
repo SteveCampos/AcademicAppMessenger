@@ -13,12 +13,14 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
+import com.consultoraestrategia.messengeracademico.entities.MediaFile;
 import com.consultoraestrategia.messengeracademico.entities.Profile;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
@@ -28,6 +30,7 @@ import com.consultoraestrategia.messengeracademico.profileEditImage.ProfileEditI
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -124,7 +127,7 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
 
     @Override
     public void onProfileEditImageError(String message) {
-        Log.e(TAG, "onProfileEditImageError :"+message);
+        Log.e(TAG, "onProfileEditImageError :" + message);
     }
 
     @Override
@@ -179,13 +182,14 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
 
     Uri imageUri;
 
-    private void compressImage(Uri imageUri){
+    private void compressImage(Uri imageUri) {
         ImageCompression imageCompression = new ImageCompression(this.getCacheDir(), this.getContentResolver()) {
+
             @Override
-            protected void onPostExecute(Uri compressedUri) {
-                Log.d(TAG, "imageCompression path: " + compressedUri);
+            protected void onPostExecute(MediaFile mediaFile) {
+                Log.d(TAG, "imageCompression path: " + mediaFile.getLocalUri());
                 // image here is compressed & ready to be sent to the server
-                presenter.editProfileImage(name, celpho, compressedUri);
+                presenter.editProfileImage(name, celpho, mediaFile.getLocalUri());
             }
         };
         imageCompression.execute(imageUri);// imagePath as a string

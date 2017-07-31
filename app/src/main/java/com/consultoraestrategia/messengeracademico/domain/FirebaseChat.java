@@ -127,8 +127,6 @@ public class FirebaseChat extends FirebaseHelper {
     }
 
     public void sendMessage(boolean online, ChatMessage message, DatabaseReference.CompletionListener listener) {
-        /*String keyMessage = getKeyMessage(message.getEmisor(), message.getReceptor());
-        message.setKeyMessage(keyMessage);*/
         changeStatus(online, ChatMessage.STATUS_WRITED, message, listener);
     }
 

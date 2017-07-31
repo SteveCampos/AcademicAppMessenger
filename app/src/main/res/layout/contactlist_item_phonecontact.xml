@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="8dp"
     android:layout_marginEnd="16dp"
-    android:orientation="vertical"
-    android:id="@+id/layout"
-    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
-    >
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_margin="8dp"
         android:id="@+id/img_profile"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_centerVertical="true"
+        android:layout_margin="8dp"
         android:contentDescription="@string/importdata.content.import"
         android:src="@drawable/common_google_signin_btn_icon_dark_disabled" />
 
     <TextView
         android:id="@+id/txt_name"
         style="@style/TextAppearance.AppCompat.Title"
-        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/img_profile"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/img_profile"
+        android:layout_toLeftOf="@+id/txt_time"
+        android:layout_toRightOf="@+id/img_profile"
         android:layout_toStartOf="@+id/txt_time"
         android:maxLines="1"
         android:text="Steve Campos"
         android:textSize="16sp"
-        android:layout_marginStart="4dp"
-        />
+        android:textStyle="bold" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/txt_time"
@@ -44,6 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/txt_name"
         android:text="phone"
         android:textAllCaps="true" />
@@ -53,6 +57,7 @@
         style="@style/TextAppearance.AppCompat.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txt_name"
         android:layout_alignStart="@+id/txt_name"
         android:layout_below="@+id/txt_name"
         android:layout_marginTop="2dp"
@@ -60,10 +65,12 @@
         android:text="@string/contactlist.message.status.default" />
 
     <View
-        android:layout_alignStart="@+id/txt_name"
-        android:layout_alignEnd="@+id/txt_time"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/md_grey_200"/>
+        android:layout_alignEnd="@+id/txt_time"
+        android:layout_alignLeft="@+id/txt_name"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/txt_time"
+        android:layout_alignStart="@+id/txt_name"
+        android:background="@color/md_grey_200" />
 </RelativeLayout>

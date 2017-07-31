@@ -5,13 +5,26 @@
     android:paddingBottom="5dp"
     android:paddingTop="5dp">
 
-    <RelativeLayout
-        android:id="@+id/layout_bubble"
-        android:layout_toLeftOf="@+id/img_status"
+    <TextView
+        android:id="@+id/txt_day_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="8dp"
+        android:background="@drawable/background_corner"
+        android:textAllCaps="true"
+        android:padding="4dp"
+        android:visibility="gone" />
+
+
+    <RelativeLayout
+        android:id="@+id/layout_bubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_day_group"
         android:layout_marginLeft="64dp"
         android:layout_marginStart="64dp"
+        android:layout_toLeftOf="@+id/img_status"
         android:background="@drawable/balloom_emisor">
 
 
@@ -25,6 +38,7 @@
             android:text="Steve Campos"
             android:textColor="@color/white"
             android:textIsSelectable="true" />
+
         <TextView
             android:id="@+id/txt_time"
             style="@style/TextAppearance.AppCompat.Small"
@@ -42,18 +56,17 @@
     </RelativeLayout>
 
 
-
     <ImageView
         android:id="@+id/img_status"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
         android:layout_alignBottom="@+id/layout_bubble"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="2dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginStart="8dp"
         android:src="@drawable/ic_double_check_colored"
         android:visibility="visible" />
 </RelativeLayout>

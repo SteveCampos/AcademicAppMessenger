@@ -23,6 +23,7 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Notification;
 import com.consultoraestrategia.messengeracademico.entities.NotificationInbox;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
+import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingComponent;
 import com.consultoraestrategia.messengeracademico.notification.domain.usecase.GetMessagesNoReaded;
 import com.consultoraestrategia.messengeracademico.notification.domain.usecase.SaveMessageOnLocal;
@@ -114,6 +115,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
             }
         }
 
+        Intent backIntent = new Intent(this, MainActivity.class);
+        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+
         Intent intent = new Intent(this, ChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -121,7 +126,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
 
         intent.setAction(action);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivities(this, 0 /* Request code */, new Intent[]{backIntent, intent},
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         if (smallIcon > 0) {

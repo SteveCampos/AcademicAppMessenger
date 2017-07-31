@@ -40,21 +40,26 @@ public class MessageImageEmisorHolder extends RecyclerView.ViewHolder {
     ImageView imageview;
     @BindView(R.id.txt_time)
     TextView txtTime;
-    @BindView(R.id.layout_bubble)
-    RelativeLayout layoutBubble;
     @BindView(R.id.img_status)
     ImageView imgStatus;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
+    @BindView(R.id.txt_day_group)
+    public TextView txtTimeTitle;
+    @BindView(R.id.layout_message_container)
+    public RelativeLayout layoutContainer;
 
     public MessageImageEmisorHolder(View view) {
         super(view);
         ButterKnife.bind(this, view);
     }
 
-    public void bind(final ChatMessage message, final ChatMessageListener listener, Drawable drawable, Context context) {
+    public void bind(final ChatMessage message, ChatMessage previousMessage, Resources resources, final ChatMessageListener listener, Drawable drawable, Context context) {
 
-        loadImageView(Uri.parse(message.getMessageUri()), context);
+
+        MessageTextEmisorHolder.
+                setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtTimeTitle, resources);
+        MessageImageReceptorHolder.loadImageView(layoutContainer, imageview, message, context);
 
         imgStatus.setImageDrawable(drawable);
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
@@ -76,40 +81,7 @@ public class MessageImageEmisorHolder extends RecyclerView.ViewHolder {
             }
         });
 
-    }
 
-    private void loadImageView(final Uri uri, final Context context) {
-        if (imageview.getHeight() == 0) {
-            // wait for layout, same as Glide's SizeDeterminer does
-            imageview.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    // re-query viewTreeObserver, because the one used to add the listener may be dead: http://stackoverflow.com/a/29172475/253468
-                    imageview.getViewTreeObserver().removeOnPreDrawListener(this);
-                    // call the same method, but now we can be sure getHeight() has a value
-                    loadImageView(uri, context);
-                    return true; // == allow drawing
-                }
-            });
-        } else {
-            Glide
-                    .with(imageview.getContext())
-                    .load(uri)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .fitCenter()
-                    .override(imageview.getWidth(), Target.SIZE_ORIGINAL)
-                    .bitmapTransform(new FitCenter(context), new RoundedCornersTransformation(context, 8, 0, RoundedCornersTransformation.CornerType.ALL))
-                    .into(imageview);
-        }
     }
-
-    private float dpFromPx(final float px) {
-        return px / Resources.getSystem().getDisplayMetrics().density;
-    }
-
-    private float pxFromDp(final float dp) {
-        return dp * Resources.getSystem().getDisplayMetrics().density;
-    }
-
 
 }

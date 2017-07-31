@@ -1,14 +1,19 @@
 package com.consultoraestrategia.messengeracademico.data.source.local;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.data.ChatDataSource;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
+import com.consultoraestrategia.messengeracademico.entities.ChatMessage_Table;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.storage.ChatDbFlowStorage;
 import com.consultoraestrategia.messengeracademico.storage.ChatStorage;
 import com.consultoraestrategia.messengeracademico.utils.StringUtils;
+import com.raizlabs.android.dbflow.sql.language.CursorResult;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction;
 import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
 
 import java.util.List;
@@ -87,10 +92,22 @@ public class ChatLocalDataSource implements ChatDataSource {
     }
 
     @Override
-    public void getMessages(Chat chat, GetMessageCallback callback) {
+    public void getMessages(Chat chat, final GetMessageCallback callback) {
         Log.d(TAG, "getMessages");
         if (chat != null) {
-            callback.onMessagesLoaded(chat.getMessageList());
+            SQLite.select()
+                    .from(ChatMessage.class)
+                    .where(ChatMessage_Table.chatKey.eq(chat.getChatKey()))
+                    //.and(ChatMessage_Table.timestamp.greaterThanOrEq(chat.getTimestamp()))
+                    .orderBy(ChatMessage_Table.timestamp, false)
+                    .limit(100)
+                    .async()
+                    .queryResultCallback(new QueryTransaction.QueryResultCallback<ChatMessage>() {
+                        @Override
+                        public void onQueryResult(QueryTransaction<ChatMessage> transaction, @NonNull CursorResult<ChatMessage> tResult) {
+                            callback.onMessagesLoaded(tResult.toList());
+                        }
+                    }).execute();
         }
     }
 
@@ -111,7 +128,7 @@ public class ChatLocalDataSource implements ChatDataSource {
                 new Transaction.Success() {
                     @Override
                     public void onSuccess(Transaction transaction) {
-                        Log.d(TAG, "onSuccess");
+                        Log.d(TAG, "message : " + message.getMessageText() + " saved successfully.");
                         callback.onMessageChanged(message);
                     }
                 },

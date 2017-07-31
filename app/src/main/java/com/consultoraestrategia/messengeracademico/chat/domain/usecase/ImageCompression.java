@@ -16,6 +16,8 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.consultoraestrategia.messengeracademico.entities.MediaFile;
+
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -24,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
+public class ImageCompression extends AsyncTask<Uri, Void, MediaFile> {
 
     private static final String TAG = ImageCompression.class.getSimpleName();
     private static final float maxHeight = 1280.0f;
@@ -39,16 +41,18 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
     }
 
     @Override
-    protected Uri doInBackground(Uri... uris) {
+    protected MediaFile doInBackground(Uri... uris) {
         if (uris[0] == null || uris[0].equals(Uri.EMPTY))
             return null;
 
         return compressImage(uris[0]);
     }
+/*
 
     protected void onPostExecute(Uri imagePathCompressed) {
         // imagePath is path of new compressed image.
     }
+*/
 
     private Bitmap getBitmapFromUri(Uri uri) throws IOException {
         ParcelFileDescriptor parcelFileDescriptor =
@@ -59,7 +63,7 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
         return image;
     }
 
-    public Uri compressImage(Uri uri) {
+    private MediaFile compressImage(Uri uri) {
 
         String imagePath = uri.getPath();
         Log.d(TAG, "uri.getPath(): " + uri.getPath());
@@ -89,6 +93,8 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
 
         int actualHeight = options.outHeight;
         int actualWidth = options.outWidth;
+        Log.d(TAG, "actualHeight: " + actualHeight);
+        Log.d(TAG, "actualWidth: " + actualWidth);
 
         float imgRatio = (float) actualWidth / (float) actualHeight;
         float maxRatio = maxWidth / maxHeight;
@@ -105,7 +111,6 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
             } else {
                 actualHeight = (int) maxHeight;
                 actualWidth = (int) maxWidth;
-
             }
         }
 
@@ -119,7 +124,7 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
         try {
             //bmp = BitmapFactory.decodeFile(imagePath, options);
             bmp = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-            printBitmapSize(bmp);
+            //printBitmapSize(bmp);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -143,20 +148,28 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
 
         if (bmp != null) {
             bmp.recycle();
+            bmp = null;
         }
 
+        int rotate = 0;
+        int orientation = 0;
         ExifInterface exif;
         try {
             exif = new ExifInterface(imagePath);
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0);
+            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0);
+            Log.d(TAG, "orientation: " + orientation);
             Matrix matrix = new Matrix();
-            if (orientation == 6) {
-                matrix.postRotate(90);
-            } else if (orientation == 3) {
-                matrix.postRotate(180);
-            } else if (orientation == 8) {
-                matrix.postRotate(270);
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                rotate = 90;
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+                rotate = 180;
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+                rotate = 270;
             }
+            if (rotate != 0) {
+                matrix.postRotate(rotate);
+            }
+
             scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
         } catch (IOException e) {
             e.printStackTrace();
@@ -175,20 +188,21 @@ public class ImageCompression extends AsyncTask<Uri, Void, Uri> {
 
         printBitmapSize(scaledBitmap);
 
-
-        return compressedUri;
+        return new MediaFile(compressedUri, compressedUri.toString(), "image/jpeg", scaledBitmap.getHeight(), scaledBitmap.getWidth(), rotate, orientation, compressedUri.getLastPathSegment(), byteSizeOf(scaledBitmap));
     }
 
     private void printBitmapSize(Bitmap scaledBitmap) {
-        int bytesize = byteSizeOf(scaledBitmap);
-        int kb = bytesize / 1024;
+        long bytesize = byteSizeOf(scaledBitmap);
+        int kb = (int) (bytesize / 1024);
         Log.d(TAG, "size bitmap : " + kb + " kb");
+        Log.d(TAG, "getHeight bitmap: " + scaledBitmap.getHeight());
+        Log.d(TAG, "getWidth bitmap: " + scaledBitmap.getWidth());
     }
 
     /**
      * returns the bytesize of the give bitmap
      */
-    public static int byteSizeOf(Bitmap bitmap) {
+    public static long byteSizeOf(Bitmap bitmap) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             return bitmap.getAllocationByteCount();
         } else {

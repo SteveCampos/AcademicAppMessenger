@@ -24,8 +24,10 @@ public class SaveMessageOnLocal extends UseCase<SaveMessageOnLocal.RequestValues
 
     @Override
     protected void executeUseCase(RequestValues requestValues) {
-        repository.saveMessageOnLocal(
-                requestValues.getMessage(),
+        ChatMessage message = requestValues.getMessage();
+        message.setMessageStatus(ChatMessage.STATUS_DELIVERED);
+        repository.saveMessage(
+                message,
                 null,
                 new ChatDataSource.ListenMessagesCallback() {
                     @Override

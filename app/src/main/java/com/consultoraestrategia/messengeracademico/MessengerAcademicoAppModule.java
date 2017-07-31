@@ -33,7 +33,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-
 /**
  * Created by @stevecampos on 17/05/2017.
  */

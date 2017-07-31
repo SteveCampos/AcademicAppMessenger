@@ -49,16 +49,27 @@ public class ChatDbFlowStorage implements ChatStorage {
         Transaction transaction = databaseDefinition.beginTransactionAsync(new ITransaction() {
             @Override
             public void execute(DatabaseWrapper databaseWrapper) {
-                message.save();
                 chat.save();
-                Log.d(TAG, "chat.getEmisor().getPhoneNumber(): " + message.getEmisor().getPhoneNumber());
+                if (message.getMediaFile() != null && !message.getMediaFile().exists()) {
+                    message.getMediaFile().save();
+                }
+                message.save();
+                Log.d(TAG, "message.getMessageText(): " + message.getMessageText());
+                Log.d(TAG, "message.getEmisor().getPhoneNumber(): " + message.getEmisor().getPhoneNumber());
+                Log.d(TAG, "message.getReceptor().getPhoneNumber(): " + message.getReceptor().getPhoneNumber());
                 boolean existsEmisor = message.getEmisor().exists();
+                boolean existsReceptor = message.getReceptor().exists();
                 Log.d(TAG, "existsEmisor: " + existsEmisor);
-                if (!message.getEmisor().exists()) {
-                    Log.d(TAG, "save emisor: " + message.getEmisor().getPhoneNumber());
+                Log.d(TAG, "existsReceptor: " + existsReceptor);
+                if (!existsEmisor && message.getEmisor().getPhoneNumber() != null) {
                     message.getEmisor().setType(Contact.TYPE_NOT_ADDED);
                     message.getEmisor().save();
                 }
+                if (!existsReceptor && message.getReceptor().getPhoneNumber() != null) {
+                    message.getReceptor().setType(Contact.TYPE_NOT_ADDED);
+                    message.getReceptor().save();
+                }
+
             }
         })
                 .success(success)

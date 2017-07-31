@@ -1,12 +1,13 @@
 package com.consultoraestrategia.messengeracademico.chat;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.BaseView;
+import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.UseCase;
 import com.consultoraestrategia.messengeracademico.UseCaseHandler;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.GenerateMessageKey;
@@ -19,6 +20,7 @@ import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.entities.MediaFile;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.main.ConnectionInteractor;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ChangeStateWriting;
@@ -31,8 +33,6 @@ import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ReadMessa
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.SendMessage;
 import com.consultoraestrategia.messengeracademico.prueba.domain.usecase.UploadImage;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
-import com.consultoraestrategia.messengeracademico.utils.StringUtils;
-import com.theartofdev.edmodo.cropper.CropImage;
 import com.zhihu.matisse.Matisse;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -42,7 +42,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-
+import static com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity.EXTRA_RECEPTOR_PHONENUMBER;
 
 /**
  * Created by @stevecampos on 10/03/2017.
@@ -68,14 +68,14 @@ public class ChatPresenterImpl implements ChatPresenter {
     private final File cacheDir;
     private final UploadImage uploadImage;
     private final ContentResolver contentResolver;
-
+    private final Resources resources;
 
 
     private Contact emisor;
     private Contact receptor;
     private Chat chat;
 
-    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver) {
+    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources) {
         this.useCaseHandler = useCaseHandler;
         this.preferencesHelper = preferencesHelper;
         this.useCaseLoadMessages = useCaseLoadMessages;
@@ -92,7 +92,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         this.cacheDir = cacheDir;
         this.uploadImage = uploadImage;
         this.contentResolver = contentResolver;
-
+        this.resources = resources;
     }
 
     @Override
@@ -113,6 +113,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     }
 
     private boolean forwardToAnotherActivity;
+    private boolean isLaunchedFromAnotherApp = false;
 
     @Override
     public void onResume() {
@@ -126,7 +127,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void onPause() {
         Log.d(TAG, "onPause");
         eventBus.unregister(this);
-        if (!forwardToAnotherActivity) {
+        if (!forwardToAnotherActivity || isLaunchedFromAnotherApp) {
             connectionInteractor.setOffline();
         }
     }
@@ -146,6 +147,9 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed");
         forwardToAnotherActivity = true;
+        if (view != null) {
+            view.finishActivity();
+        }
     }
 
     @Override
@@ -229,11 +233,85 @@ public class ChatPresenterImpl implements ChatPresenter {
 
                     @Override
                     public void onError() {
-                        onLoadingFailed();
+                        onFatalError("El contacto no tiene instalado el app Messenger Académico.");
                     }
                 }
         );
     }
+
+    @Override
+    public void manageIntent(Intent intent) {
+        String receptorPhoneNumber = intent.getStringExtra(EXTRA_RECEPTOR_PHONENUMBER);
+        Log.d(TAG, "receptorPhoneNumber: " + receptorPhoneNumber);
+        loadReceptor(receptorPhoneNumber);
+        getAcademicInformation(intent);
+    }
+
+    private void getAcademicInformation(Intent intent) {
+        String phoneNumber = "-";
+        String nombre = "-";
+        String padre = "-";
+        String madre = "-";
+        String nivel = "-";
+        String anoAcademico = "-";
+        String curso = "-";
+        String seccion = "-";
+        String rol = "-";
+
+        if (intent.hasExtra(EXTRA_RECEPTOR_PHONENUMBER)) {
+            phoneNumber = intent.getStringExtra(EXTRA_RECEPTOR_PHONENUMBER);
+        }
+        if (intent.hasExtra("NOMBRE")) {
+            nombre = intent.getStringExtra("NOMBRE");
+        }
+        if (intent.hasExtra("PADRE")) {
+            padre = intent.getStringExtra("PADRE");
+        }
+        if (intent.hasExtra("MADRE")) {
+            madre = intent.getStringExtra("MADRE");
+        }
+        if (intent.hasExtra("NIVEL")) {
+            nivel = intent.getStringExtra("NIVEL");
+        }
+        if (intent.hasExtra("AÑO")) {
+            anoAcademico = intent.getStringExtra("AÑO");
+        }
+        if (intent.hasExtra("CURSO")) {
+            curso = intent.getStringExtra("CURSO");
+        }
+        if (intent.hasExtra("SECCION")) {
+            seccion = intent.getStringExtra("SECCION");
+        }
+        if (intent.hasExtra("ROL")) {
+            rol = intent.getStringExtra("ROL");
+            isLaunchedFromAnotherApp = true;
+        }
+
+        String textFormatted = null;
+
+        switch (rol) {
+            case "ALUMNO":
+                textFormatted = String.format(resources.getString(R.string.chat_message_academic_information), rol, nivel, anoAcademico, curso, seccion);
+                break;
+            case "PADRE":
+                textFormatted = String.format(resources.getString(R.string.chat_message_rol_information), rol);
+                nombre = padre;
+                break;
+            case "MADRE":
+                textFormatted = String.format(resources.getString(R.string.chat_message_rol_information), rol);
+                nombre = madre;
+                break;
+        }
+
+        if (view != null) {
+            view.showReceptor(new Contact(nombre, phoneNumber, null, ""));
+            if (textFormatted != null) {
+                view.showAcademicInformation(textFormatted);
+            }
+        }
+
+    }
+
 
     @Override
     public void sendMessageText(String text) {
@@ -410,8 +488,6 @@ public class ChatPresenterImpl implements ChatPresenter {
                     break;
                 }
             }
-        } else {
-            showErrorPickingImage(new Exception("Error Seleccinando Imagen!"));
         }
     }
 
@@ -434,10 +510,10 @@ public class ChatPresenterImpl implements ChatPresenter {
 
                         ImageCompression imageCompression = new ImageCompression(cacheDir, contentResolver) {
                             @Override
-                            protected void onPostExecute(Uri compressedUri) {
-                                Log.d(TAG, "imageCompression path: " + compressedUri);
+                            protected void onPostExecute(MediaFile compressedFile) {
+                                Log.d(TAG, "imageCompression path: " + compressedFile.getLocalUri().getPath());
                                 // image here is compressed & ready to be sent to the server
-                                ChatMessage message = composeMessageImage(keyMessage, compressedUri);
+                                ChatMessage message = composeMessageImage(keyMessage, compressedFile);
                                 onMessageChanged(message);
                                 uploadImage(message);
                             }
@@ -493,6 +569,7 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     private void onImageUploadSucess(ChatMessage message) {
         Log.d(TAG, "onImageUploadSuccess");
+        message.getMediaFile().setDownloadUri(message.getMessageUri());
         sendMessage(message);
     }
 
@@ -503,7 +580,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     }
 
 
-    private ChatMessage composeMessageImage(String keyMessage, Uri imageUri) {
+    private ChatMessage composeMessageImage(String keyMessage, MediaFile mediaFile) {
         ChatMessage message = new ChatMessage();
         message.setKeyMessage(keyMessage);
         message.setEmisor(emisor);
@@ -511,7 +588,8 @@ public class ChatPresenterImpl implements ChatPresenter {
         message.setMessageText("");
         message.setMessageStatus(ChatMessage.STATUS_WRITED);
         message.setMessageType(ChatMessage.TYPE_IMAGE);
-        message.setMessageUri(imageUri.toString());
+        message.setMessageUri(mediaFile.getLocalUri().toString());
+        message.setMediaFile(mediaFile);
         message.setTimestamp(new Date().getTime());
         message.setChatKey(chat.getChatKey());
 
@@ -586,6 +664,12 @@ public class ChatPresenterImpl implements ChatPresenter {
         }
     }
 
+    private void onFatalError(String error) {
+        Log.d(TAG, "onFatalError");
+        if (view != null) {
+            view.showFatalError(error);
+        }
+    }
 
     private void onLoadingFailed() {
         Log.d(TAG, "onError");

@@ -105,23 +105,28 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Log.d(TAG, "position: " + position);
         ChatMessage message = messages.get(position);
+        ChatMessage previousMessage = null;
+        if (position >= 1) {
+            previousMessage = messages.get(position - 1);
+        }
         switch (holder.getItemViewType()) {
             case TYPE_EMISOR_TEXT:
                 MessageTextEmisorHolder vh1 = (MessageTextEmisorHolder) holder;
-                vh1.bind(message, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context));
+                vh1.bind(message, previousMessage, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context), context.getResources());
                 break;
             case TYPE_RECEPTOR_TEXT:
                 MessageTextReceptorHolder vh2 = (MessageTextReceptorHolder) holder;
-                vh2.bind(message, listener);
+                vh2.bind(message, previousMessage, listener, context.getResources());
                 break;
             case TYPE_EMISOR_IMAGE:
                 MessageImageEmisorHolder vh3 = (MessageImageEmisorHolder) holder;
-                vh3.bind(message, listener, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context), context);
+                vh3.bind(message, previousMessage, context.getResources(), listener, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context), context);
                 break;
             case TYPE_RECEPTOR_IMAGE:
                 MessageImageReceptorHolder vh4 = (MessageImageReceptorHolder) holder;
-                vh4.bind(message, listener, context);
+                vh4.bind(message, previousMessage, listener, context);
                 break;
         }
     }

@@ -1,34 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="5dp"
     android:paddingTop="5dp">
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/txt_day_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="8dp"
+        android:background="@drawable/background_corner"
+        android:padding="4dp"
+        android:textAllCaps="true"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/layout_message_container"
+        android:layout_width="@dimen/image_default_size"
+        android:layout_height="@dimen/image_default_size"
+        android:layout_below="@+id/txt_day_group"
         android:background="@drawable/balloom_receptor">
 
         <ImageView
             android:id="@+id/imageview"
-            android:minHeight="196dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:scaleType="fitCenter" />
 
         <TextView
             android:id="@+id/txt_time"
-            style="@style/TextAppearance.AppCompat.Small"
+            style="@style/TextAppearance.AppCompat.Notification.Time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/imageview"
+            android:layout_alignEnd="@+id/imageview"
             android:layout_alignRight="@+id/imageview"
-            android:paddingBottom="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
             android:text="03:14"
-            android:textColor="@color/md_grey_200"
-            android:textSize="12sp" />
+            android:textColor="@color/md_grey_200" />
 
     </RelativeLayout>
 

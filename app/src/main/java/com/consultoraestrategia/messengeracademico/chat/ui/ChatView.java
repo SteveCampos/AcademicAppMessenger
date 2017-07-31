@@ -36,9 +36,18 @@ public interface ChatView extends BaseView<ChatPresenter> {
     void showError(String error);
 
     void showVoiceIcon();
+
     void showSendIcon();
 
     void hideKeboard();
+
     void showKeyboard();
+
     void toggleMenuWithEffect();
+
+    void finishActivity();
+
+    void showFatalError(String error);
+
+    void showAcademicInformation(String data);
 }

@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseContactsHelper;
+import com.consultoraestrategia.messengeracademico.entities.MediaFile;
 import com.consultoraestrategia.messengeracademico.entities.Profile;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenter;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenterImpl;
@@ -30,6 +31,7 @@ import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActiv
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -100,13 +102,12 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return preferences.getString(VerificationActivity.PREF_PHONENUMBER, null);
     }
+
     @OnClick(R.id.btnGo)
     public void btnGo() {
-
         String mName = edtName.getText().toString();
         onRegisterNewProfile(compreUri, mName, getPhoneNumber());
     }
-
 
 
     private AppCompatActivity getActivity() {
@@ -171,18 +172,6 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         showSnackbar(error);
     }
 
-    Uri compreUri;
-    private void compressImage(Uri imageUri) {
-        ImageCompression imageCompression = new ImageCompression(this.getCacheDir(), this.getContentResolver()) {
-            @Override
-            protected void onPostExecute(Uri compressedUri) {
-                Log.d(TAG, "imageCompression path: " + compressedUri);
-                // image here is compressed & ready to be sent to the server
-                compreUri = compressedUri;
-            }
-        };
-        imageCompression.execute(imageUri);// imagePath as a string
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -190,6 +179,7 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
             if (resultCode == RESULT_OK) {
                 imgProfile.setImageURI(result.getUri());
                 imageUri = result.getUri();
+                compressImage(imageUri);
                 Log.d(TAG, "ResulURi: " + result.getUri());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Log.d(TAG, "Cropping failed: " + result.getError());
@@ -261,5 +251,21 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
+
+    Uri compreUri;
+
+    private void compressImage(Uri imageUri) {
+        ImageCompression imageCompression = new ImageCompression(this.getCacheDir(), this.getContentResolver()) {
+            @Override
+            protected void onPostExecute(MediaFile mediaFile) {
+
+                compreUri = mediaFile.getLocalUri();
+                // image here is compressed & ready to be sent to the server
+                Log.d(TAG, "imageCompression path: " + compreUri);
+            }
+        };
+        imageCompression.execute(imageUri);// imagePath as a string
+    }
+
 
 }

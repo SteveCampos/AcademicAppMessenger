@@ -7,6 +7,7 @@ import android.util.Log;
 import com.consultoraestrategia.messengeracademico.R;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -57,9 +58,8 @@ public class TimeUtils {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
             return formatter.format(startDate);
         }
-        Log.d(TAG, "%d resto: " + rest + ", %s periodo: " + period);
-
         lastConnection = String.format(Locale.getDefault(), resources.getString(R.string.last_connection), rest, period);
+        Log.d(TAG, "lastConnection: " + lastConnection);
         return lastConnection;
     }
 
@@ -102,6 +102,27 @@ public class TimeUtils {
 
         lastConnection = String.format(Locale.getDefault(), resources.getString(R.string.last_message_time), rest, period);
         return lastConnection;
+    }
+
+    public static String formatDate(long timestamp, Resources resources) {
+
+        Calendar dateToFormat = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
+        dateToFormat.setTimeInMillis(timestamp);
+        now.setTimeInMillis(new Date().getTime());
+
+        boolean sameYear = dateToFormat.get(Calendar.YEAR) == now.get(Calendar.YEAR);
+        boolean sameMonth = dateToFormat.get(Calendar.MONTH) == now.get(Calendar.MONTH);
+        boolean sameWeek = dateToFormat.get(Calendar.WEEK_OF_MONTH) == now.get(Calendar.WEEK_OF_MONTH);
+        boolean sameDay = dateToFormat.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH);
+
+
+        if (sameYear && sameMonth && sameDay) {
+            return resources.getString(R.string.global_time_today);
+        } else if (sameYear && sameMonth && sameWeek) {
+            return new SimpleDateFormat("EEEE", Locale.getDefault()).format(dateToFormat.getTime());
+        }
+        return new SimpleDateFormat("EEEE, d 'de' MMMM 'del' yyyy", Locale.getDefault()).format(dateToFormat.getTime());
     }
 
 }

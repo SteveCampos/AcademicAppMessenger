@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.chat.adapters.holder;
 
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,8 @@ public class MessageTextReceptorHolder extends RecyclerView.ViewHolder {
     public EmojiTextView txtMessage;
     @BindView(R.id.txt_time)
     public TextView txtTime;
+    @BindView(R.id.txt_day_group)
+    public TextView txtTimeTitle;
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
@@ -36,7 +39,7 @@ public class MessageTextReceptorHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(ChatMessage message, ChatMessageListener listener) {
+    public void bind(ChatMessage message, ChatMessage previousMessage, ChatMessageListener listener, Resources resources) {
         Log.d(TAG, "MessageTextReceptorHolder bind");
         txtMessage.setText(message.getMessageText());
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
@@ -44,6 +47,9 @@ public class MessageTextReceptorHolder extends RecyclerView.ViewHolder {
         if (listener != null && message.getMessageStatus() != ChatMessage.STATUS_READED) {
             listener.onMessageReaded(message);
         }
+
+        MessageTextEmisorHolder.
+                setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtTimeTitle, resources);
     }
 
 

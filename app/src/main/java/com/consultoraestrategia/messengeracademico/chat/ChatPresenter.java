@@ -19,6 +19,8 @@ public interface ChatPresenter extends BasePresenter {
 
     void loadReceptor(String phoneNumber);
 
+    void manageIntent(Intent intent);
+
     void sendMessageText(String text);
 
     void readMessage(ChatMessage message);

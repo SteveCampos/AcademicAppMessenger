@@ -85,13 +85,18 @@
 
     <string name="menu_options_profile_edit">Editar</string>
     <string name="menu_options_profile_view">Ver en lista de contactos</string>
-    <string name="last_connection">Última vez hace %1$d %2$s</string>
+    <string name="last_connection">últ. vez hace %1$d %2$s</string>
     <string name="last_message_time">Hace %1$d %2$s</string>
     <string name="time_seconds">segundos</string>
     <string name="time_minutes">minutos</string>
     <string name="time_hours">horas</string>
     <string name="time_days">días</string>
 
+    <string name="global_time_today">Hoy</string>
+    <string name="global_time_yersterday">Ayer</string>
+
+    <string name="chat.message.academic.information">Rol: %1$s, Nivel %2$s \nAño: %3$s, Curso: %4$s, Sección %5$s.</string>
+    <string name="chat.message.rol.information">Rol: %1$s.</string>
 
     <string name="profile.notice">"Esto no es un nombre de usuario ni un pin. \n""Este nombre será visible para tus contactos de Messenger Academico."</string>
 

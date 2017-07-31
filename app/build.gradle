@@ -79,7 +79,7 @@ dependencies {
     androidTestCompile "com.android.support:design:$rootProject.ext.supportLibraryVersion"
 
 
-    apt  "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+    apt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
     compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
     compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
 
@@ -93,10 +93,10 @@ dependencies {
 
 
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
-    apt  "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
+    apt "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250Version"
 
-    apt  "com.jakewharton:butterknife-compiler:$rootProject.ext.butterKnifeVersion"
+    apt "com.jakewharton:butterknife-compiler:$rootProject.ext.butterKnifeVersion"
     compile "org.greenrobot:eventbus:$rootProject.ext.eventBusVersion"
 
     debugCompile "com.amitshekhar.android:debug-db:$rootProject.ext.debugDbVersion"
@@ -108,16 +108,16 @@ dependencies {
     compile 'jp.wasabeef:glide-transformations:2.0.2'
     compile "com.davemorrissey.labs:subsampling-scale-image-view:$rootProject.ext.scaleImageViewLibraryVersion"
     compile "com.github.hotchemi:permissionsdispatcher:$rootProject.ext.permissionsdispatcher"
-    apt  "com.github.hotchemi:permissionsdispatcher-processor:$rootProject.ext.permissionsdispatcher"
+    apt "com.github.hotchemi:permissionsdispatcher-processor:$rootProject.ext.permissionsdispatcher"
     compile "org.androidannotations:androidannotations-api:$rootProject.ext.androidannotations"
-    apt  "org.androidannotations:androidannotations:$rootProject.ext.androidannotations"
-    apt  "com.github.AleksanderMielczarek:AndroidAnnotationsPermissionsDispatcherPlugin:$rootProject.ext.AndroidAnnotationsPermissionsDispatcherPlugin"
+    apt "org.androidannotations:androidannotations:$rootProject.ext.androidannotations"
+    apt "com.github.AleksanderMielczarek:AndroidAnnotationsPermissionsDispatcherPlugin:$rootProject.ext.AndroidAnnotationsPermissionsDispatcherPlugin"
     compile 'org.parceler:parceler-api:1.1.6'
-    apt  'org.parceler:parceler:1.1.6'
+    apt 'org.parceler:parceler:1.1.6'
 
     compile 'com.zhihu.android:matisse:0.5.0-alpha4'
 
-    compile ('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
+    compile('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
         transitive = true;
     }
 }

@@ -2,6 +2,7 @@ package com.consultoraestrategia.messengeracademico.chat.di;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 
 import com.consultoraestrategia.messengeracademico.UseCaseHandler;
 import com.consultoraestrategia.messengeracademico.chat.ChatPresenter;
@@ -38,7 +39,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-
 /**
  * Created by @stevecampos on 9/06/2017.
  */
@@ -70,8 +70,8 @@ public class ChatModule {
 
     @Provides
     @Singleton
-    ChatPresenter providePresenter(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver) {
-        return new ChatPresenterImpl(useCaseHandler, preferencesHelper, useCaseLoadMessages, useCaseGetContact, useCaseGetChat, useCaseSendMessage, useCaseReadMessage, useCaseChangeStateWriting, useCaseListenReceptorConnection, useCaseListenReceptorAction, eventBus, connectionInteractor, generateMessageKey, cacheDir, uploadImage, contentResolver);
+    ChatPresenter providePresenter(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources) {
+        return new ChatPresenterImpl(useCaseHandler, preferencesHelper, useCaseLoadMessages, useCaseGetContact, useCaseGetChat, useCaseSendMessage, useCaseReadMessage, useCaseChangeStateWriting, useCaseListenReceptorConnection, useCaseListenReceptorAction, eventBus, connectionInteractor, generateMessageKey, cacheDir, uploadImage, contentResolver, resources);
     }
 
     @Provides

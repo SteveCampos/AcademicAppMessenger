@@ -52,9 +52,6 @@ public class ChatMessage extends BaseModel {
 
     @Column
     public long timestamp;
-    @Column
-    public String messageUri;
-
 
     @PrimaryKey
     @Exclude
@@ -63,6 +60,11 @@ public class ChatMessage extends BaseModel {
     @Column
     public String chatKey; //Foreign key xd
 
+    @Column
+    public String messageUri;
+
+    @ForeignKey(stubbedRelationship = true)
+    public MediaFile mediaFile;
 
     @Exclude
     @Column
@@ -176,6 +178,13 @@ public class ChatMessage extends BaseModel {
         this.chatKey = chatKey;
     }
 
+    public MediaFile getMediaFile() {
+        return mediaFile;
+    }
+
+    public void setMediaFile(MediaFile mediaFile) {
+        this.mediaFile = mediaFile;
+    }
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -188,6 +197,9 @@ public class ChatMessage extends BaseModel {
         result.put("messageUri", messageUri);
         result.put("keyMessage", keyMessage);
         result.put("chatKey", chatKey);
+        if (mediaFile != null) {
+            result.put("mediaFile", mediaFile.toMap());
+        }
         return result;
     }
 
@@ -214,6 +226,10 @@ public class ChatMessage extends BaseModel {
 
     @Override
     public String toString() {
+        String strMF = null;
+        if (mediaFile != null) {
+            strMF = mediaFile.toString();
+        }
         return "emisor: " + emisor.getPhoneNumber() + "\n" +
                 "receptor: " + receptor.getPhoneNumber() + "\n" +
                 "messageText: " + messageText + "\n" +
@@ -222,7 +238,8 @@ public class ChatMessage extends BaseModel {
                 "timestamp: " + timestamp + "\n" +
                 "keyMessage: " + keyMessage + "\n" +
                 "chatKey: " + chatKey + "\n" +
-                "messageUri: " + messageUri;
+                "messageUri: " + messageUri + "\n" +
+                "mediaFile: " + strMF;
     }
 
     public String getId() {

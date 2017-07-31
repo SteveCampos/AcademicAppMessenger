@@ -83,30 +83,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onChatChanged(Chat chat) {
         if (chats.contains(chat)) {
             int position = chats.indexOf(chat);
-            chats.set(position, chat);
-            notifyItemChanged(position);
-
-            /*Collections.swap(this.chats, position, 0);
-            notifyItemMoved(position, 0);*/
-
-            //swapItems(position, 0);
-
+            chats.remove(position);
+            chats.add(0, chat);
+            notifyDataSetChanged();
         } else {
             onChatAdded(chat);
         }
     }
-
-    // Swap itemA with itemB
-    public void swapItems(int itemAIndex, int itemBIndex) {
-        //make sure to check if dataset is null and if itemA and itemB are valid indexes.
-        Chat itemA = chats.get(itemAIndex);
-        Chat itemB = chats.get(itemBIndex);
-        chats.set(itemAIndex, itemB);
-        chats.set(itemBIndex, itemA);
-
-        notifyDataSetChanged(); //This will trigger onBindViewHolder method from the adapter.
-    }
-
 
     public void onChatDeleted(Chat chat) {
         if (chats.contains(chat)) {

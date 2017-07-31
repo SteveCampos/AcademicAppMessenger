@@ -21,6 +21,8 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
@@ -44,6 +46,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.consultoraestrategia.messengeracademico.MessengerAcademicoApp;
@@ -162,6 +165,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @BindView(R.id.edt_message)
     EmojiEditText edtMessage;
 
+
+    @BindView(R.id.txt_academic_information)
+    TextView txtAcademicInformation;
+    @BindView(R.id.layout_academic_information)
+    RelativeLayout layoutAcademicInformation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -205,11 +214,11 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     private void initPresenter() {
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_RECEPTOR_PHONENUMBER)) {
-            String receptorPhoneNumber = intent.getStringExtra(EXTRA_RECEPTOR_PHONENUMBER);
             presenter.onCreate();
-            presenter.loadReceptor(receptorPhoneNumber);
+            presenter.manageIntent(intent);
+
         } else {
-            finish();
+            showFatalError("No existe el número.");
         }
     }
 
@@ -222,7 +231,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         } else {
             presenter.onBackPressed();
         }
-        super.onBackPressed();
+        //super.onBackPressed();
     }
 
     @OnClick(R.id.layout_profile)
@@ -262,14 +271,18 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
             presenter.pickImage();
             return true;
         }*/
-        if (id == R.id.action_clip) {
+        if (id == R.id.action_atttach_file) {
             toggleMenuWithEffect();
+            return true;
+        }
+
+        if (id == android.R.id.home) {
+            presenter.onBackPressed();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     protected void onResume() {
@@ -492,7 +505,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
                 .setMultiTouchEnabled(true)
                 .start(this);*/
         Matisse.from(ChatActivity.this)
-                .choose(MimeType.ofAll())
+                .choose(MimeType.ofImage())
                 .countable(true)
                 .capture(true)
                 .captureStrategy(
@@ -542,6 +555,44 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         int cy = mRevealView.getTop();
         hideKeboard();
         makeEffect(mRevealView, cx, cy);
+    }
+
+    @Override
+    public void finishActivity() {
+        Log.d(TAG, "finishActivity");
+        navigateToParent();
+    }
+
+    @Override
+    public void showFatalError(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        presenter.onBackPressed();
+
+    }
+
+    @Override
+    public void showAcademicInformation(String data) {
+        layoutAcademicInformation.setVisibility(View.VISIBLE);
+        txtAcademicInformation.setText(data);
+    }
+
+    private void navigateToParent() {
+        NavUtils.navigateUpFromSameTask(this);
+        /*
+        Intent upIntent = NavUtils.getParentActivityIntent(this);
+        if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+            // This activity is NOT part of this app's task, so create a new task
+            // when navigating up, with a synthesized back stack.
+            TaskStackBuilder.create(this)
+                    // Add all of this activity's parents to the back stack
+                    .addNextIntentWithParentStack(upIntent)
+                    // Navigate up to the closest parent
+                    .startActivities();
+        } else {
+            // This activity is part of this app's task, so simply
+            // navigate up to the logical parent activity.
+            NavUtils.navigateUpTo(this, upIntent);
+        }*/
     }
 
     @Override

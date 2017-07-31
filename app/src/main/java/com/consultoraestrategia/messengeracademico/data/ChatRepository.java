@@ -54,6 +54,7 @@ public class ChatRepository implements ChatDataSource {
      * has package local visibility so it can be accessed from tests.
      */
     boolean mCacheIsDirty = false;
+    private boolean isListenForIncomingMessages = false;
 
     // Prevent direct instantiation.
     private ChatRepository(ChatLocalDataSource chatLocalDataSource, ChatRemoteDataSource chatRemoteDataSource, ChatListPostEvent chatListPostEvent, ChatPostEvent chatPostEvent, Contact mainUser) {
@@ -62,6 +63,15 @@ public class ChatRepository implements ChatDataSource {
         this.chatListPostEvent = chatListPostEvent;
         this.chatPostEvent = chatPostEvent;
         this.mainUser = mainUser;
+        listenForAllUserMessages(mainUser, new ListenMessagesCallback() {
+            @Override
+            public void onMessageChanged(ChatMessage message) {
+            }
+
+            @Override
+            public void onError(String error) {
+            }
+        });
     }
 
     /**
@@ -564,22 +574,25 @@ public class ChatRepository implements ChatDataSource {
     @Override
     public void listenForAllUserMessages(Contact contact, final ListenMessagesCallback callback) {
         Log.d(TAG, "listenForAllUserMessages");
-        chatRemoteDataSource.listenForAllUserMessages(contact, new ListenMessagesCallback() {
-            @Override
-            public void onMessageChanged(ChatMessage message) {
-                onIncomingMessageChanged(message);
-            }
+        if (!isListenForIncomingMessages) {
+            isListenForIncomingMessages = true;
+            chatRemoteDataSource.listenForAllUserMessages(contact, new ListenMessagesCallback() {
+                @Override
+                public void onMessageChanged(ChatMessage message) {
+                    onIncomingMessageChanged(message);
+                }
 
-            @Override
-            public void onError(String error) {
-                Log.d(TAG, "listenMessages onError: " + error);
-            }
-        });
+                @Override
+                public void onError(String error) {
+                    Log.d(TAG, "listenMessages onError: " + error);
+                }
+            });
+        }
     }
 
     private void onIncomingMessageChanged(ChatMessage message) {
         Log.d(TAG, "onMessageChanged");
-        addMessageToCache(message);
+        Log.d(TAG, "message: " + message.toString());
         int status = message.getMessageStatus();
         switch (status) {
             case ChatMessage.STATUS_WRITED:
@@ -592,6 +605,7 @@ public class ChatRepository implements ChatDataSource {
                 handleMessageWithStatusReaded(message);
                 break;
         }
+        addMessageToCache(message);
     }
 
     private void handleMessageWithStatusReaded(ChatMessage message) {
@@ -614,6 +628,9 @@ public class ChatRepository implements ChatDataSource {
     private void onReceptorReceiveMessageReaded(ChatMessage message) {
         Log.d(TAG, "onEmisorReceiveMessageReaded");
         //do nothing!
+        fireMessage(message);
+        //save on local!
+        saveMessageOnLocal(message);
     }
 
     private void handleMessageWithStatusWrited(ChatMessage message) {
@@ -645,6 +662,10 @@ public class ChatRepository implements ChatDataSource {
     private void onReceptorReceiveMessageDelivered(ChatMessage message) {
         Log.d(TAG, "onReceptorReceiveMessageDelivered");
         //do nothing!
+        //fire
+        fireMessage(message);
+        //save on local
+        saveMessageOnLocal(message);
     }
 
 
