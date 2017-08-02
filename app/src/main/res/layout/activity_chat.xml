@@ -52,7 +52,7 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
                         android:contentDescription="Profile"
-                        android:src="@drawable/common_google_signin_btn_icon_dark_disabled" />
+                        />
 
                 </LinearLayout>
 

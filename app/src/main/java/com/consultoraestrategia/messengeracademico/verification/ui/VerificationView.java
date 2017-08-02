@@ -26,7 +26,7 @@ public interface VerificationView {
     void setCode(String code);
 
     /*SUCESS*/
-    void onPhoneNumberVerificated(PhoneNumberVerified numberVerified);
+    void onPhoneNumberVerificated(String phoneNumber);
 
 
     /*ERRORS*/

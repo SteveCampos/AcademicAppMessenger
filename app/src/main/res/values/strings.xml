@@ -11,8 +11,10 @@
     <string name="verification.title.verificating">Verificar %s</string>
     <string name="verification.message.verificating">Esperando para detectar automáticamente el SMS enviado al &lt;b>%s&lt;/b>. &lt;a href="https://www.facebook.com/jairsteve.camposvega">¿Número equivocado?&lt;/a></string>
     <string name="verification.dialog.message.confirm">Vamos a verificar el número de teléfono \n\n%s \n\n¿Es correcto o quieres modificarlo?</string>
+
     <string name="verification.error.invalid.phonenumber">El número introducido no es válido.</string>
     <string name="verification.error.code.invalid">El código introducido no es válido</string>
+    <string name="verification.error.failed">Verificación fallida</string>
 
     <string name="verification.hint.code">Código</string>
     <string name="verification.button.sendsmsagain">Enviar SMS de nuevo</string>

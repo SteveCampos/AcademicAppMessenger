@@ -243,8 +243,8 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void manageIntent(Intent intent) {
         String receptorPhoneNumber = intent.getStringExtra(EXTRA_RECEPTOR_PHONENUMBER);
         Log.d(TAG, "receptorPhoneNumber: " + receptorPhoneNumber);
-        loadReceptor(receptorPhoneNumber);
         getAcademicInformation(intent);
+        loadReceptor(receptorPhoneNumber);
     }
 
     private void getAcademicInformation(Intent intent) {
@@ -304,7 +304,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         }
 
         if (view != null) {
-            view.showReceptor(new Contact(nombre, phoneNumber, null, ""));
+            view.showReceptor(new Contact(phoneNumber, phoneNumber, nombre, ""));
             if (textFormatted != null) {
                 view.showAcademicInformation(textFormatted);
             }

@@ -76,7 +76,8 @@ public class VerificationPresenterImpl implements VerificationPresenter {
         if (view != null) {
             view.showProgress();
         }
-        interactor.executeInitVerificationProcess(phoneNumber);
+        //interactor.executeInitVerificationProcess(phoneNumber);
+        onPhoneNumberSended(phoneNumber);
     }
 
 
@@ -121,7 +122,7 @@ public class VerificationPresenterImpl implements VerificationPresenter {
     private void OnPhoneNumberVerificated(VerificationEvent event) {
         if (view != null) {
             view.hideProgress();
-            view.onPhoneNumberVerificated(event.getPhoneNumberVerified());
+            view.onPhoneNumberVerificated(event.getPhoneNumberVerified().getPhoneNumber());
         }
     }
 

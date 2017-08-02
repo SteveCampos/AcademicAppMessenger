@@ -1,5 +1,7 @@
 package com.consultoraestrategia.messengeracademico.chat.domain.usecase;
 
+import android.util.Log;
+
 import com.consultoraestrategia.messengeracademico.UseCase;
 import com.consultoraestrategia.messengeracademico.data.ContactDataSource;
 import com.consultoraestrategia.messengeracademico.data.ContactRepository;
@@ -11,6 +13,7 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 public class GetContact extends UseCase<GetContact.RequestValues, GetContact.ResponseValue> {
 
+    private static final String TAG = GetContact.class.getSimpleName();
     private ContactRepository contactRepository;
 
     public GetContact(ContactRepository contactRepository) {
@@ -23,6 +26,7 @@ public class GetContact extends UseCase<GetContact.RequestValues, GetContact.Res
         contactRepository.getContact(phoneNumber, new ContactDataSource.GetContactCallback() {
             @Override
             public void onContactLoaded(Contact contact) {
+                Log.d(TAG, "contact : " + contact.toString());
                 GetContact.ResponseValue responseValue = new GetContact.ResponseValue(contact);
                 getUseCaseCallback().onSuccess(responseValue);
             }

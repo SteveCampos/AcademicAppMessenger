@@ -124,4 +124,11 @@ public class Contact extends BaseModel {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "userKey: " + userKey +
+                ", phoneNumber: " + phoneNumber +
+                ", name: " + name +
+                ", photoUri: " + photoUri;
+    }
 }

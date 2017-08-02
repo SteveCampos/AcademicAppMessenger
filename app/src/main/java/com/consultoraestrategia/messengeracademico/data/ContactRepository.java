@@ -32,8 +32,7 @@ public class ContactRepository implements ContactDataSource {
     @Override
     public void getContact(String phoneNumber, GetContactCallback callback) {
         Contact contact = getContactFromLocal(phoneNumber);
-
-        if (contact != null) {
+        if (contact != null && contact.name != null) {
             callback.onContactLoaded(contact);
         } else {
             getContactFromRemote(phoneNumber, callback);
@@ -80,6 +79,9 @@ public class ContactRepository implements ContactDataSource {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null && dataSnapshot.getValue() != null) {
                     Contact contactProfile = dataSnapshot.getValue(Contact.class);
+                    contactProfile.setType(Contact.TYPE_NOT_ADDED);
+                    contactProfile.save();
+                    Log.d(TAG, "contact : " + contactProfile.toString());
                     callback.onContactLoaded(contactProfile);
                 } else {
                     onContactNotAvaliable(callback);
