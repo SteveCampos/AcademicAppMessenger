@@ -29,6 +29,12 @@ public class ConnectionRepositoryImpl implements ConnectionRepository {
     public ConnectionRepositoryImpl(FirebaseUser firebaseUser, Contact mainContact) {
         this.firebaseUser = firebaseUser;
         this.mainContact = mainContact;
+        onDisconnect();
+    }
+
+    private void onDisconnect() {
+        Log.d(TAG, "onDisconnect");
+        firebaseUser.onDisconnect(mainContact, new Connection(false, 0));
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.consultoraestrategia.messengeracademico.data.ChatDataSource;
 import com.consultoraestrategia.messengeracademico.data.ChatRepository;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
+import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 /**
  * Created by @stevecampos on 29/05/2017.
@@ -24,7 +25,7 @@ public class ListenReceptorConnection extends UseCase<ListenReceptorConnection.R
     @Override
     protected void executeUseCase(RequestValues requestValues) {
         Log.d(TAG, "executeUseCase");
-        repository.listenConnection(requestValues.getChat(), new ChatDataSource.ListenConnectionCallback() {
+        repository.listenConnection(requestValues.getContact(), new ChatDataSource.ListenConnectionCallback() {
             @Override
             public void onConnectionChanged(Connection connection) {
                 getUseCaseCallback().onSuccess(new ResponseValue(connection));
@@ -50,14 +51,14 @@ public class ListenReceptorConnection extends UseCase<ListenReceptorConnection.R
     }
 
     public static final class RequestValues implements UseCase.RequestValues {
-        private Chat chat;
+        private Contact contact;
 
-        public RequestValues(Chat chat) {
-            this.chat = chat;
+        public RequestValues(Contact contact) {
+            this.contact = contact;
         }
 
-        public Chat getChat() {
-            return chat;
+        public Contact getContact() {
+            return contact;
         }
     }
 }

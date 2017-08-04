@@ -90,12 +90,6 @@ public class FirebaseChat extends FirebaseHelper {
 
     }
 
-    public void listenChatAction(Contact from, Contact to, ValueEventListener listener) {
-        /*String[] sort = StringUtils.sortAlphabetical(from.getUserKey(), to.getUserKey());
-        String key1 = sort[0];
-        String key2 = sort[1];
-        listenChatAction(key1 + "_" + key2, to.getUserKey(), listener);*/
-    }
 
     public void listenReceptorAction(Chat chat, ValueEventListener listener) {
         listenChatAction(chat.getChatKey(), chat.getReceptor().getUserKey(), listener);
@@ -147,33 +141,6 @@ public class FirebaseChat extends FirebaseHelper {
         map.put(PATH_CHATS + keyChat + "/" + CHILD_MESSAGES + "/" + keyMessage, message.toMap());
         map.put(FirebaseUser.CHILD_USER + "/" + from.getUserKey() + "/" + FirebaseUser.CHILD_ALL_MESSAGES + "/" + keyMessage, message.toMap());
         map.put(FirebaseUser.CHILD_USER + "/" + to.getUserKey() + "/" + FirebaseUser.CHILD_ALL_MESSAGES + "/" + keyMessage, message.toMap());
-        /*
-        String userKey = null;
-
-        int status = message.getMessageStatus();
-        switch (status) {
-            case ChatMessage.STATUS_WRITED:
-                userKey = receptorKey;
-                break;
-            case ChatMessage.STATUS_SEND:
-                userKey = receptorKey;
-                break;
-            case ChatMessage.STATUS_DELIVERED:
-                userKey = emisorKey;
-                break;
-            case ChatMessage.STATUS_READED:
-                userKey = emisorKey;
-                break;
-            default:
-                userKey = receptorKey;
-                break;
-        }*/
-
-        /*if (online) {
-            map.put(FirebaseUser.CHILD_USER + "/" + userKey + "/" + FirebaseUser.CHILD_INCOMING_MESSAGES + "/" + keyMessage, message.toMap());
-        } else {
-            map.put(FirebaseUser.CHILD_NOTIFICATIONS + "/" + keyMessage, message.toMap());
-        }*/
         if (!online) {
             map.put(FirebaseUser.CHILD_NOTIFICATIONS + "/" + keyMessage, message.toMap());
         }

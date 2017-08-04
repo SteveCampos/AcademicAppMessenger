@@ -168,7 +168,7 @@ public class ChatLocalDataSource implements ChatDataSource {
     }
 
     @Override
-    public void listenConnection(Chat chat, ListenConnectionCallback callback) {
+    public void listenConnection(Contact contact, ListenConnectionCallback callback) {
 
     }
 

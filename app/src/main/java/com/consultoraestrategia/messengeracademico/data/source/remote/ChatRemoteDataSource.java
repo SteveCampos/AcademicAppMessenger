@@ -145,9 +145,9 @@ public class ChatRemoteDataSource implements ChatDataSource {
     }
 
     @Override
-    public void listenConnection(Chat chat, final ListenConnectionCallback callback) {
+    public void listenConnection(Contact contact, final ListenConnectionCallback callback) {
         Log.d(TAG, "listenConnection");
-        firebaseChat.listenConnection(chat.getReceptor(), new ValueEventListener() {
+        firebaseChat.listenConnection(contact, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "listenConnection onDataChange: " + dataSnapshot);
@@ -155,9 +155,6 @@ public class ChatRemoteDataSource implements ChatDataSource {
                     Connection connection = dataSnapshot.getValue(Connection.class);
                     if (connection != null) {
                         callback.onConnectionChanged(connection);
-                        /*
-                        online = connection.isOnline();
-                        post(ChatEvent.TYPE_CONNECTION, connection);*/
                     }
                 }
             }

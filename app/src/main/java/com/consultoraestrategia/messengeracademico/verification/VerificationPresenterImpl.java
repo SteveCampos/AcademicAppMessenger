@@ -147,9 +147,9 @@ public class VerificationPresenterImpl implements VerificationPresenter {
     }
 
     private String getCodeFromText(String message) {
-        String str = StringUtils.getCodeBetweenStrings(message, "code", ".");
-        Log.d(TAG, "getCodeFromText code: " + str);
-        return str;
+        String code = StringUtils.getCode(message);
+        Log.d(TAG, "getCodeFromText code: " + code);
+        return code;
     }
 
     private void onPhoneNumberSenderError(String error) {

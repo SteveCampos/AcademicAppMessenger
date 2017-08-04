@@ -70,7 +70,7 @@ public interface ChatDataSource {
 
     void changeStateWriting(Chat chat, boolean writing);
 
-    void listenConnection(Chat chat, ListenConnectionCallback callback);
+    void listenConnection(Contact contact, ListenConnectionCallback callback);
 
     void listenReceptorAction(Chat chat, ListenReceptorActionCallback callback);
 

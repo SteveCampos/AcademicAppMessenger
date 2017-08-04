@@ -10,6 +10,8 @@ import org.json.JSONObject;
  */
 
 public class StringUtils {
+    private static final String TAG = StringUtils.class.getSimpleName();
+
     /**
      * Get text between two strings. Passed limiting strings are not
      * included into result.
@@ -23,6 +25,13 @@ public class StringUtils {
             String textFrom,
             String textTo) {
         return input.toLowerCase().substring(input.lastIndexOf(textFrom) + textFrom.length(), input.lastIndexOf(textTo)).replaceAll("\\s", "").replaceAll("-", "");
+    }
+
+    public static String getCode(String input) {
+        String[] split = input.split("is your verification code.");
+        String code = split[0].replaceAll("\\s+", "");
+        Log.d(TAG, "code: " + code);
+        return code;
     }
 
     public static String[] sortAlphabetical(String key1, String key2) {

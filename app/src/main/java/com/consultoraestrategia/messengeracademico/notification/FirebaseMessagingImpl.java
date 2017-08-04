@@ -74,6 +74,24 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
         this.message = message;
 
         useCaseHandler.execute(
+                saveMessageOnLocal,
+                new SaveMessageOnLocal.RequestValues(message),
+                new UseCase.UseCaseCallback<SaveMessageOnLocal.ResponseValue>() {
+                    @Override
+                    public void onSuccess(SaveMessageOnLocal.ResponseValue response) {
+                        Log.d(TAG, "SaveMessageOnLocal onSuccess");
+                        ChatMessage mssgSaved = response.getMessage();
+                        constructNotification();
+                    }
+
+                    @Override
+                    public void onError() {
+                        Log.d(TAG, "SaveMessageOnLocal onError");
+                    }
+                }
+        );
+
+        useCaseHandler.execute(
                 getContact,
                 new GetContact.RequestValues(message.getEmisor().getPhoneNumber()),
                 new UseCase.UseCaseCallback<GetContact.ResponseValue>() {
@@ -125,23 +143,6 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
                 }
         );
 
-        useCaseHandler.execute(
-                saveMessageOnLocal,
-                new SaveMessageOnLocal.RequestValues(message),
-                new UseCase.UseCaseCallback<SaveMessageOnLocal.ResponseValue>() {
-                    @Override
-                    public void onSuccess(SaveMessageOnLocal.ResponseValue response) {
-                        Log.d(TAG, "SaveMessageOnLocal onSuccess");
-                        ChatMessage mssgSaved = response.getMessage();
-                        constructNotification();
-                    }
-
-                    @Override
-                    public void onError() {
-                        Log.d(TAG, "SaveMessageOnLocal onError");
-                    }
-                }
-        );
 
         //GetContact
         //GetChat

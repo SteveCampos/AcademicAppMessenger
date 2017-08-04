@@ -2,6 +2,7 @@ package com.consultoraestrategia.messengeracademico.entities;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by @stevecampos on 9/03/2017.
@@ -38,6 +39,12 @@ public class Connection {
         HashMap<String, Object> result = new HashMap<>();
         result.put("online", online);
         result.put("timestamp", timestamp);
+        return result;
+    }
+
+    public Map<String, Object> onlineToMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("online", online);
         return result;
     }
 }

@@ -132,7 +132,6 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
 
     @Override
     public void showLoadProfileViews() {
-        //requestFocus(edtName);
         tilName.setVisibility(View.VISIBLE);
         imgEmoji.setVisibility(View.VISIBLE);
         btnGo.setVisibility(View.VISIBLE);
@@ -228,12 +227,6 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         }
     }
 
-
-    private void requestFocus(View view) {
-        view.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
 
     private void showSnackbar(CharSequence message) {
         Snackbar.make(imgEmoji, message, Snackbar.LENGTH_LONG).show();

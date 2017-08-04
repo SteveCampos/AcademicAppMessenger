@@ -745,9 +745,9 @@ public class ChatRepository implements ChatDataSource {
     }
 
     @Override
-    public void listenConnection(Chat chat, ListenConnectionCallback callback) {
+    public void listenConnection(Contact contact, ListenConnectionCallback callback) {
         Log.d(TAG, "listenConnection");
-        chatRemoteDataSource.listenConnection(chat, callback);
+        chatRemoteDataSource.listenConnection(contact, callback);
     }
 
     @Override

@@ -56,6 +56,20 @@ public class FirebaseUser extends FirebaseHelper {
         }
     }
 
+    public void onDisconnect(Contact contact, Connection connection) {
+        Log.d(TAG, "onDisconnect");
+        if (contact != null) {
+            String keyUser = contact.getUserKey();
+            getDatabase().getReference()
+                    .child(CHILD_USER)
+                    .child(keyUser)
+                    .child(CHILD_CONNECTION)
+                    .child("online")
+                    .onDisconnect()
+                    .setValue(false);
+        }
+    }
+
     private ChildEventListener listenerAllMessages;
 
     public void listenForAllUserMessages(Contact contact, ChildEventListener listener) {

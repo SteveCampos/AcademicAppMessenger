@@ -104,6 +104,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
+        eventBus.register(this);
         loadEmisor();
     }
 
@@ -119,14 +120,12 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void onResume() {
         Log.d(TAG, "onResume");
         forwardToAnotherActivity = false;
-        eventBus.register(this);
         connectionInteractor.setOnline();
     }
 
     @Override
     public void onPause() {
         Log.d(TAG, "onPause");
-        eventBus.unregister(this);
         if (!forwardToAnotherActivity || isLaunchedFromAnotherApp) {
             connectionInteractor.setOffline();
         }
@@ -146,6 +145,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed");
+        eventBus.unregister(this);
         forwardToAnotherActivity = true;
         if (view != null) {
             view.finishActivity();
@@ -409,7 +409,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         if (chat != null) {
             useCaseHandler.execute(
                     useCaseListenReceptorConnection,
-                    new ListenReceptorConnection.RequestValues(chat),
+                    new ListenReceptorConnection.RequestValues(receptor),
                     new UseCase.UseCaseCallback<ListenReceptorConnection.ResponseValue>() {
                         @Override
                         public void onSuccess(ListenReceptorConnection.ResponseValue response) {
