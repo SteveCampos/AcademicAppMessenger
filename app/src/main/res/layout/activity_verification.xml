@@ -84,7 +84,8 @@
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_chat_black_24dp"
                     android:text="@string/verification.button.sendsmsagain"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:drawableLeft="@drawable/ic_chat_black_24dp" />
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/btnRetro"
@@ -93,7 +94,8 @@
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_undo_black_24dp"
                     android:text="@string/verification.button.retro"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:drawableLeft="@drawable/ic_undo_black_24dp" />
 
             </android.support.v7.widget.LinearLayoutCompat>
 

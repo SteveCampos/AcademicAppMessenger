@@ -34,6 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/txt_time"
+            android:layout_toStartOf="@+id/txt_time"
             android:autoLink="web"
             android:text="Steve Campos"
             android:textColor="@color/white"

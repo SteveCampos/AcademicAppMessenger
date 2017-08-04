@@ -94,7 +94,8 @@
                 android:layout_marginStart="22sp"
                 android:padding="5dp"
                 android:layout_marginTop="@dimen/scrool_view_margin_top"
-                android:text="@string/profile.notice" />
+                android:text="@string/profile.notice"
+                android:layout_marginLeft="22sp" />
 
         </RelativeLayout>
 

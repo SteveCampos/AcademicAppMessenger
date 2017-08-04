@@ -76,7 +76,8 @@
                     android:layout_marginStart="@dimen/md_keylines"
                     android:text="Tono de notificación"
                     android:textColor="@color/md_grey_900"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:layout_marginLeft="@dimen/md_keylines" />
 
                 <TextView
                     android:layout_width="match_parent"
