@@ -214,9 +214,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     private void initPresenter() {
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_RECEPTOR_PHONENUMBER)) {
-            presenter.onCreate();
             presenter.manageIntent(intent);
-
         } else {
             showFatalError("No existe el número.");
         }
@@ -235,11 +233,10 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
     @OnClick(R.id.layout_profile)
-    public void onClickBackPressed(){
+    public void onClickBackPressed() {
         presenter.onBackPressed();
         super.onBackPressed();
     }
-
 
 
     @Override
@@ -336,6 +333,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
             MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
             ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this);
             presenter = chatComponent.getPresenter();
+            presenter.onCreate();
             adapter = chatComponent.getAdapter();
         }
         if (adapter == null) {

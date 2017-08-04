@@ -287,6 +287,7 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d(TAG, "afterTextChanged count: " + s.length());
+
                 if (s.length() == 6) {
                     //presenter.validateCode(phoneNumber, s.toString());
                     validateCode(s.toString());
@@ -451,7 +452,9 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
 
             // Show a message and update the UI
             // ...
+            hideProgress();
             onPhoneNumberFailedToVerificated(getActivity().getString(R.string.verification_error_failed));
+
         }
 
         @Override
@@ -475,9 +478,11 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
 
     private void validateCode(String code) {
         Log.d(TAG, "validateCode: " + code);
-        showProgress();
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
-        signInWithPhoneAuthCredential(credential);
+        if (code != null && !code.isEmpty()) {
+            showProgress();
+            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
+            signInWithPhoneAuthCredential(credential);
+        }
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
