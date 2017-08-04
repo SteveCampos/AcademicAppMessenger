@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListener;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
@@ -78,6 +79,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
         Glide
                 .with(context)
                 .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .error(R.drawable.ic_users)
                 .into(imgProfile);
         imgProfile.setOnClickListener(new View.OnClickListener() {

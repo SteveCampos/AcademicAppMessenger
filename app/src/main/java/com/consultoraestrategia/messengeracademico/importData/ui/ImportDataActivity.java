@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.importData.DatosGeneralesAsyntask;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
@@ -138,6 +139,7 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
                 .with(this)
                 .load(contact.getPhotoUri())
                 .error(R.drawable.ic_users)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgProfile);
     }
 

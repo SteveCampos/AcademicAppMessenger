@@ -38,6 +38,7 @@ import com.consultoraestrategia.messengeracademico.verification.VerificationPres
 import com.consultoraestrategia.messengeracademico.verification.sms.SmsListener;
 import com.consultoraestrategia.messengeracademico.verification.sms.SmsReceiver;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -340,16 +341,16 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
 
     @Override
     public boolean checkGooglePlayServicesAvailable() {
-        final int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        final int status = googleAPI.isGooglePlayServicesAvailable(this);
         if (status == ConnectionResult.SUCCESS) {
             return true;
         }
-        if (GooglePlayServicesUtil.isUserRecoverableError(status)) {
-            final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(status, this, 1);
+        if (googleAPI.isUserResolvableError(status)) {
+            final Dialog errorDialog = googleAPI.getErrorDialog(this, status, 1);
             if (errorDialog != null) {
                 inflateDialog();
             }
-
         }
         return false;
     }
@@ -385,15 +386,15 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
 
     private void inflateDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Google Play Services");
-        builder.setMessage("Necesita actualizar los paquetes de Google Play Services para continuar");
+        builder.setTitle(getString(R.string.google_play_services_title));
+        builder.setMessage(getString(R.string.google_play_services_message));
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked OK button
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.gms")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.marker_google_services))));
                 } catch (android.content.ActivityNotFoundException anfe) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.gms")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.playstore_google_services))));
                 }
                 dialog.dismiss();
                 checkGooglePlayServicesAvailable();

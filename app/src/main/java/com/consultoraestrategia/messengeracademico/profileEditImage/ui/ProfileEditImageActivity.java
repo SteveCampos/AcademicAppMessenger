@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
@@ -143,6 +144,7 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
                 .with(this)
                 .load(imageUrl)
                 .error(R.drawable.ic_users)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .fitCenter()
                 .into(imageView);
     }

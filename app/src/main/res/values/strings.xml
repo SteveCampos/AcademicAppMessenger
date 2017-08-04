@@ -102,5 +102,13 @@
 
     <string name="profile.notice">"Esto no es un nombre de usuario ni un pin. \n""Este nombre será visible para tus contactos de Messenger Academico."</string>
 
+    <!--Google Play Services -->
+    <string name="google.play.services.title">Google Play Services</string>
+    <string name="google.play.services.message">Necesita actualizar los paquetes de Google Play Services para continuar</string>
+    <!--Play Store -->
+    <string name="marker.google.services">market://details?id=com.google.android.gms</string>
+    <string name="playstore.google.services">https://play.google.com/store/apps/details?id=com.google.android.gms</string>
+
+
 
 </resources>

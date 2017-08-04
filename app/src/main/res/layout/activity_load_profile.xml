@@ -48,7 +48,8 @@
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_users"
                 android:layout_width="64dp"
-                android:layout_height="64dp" />
+                android:layout_height="64dp"
+                android:layout_alignParentLeft="true" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_marginStart="8dp"
@@ -59,7 +60,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:counterEnabled="true"
-                app:counterMaxLength="16">
+                app:counterMaxLength="16"
+                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@+id/imgProfile"
+                android:layout_toLeftOf="@+id/imgEmoji">
 
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/edtName"
@@ -76,7 +80,8 @@
                 android:layout_centerVertical="true"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_tag_faces_black_24dp" />
+                android:src="@drawable/ic_tag_faces_black_24dp"
+                android:layout_alignParentRight="true" />
         </RelativeLayout>
 
     </android.support.v7.widget.LinearLayoutCompat>

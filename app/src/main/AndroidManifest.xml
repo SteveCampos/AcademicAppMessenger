@@ -43,7 +43,8 @@
         </receiver>
 
         <activity android:name=".loadProfile.ui.LoadProfileActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".importData.ui.ImportDataActivity" />
         <!--<activity
             android:name=".prueba.PruebaActivity"
@@ -94,11 +95,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity" />
         </activity>
-        <activity android:name=".profile.ui.ProfileActivity"></activity>
+        <activity android:name=".profile.ui.ProfileActivity"
+            android:configChanges="orientation|screenSize"></activity>
         <activity android:name=".customNotification.CustomNotificationActivity"/>
-        <activity android:name=".profileEditImage.ui.ProfileEditImageActivity"></activity>
+        <activity android:name=".profileEditImage.ui.ProfileEditImageActivity"
+            android:configChanges="orientation|screenSize"></activity>
         <activity android:name=".profileEditName.ui.ProfileEditNameActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

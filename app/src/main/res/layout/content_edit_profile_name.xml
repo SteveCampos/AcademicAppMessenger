@@ -29,7 +29,10 @@
                 android:layout_toEndOf="@+id/imgProfile"
                 android:layout_toStartOf="@+id/imgEmoji"
                 app:counterEnabled="true"
-                app:counterMaxLength="16">
+                app:counterMaxLength="16"
+                android:layout_marginLeft="8dp"
+                android:layout_toLeftOf="@+id/imgEmoji"
+                android:layout_toRightOf="@+id/imgProfile">
 
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/edtName"
@@ -46,7 +49,8 @@
                 android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_tag_faces_black_24dp" />
+                android:src="@drawable/ic_tag_faces_black_24dp"
+                android:layout_alignParentRight="true" />
         </RelativeLayout>
 
     </android.support.v7.widget.LinearLayoutCompat>

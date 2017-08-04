@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
 import com.consultoraestrategia.messengeracademico.dialogProfile.ui.DialogProfileView;
@@ -122,6 +123,7 @@ public class DialogProfile extends DialogFragment implements DialogProfileView {
         Glide.with(this)
                 .load(imageUri)
                 .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imageViewDialog);
     }
 

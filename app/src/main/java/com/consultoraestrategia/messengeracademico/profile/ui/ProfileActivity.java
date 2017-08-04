@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
 import com.consultoraestrategia.messengeracademico.customNotification.CustomNotificationActivity;
@@ -86,6 +87,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileView {
             Glide.with(this)
                     .load(imageUrl)
                     .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(imageCollapsing);
         }else {
             imageCollapsingNull.setVisibility(View.VISIBLE);

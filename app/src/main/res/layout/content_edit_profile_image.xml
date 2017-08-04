@@ -59,7 +59,8 @@
                     android:layout_marginTop="@dimen/scrool_view_margin_top"
                     android:text="luisrojas"
                     android:textColor="@color/md_grey_900"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:layout_marginLeft="16dp" />
 
                 <ImageView
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -71,7 +72,9 @@
                     android:layout_marginEnd="@dimen/scrool_view_margin_top"
                     android:src="@drawable/ic_mode_edit_black_24dp"
                     android:backgroundTint="@color/colorPrimary"
-                    android:contentDescription="@string/action_change_background" />
+                    android:contentDescription="@string/action_change_background"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/scrool_view_margin_top" />
 
             </RelativeLayout>
 
@@ -118,7 +121,8 @@
                     android:text="Info y número de teléfono"
                     android:textColor="@color/colorPrimary"
                     android:padding="5dp"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:layout_marginLeft="@dimen/md_keylines" />
 
 
                 <TextView
@@ -132,7 +136,8 @@
                     android:text="This is awesome!"
                     android:padding="5dp"
                     android:textColor="@color/md_grey_900"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:layout_alignLeft="@+id/txt.inf.telf" />
 
                 <View
                     android:id="@+id/view"
@@ -141,7 +146,8 @@
                     android:layout_below="@+id/text.stated"
                     android:layout_marginStart="@dimen/md_keylines"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:background="@color/md_grey_200" />
+                    android:background="@color/md_grey_200"
+                    android:layout_marginLeft="@dimen/md_keylines" />
 
                 <TextView
                     android:id="@+id/txt.phoneNumber"
@@ -154,7 +160,8 @@
                     android:text="+51 963 108 545"
                     android:padding="5dp"
                     android:textColor="@color/md_grey_900"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:layout_marginLeft="16dp" />
 
             </RelativeLayout>
 
