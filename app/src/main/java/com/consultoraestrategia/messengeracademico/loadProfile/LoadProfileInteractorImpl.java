@@ -1,12 +1,12 @@
 package com.consultoraestrategia.messengeracademico.loadProfile;
 
-import android.net.Uri;
 
 /**
  * Created by kike on 24/02/2017.
  */
 
 public class LoadProfileInteractorImpl implements LoadProfileInteractor {
+    /*
     private LoadProfileRepository repository;
     public static String TAG = LoadProfileInteractorImpl.class.getSimpleName();
 
@@ -23,6 +23,6 @@ public class LoadProfileInteractorImpl implements LoadProfileInteractor {
     @Override
     public void executeVerificatedProfile(String phoneNumber) {
         repository.initNewProfileVerificated(phoneNumber);
-    }
+    }*/
 
 }

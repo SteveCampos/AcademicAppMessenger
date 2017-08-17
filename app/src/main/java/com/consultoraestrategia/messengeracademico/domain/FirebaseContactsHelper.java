@@ -1,13 +1,12 @@
 package com.consultoraestrategia.messengeracademico.domain;
 
+import android.util.Log;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.consultoraestrategia.messengeracademico.domain.FirebaseUser.CHILD_USERS;
 
-import static com.consultoraestrategia.messengeracademico.domain.FirebaseUser.CHILD_PROFILE;
-import static com.consultoraestrategia.messengeracademico.domain.FirebaseUser.CHILD_USER;
 
 /**
  * Created by @stevecampos on 3/03/2017.
@@ -16,47 +15,44 @@ import static com.consultoraestrategia.messengeracademico.domain.FirebaseUser.CH
 public class FirebaseContactsHelper extends FirebaseHelper {
 
 
-    private static final String CHILD_MAP = "MAP";
-    private static final String CHILD_PHONE_TO_CODE = "PHONE_TO_CODE";
-    private static final String CHILD_CODE_TO_PHONE = "CODE_TO_PHONE";
-    private static final String CHILD_ALL = "ALL";
+    private static final String CHILD_PHONENUMBERS = "phoneNumbers";
 
 
-    private static final String PATH_PHONE_TO_CODE = "/" + CHILD_MAP + "/" + CHILD_PHONE_TO_CODE + "/" + CHILD_ALL + "/";
+    private static final String PATH_PHONENUMBERS = "/" + CHILD_PHONENUMBERS + "/";
     private static final String TAG = FirebaseContactsHelper.class.getSimpleName();
 
-    private DatabaseReference phoneToCodeRef;
+    private DatabaseReference phoneNumbersRef;
 
     public FirebaseContactsHelper() {
         super();
-        phoneToCodeRef = getDatabase().getReference(PATH_PHONE_TO_CODE);
+        phoneNumbersRef = getDatabase().getReference(PATH_PHONENUMBERS);
     }
 
     public void existPhoneNumber(String phoneNumber, ValueEventListener listener) {
-        phoneToCodeRef.child(phoneNumber).addListenerForSingleValueEvent(listener);
+        phoneNumbersRef.child(phoneNumber).addListenerForSingleValueEvent(listener);
     }
 
     public void removeListener(String phoneNumber, ValueEventListener listener) {
-        phoneToCodeRef.child(phoneNumber).removeEventListener(listener);
+        phoneNumbersRef.child(phoneNumber).removeEventListener(listener);
     }
 
     public void postPhoneNumber(String phoneNumber, DatabaseReference.CompletionListener listener) {
-        String phoneKey = phoneToCodeRef.push().getKey();
+        /*String phoneKey = phoneToCodeRef.push().getKey();
         Map<String, Object> map = new HashMap<>();
         map.put(phoneNumber, phoneKey);
-        phoneToCodeRef.updateChildren(map, listener);
+        phoneToCodeRef.updateChildren(map, listener);*/
     }
 
-    public void listenUserProfile(String userKey, ValueEventListener listener) {
+    public void listenUserProfile(String uid, ValueEventListener listener) {
         getDatabase()
                 .getReference()
-                .child(CHILD_USER)
-                .child(userKey)
-                .child(CHILD_PROFILE)
+                .child(CHILD_USERS)
+                .child(uid)
                 .addListenerForSingleValueEvent(listener);
     }
 
-    public void getUserKey(final String phoneNumber, ValueEventListener listener) {
-        phoneToCodeRef.child(phoneNumber).addListenerForSingleValueEvent(listener);
+    public void getUserKey(String phoneNumber, ValueEventListener listener) {
+        Log.e(TAG, "DEPRECATED!!!");
+        //phoneToCodeRef.child(phoneNumber).addListenerForSingleValueEvent(listener);
     }
 }

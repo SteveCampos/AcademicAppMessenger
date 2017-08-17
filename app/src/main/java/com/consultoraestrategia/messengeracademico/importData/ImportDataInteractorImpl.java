@@ -9,7 +9,7 @@ import android.util.Log;
  */
 public class ImportDataInteractorImpl implements ImportDataInteractor {
     private static final String TAG = ImportDataInteractorImpl.class.getSimpleName();
-    private  ImportDataRepository repository;
+    private ImportDataRepository repository;
 
 
     public ImportDataInteractorImpl(Context context) {
@@ -17,8 +17,8 @@ public class ImportDataInteractorImpl implements ImportDataInteractor {
     }
 
     @Override
-    public void executeImportData(String phoneNumber) {
+    public void executeImportData() {
         Log.d(TAG, "executeImportData");
-        repository.getData(phoneNumber);
+        repository.getData();
     }
 }

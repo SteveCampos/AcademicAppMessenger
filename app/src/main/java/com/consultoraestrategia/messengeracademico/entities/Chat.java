@@ -1,19 +1,16 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
 
-import android.database.Cursor;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
-import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.language.Method;
 import com.raizlabs.android.dbflow.sql.language.OrderBy;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
-import com.raizlabs.android.dbflow.sql.language.property.PropertyFactory;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.List;
@@ -132,15 +129,15 @@ public class Chat extends BaseModel {
     }
 
     public List<ChatMessage> getMessageNoReadedList(String mainUserKey) {
-        Log.d(TAG, "getEmisor key: " + getEmisor().getUserKey());
-        Log.d(TAG, "getReceptor key: " + getReceptor().getUserKey());
+        Log.d(TAG, "getEmisor key: " + getEmisor().getUid());
+        Log.d(TAG, "getReceptor key: " + getReceptor().getUid());
 
         List<ChatMessage> messages = SQLite.select()
                 .from(ChatMessage.class)
                 .where(ChatMessage_Table.chatKey.eq(chatKey))
                 .and(ChatMessage_Table.timestamp.greaterThanOrEq(timestamp))
                 .and(ChatMessage_Table.messageStatus.notEq(ChatMessage.STATUS_READED))
-                .and(ChatMessage_Table.emisor_userKey.notEq(mainUserKey))
+                .and(ChatMessage_Table.emisor_uid.notEq(mainUserKey))
                 .orderBy(ChatMessage_Table.timestamp, false)
                 .limit(100)
                 .queryList();
@@ -176,7 +173,7 @@ public class Chat extends BaseModel {
                 .where(ChatMessage_Table.chatKey.eq(chatKey))
                 //.and(ChatMessage_Table.timestamp.greaterThanOrEq(state))
                 .and(ChatMessage_Table.messageStatus.eq(ChatMessage.STATUS_DELIVERED))
-                .and(ChatMessage_Table.emisor_userKey.notEq(mainUserKey))
+                .and(ChatMessage_Table.emisor_uid.notEq(mainUserKey))
                 .count();
     }
 

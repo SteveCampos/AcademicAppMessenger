@@ -1,6 +1,5 @@
 package com.consultoraestrategia.messengeracademico.main.di;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.support.v4.app.FragmentManager;
 
@@ -9,14 +8,9 @@ import com.consultoraestrategia.messengeracademico.UseCaseHandler;
 import com.consultoraestrategia.messengeracademico.chatList.ui.ChatListFragment;
 import com.consultoraestrategia.messengeracademico.contactList.ui.ContactListFragment;
 import com.consultoraestrategia.messengeracademico.data.ChatRepository;
-import com.consultoraestrategia.messengeracademico.domain.FirebaseUser;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.main.ChatsFragment;
 import com.consultoraestrategia.messengeracademico.main.ConnectionInteractor;
-import com.consultoraestrategia.messengeracademico.main.ConnectionInteractorImpl;
-import com.consultoraestrategia.messengeracademico.main.ConnectionRepository;
-import com.consultoraestrategia.messengeracademico.main.ConnectionRepositoryImpl;
 import com.consultoraestrategia.messengeracademico.main.MainPresenter;
 import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;
 import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapter;
@@ -81,8 +75,8 @@ public class MainModule {
 
     @Provides
     @Singleton
-    MainPresenter provideMainPresenter(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, ListenForUserMessages listenForMessages, EventBus eventBus, ConnectionInteractor connectionInteractor, Long timestamp) {
-        return new MainPresenterImpl(useCaseHandler, preferencesHelper, listenForMessages, eventBus, connectionInteractor, timestamp);
+    MainPresenter provideMainPresenter(UseCaseHandler useCaseHandler, ListenForUserMessages listenForMessages, EventBus eventBus, ConnectionInteractor connectionInteractor, Long timestamp, com.google.firebase.auth.FirebaseUser mainUser) {
+        return new MainPresenterImpl(useCaseHandler, listenForMessages, eventBus, connectionInteractor, timestamp, mainUser);
     }
 
     @Provides

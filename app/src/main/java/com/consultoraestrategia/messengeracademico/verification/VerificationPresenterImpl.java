@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 public class VerificationPresenterImpl implements VerificationPresenter {
 
+
     private static final String TAG = VerificationPresenterImpl.class.getSimpleName();
     private VerificationView view;
     private VerificationInteractor interactor;

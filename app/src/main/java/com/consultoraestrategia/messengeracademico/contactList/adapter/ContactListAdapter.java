@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
  * Created by Steve on 7/03/2017.
  */
 
-public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEW_TYPE_FROM_PHONE = 1;
     private static final int VIEW_TYPE_FROM_ACADEMIC = 2;
@@ -46,8 +46,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return VIEW_TYPE_FROM_PHONE;
     }
 
-    public void setContacts(List<Contact> contacts){
-        if (!contacts.isEmpty()){
+    public void setContacts(List<Contact> contacts) {
+        if (!contacts.isEmpty()) {
             this.contacts = contacts;
             notifyDataSetChanged();
         }

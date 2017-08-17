@@ -34,29 +34,34 @@ public class ChatListPresenterImpl implements ChatListPresenter {
 
     @Override
     public void onCreateView() {
+        Log.d(TAG, "onCreateView");
         eventBus.register(this);
+        getChats();
     }
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy");
         eventBus.unregister(this);
+        view = null;
     }
 
     @Override
     public void onPause() {
-
+        Log.d(TAG, "onPause");
     }
 
     @Override
     public void onStop() {
-
+        Log.d(TAG, "onStop");
     }
 
     @Override
     public void onResume() {
-
+        Log.d(TAG, "onResume");
     }
 
+    /*
     @Override
     public void getPhoneNumber(SharedPreferences preferences) {
         interactor.getPhoneNumber(preferences);
@@ -66,11 +71,11 @@ public class ChatListPresenterImpl implements ChatListPresenter {
     public void getContact(String phoneNumber) {
         Log.d(TAG, "getContact");
         interactor.getContact(phoneNumber);
-    }
+    }*/
 
     @Override
-    public void getChats(Contact contact) {
-        interactor.getChats(contact);
+    public void getChats() {
+        interactor.getChats();
     }
 
 
@@ -83,10 +88,10 @@ public class ChatListPresenterImpl implements ChatListPresenter {
                 onChatsRetreived(event.getChats());
                 break;
             case ChatListEvent.TYPE_CONTACT:
-                onContactRetreived(event.getContact());
+                //onContactRetreived(event.getContact());
                 break;
             case ChatListEvent.TYPE_PHONENUMBER:
-                onPhoneNumberRetreived(event.getPhoneNumber());
+                //onPhoneNumberRetreived(event.getPhoneNumber());
                 break;
             case ChatListEvent.TYPE_CHAT:
                 onChatChanged(event.getChat());
@@ -94,6 +99,7 @@ public class ChatListPresenterImpl implements ChatListPresenter {
         }
     }
 
+    /*
     @Override
     public void onPhoneNumberRetreived(String phoneNumber) {
         Log.d(TAG, "onPhoneNumberRetreived");
@@ -107,7 +113,7 @@ public class ChatListPresenterImpl implements ChatListPresenter {
         if (view != null) {
             view.setContact(contact);
         }
-    }
+    }*/
 
     @Override
     public void onChatsRetreived(List<Chat> chats) {

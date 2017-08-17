@@ -35,6 +35,8 @@ public class ChatMessage extends BaseModel {
     public static final String TYPE_AUDIO = "AUDIO";
     public static final String TYPE_VIDEO = "VIDEO";
     public static final String TYPE_FILE = "FILE";
+    public static final String TYPE_TEXT_OFFICIAL = "TEXT_OFFICIAL";
+
 
     @ForeignKey(stubbedRelationship = true)
     public Contact emisor;
@@ -70,6 +72,9 @@ public class ChatMessage extends BaseModel {
     @Column
     public int stateChatMessage;// VISIBLE, DELETED, ETC.
 
+    @ForeignKey(stubbedRelationship = true)
+    public OfficialMessage officialMessage;
+
     public ChatMessage() {
     }
 
@@ -85,6 +90,21 @@ public class ChatMessage extends BaseModel {
         this.keyMessage = keyMessage;
         this.chatKey = chatKey;
         this.stateChatMessage = stateChatMessage;
+    }
+
+    public ChatMessage(Contact emisor, Contact receptor, String messageText, int messageStatus, String messageType, long timestamp, String keyMessage, String chatKey, String messageUri, MediaFile mediaFile, int stateChatMessage, OfficialMessage officialMessage) {
+        this.emisor = emisor;
+        this.receptor = receptor;
+        this.messageText = messageText;
+        this.messageStatus = messageStatus;
+        this.messageType = messageType;
+        this.timestamp = timestamp;
+        this.keyMessage = keyMessage;
+        this.chatKey = chatKey;
+        this.messageUri = messageUri;
+        this.mediaFile = mediaFile;
+        this.stateChatMessage = stateChatMessage;
+        this.officialMessage = officialMessage;
     }
 
     public String getMessageText() {
@@ -186,6 +206,14 @@ public class ChatMessage extends BaseModel {
         this.mediaFile = mediaFile;
     }
 
+    public OfficialMessage getOfficialMessage() {
+        return officialMessage;
+    }
+
+    public void setOfficialMessage(OfficialMessage officialMessage) {
+        this.officialMessage = officialMessage;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("emisor", emisor.toMap());
@@ -200,28 +228,10 @@ public class ChatMessage extends BaseModel {
         if (mediaFile != null) {
             result.put("mediaFile", mediaFile.toMap());
         }
+        if (officialMessage != null) {
+            result.put("officialMessage", officialMessage.toMap());
+        }
         return result;
-    }
-
-    public Contact getTo(Contact user) {
-        if (user == null || emisor == null || receptor == null) {
-            return null;
-        }
-        if (user.equals(emisor)) {
-            return receptor;
-        }
-        if (user.equals(receptor)) {
-            return emisor;
-        }
-        return null;
-    }
-
-    public List<ChatMessage> getMessagesNoReaded() {
-        return SQLite.select()
-                .from(ChatMessage.class)
-                .where(ChatMessage_Table.chatKey.eq(chatKey))
-                .and(ChatMessage_Table.messageStatus.eq(ChatMessage.STATUS_DELIVERED))
-                .queryList();
     }
 
     @Override

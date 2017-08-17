@@ -72,7 +72,8 @@
     <string name="load.profile.user">android.resource://com.consultoraestrategia.messengeracademico/drawable/users</string>
 
     <string name="notification.summary.newmessages">%d nuevo(s) mensaje(s)</string>
-    <string name="load_profile_error">Revisar los campos</string>
+    <string name="load_profile_error">Error actualizando el perfil.</string>
+    <string name="user_photo_upload_sucess">Foto de Perfil Actualizada.</string>
     <string name="load_profile_error_fields">Revisar los campos</string>
 
     <string name="title_activity_fullscreen">FullscreenActivity</string>
@@ -101,6 +102,7 @@
     <string name="chat.message.rol.information">Rol: %1$s.</string>
 
     <string name="profile.notice">"Esto no es un nombre de usuario ni un pin. \n""Este nombre será visible para tus contactos de Messenger Academico."</string>
+    <string name="profile.title">Perfil</string>
 
     <!--Google Play Services -->
     <string name="google.play.services.title">Google Play Services</string>
@@ -109,6 +111,16 @@
     <string name="marker.google.services">market://details?id=com.google.android.gms</string>
     <string name="playstore.google.services">https://play.google.com/store/apps/details?id=com.google.android.gms</string>
 
+    <string name="unknown_response">Respuesta desconocida</string>
+    <string name="sign_in_sucess">Inicio de Sesión exitoso.</string>
+    <string name="sign_in_cancelled">Verificación Cancelada</string>
+    <string name="no_internet_connection">Sin conexión a internet</string>
+    <string name="unknown_error">Error Desconocido</string>
+    <string name="unknown_sign_in_response">Respuesta de Inicio de Sesión Desconocida</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="officialmessage_state_waiting">Esperando Confirmación</string>
+    <string name="officialmessage_state_confirm">Confirmado</string>
+    <string name="officialmessage_state_deny">Denegado</string>
 
 
 </resources>

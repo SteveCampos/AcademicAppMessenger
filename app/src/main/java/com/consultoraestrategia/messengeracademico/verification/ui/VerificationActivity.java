@@ -62,13 +62,15 @@ import permissions.dispatcher.RuntimePermissions;
 
 import static com.consultoraestrategia.messengeracademico.loadProfile.ui.LoadProfileActivity.PREF_STEP_LOAD_PROFILE;
 
+
 @RuntimePermissions
 public class VerificationActivity extends AppCompatActivity implements VerificationView, SmsListener {
 
-    private static final String TAG = VerificationActivity.class.getSimpleName();
     public static final String EXTRA_PHONENUMBER = "EXTRA_PHONENUMBER";
     public static final String PREF_PHONENUMBER = "PREF_PHONENUMBER";
     public static final String PREF_STEP_VERIFICATION = "PREF_STEP_VERIFICATION";
+
+    private static final String TAG = VerificationActivity.class.getSimpleName();
     @BindView(R.id.txt_title)
     AppCompatTextView txttitle;
     @BindView(R.id.txt_subtitle)

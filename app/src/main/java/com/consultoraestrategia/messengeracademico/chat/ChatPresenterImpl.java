@@ -21,6 +21,7 @@ import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.MediaFile;
+import com.consultoraestrategia.messengeracademico.entities.OfficialMessage;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.main.ConnectionInteractor;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ChangeStateWriting;
@@ -33,6 +34,7 @@ import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ReadMessa
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.SendMessage;
 import com.consultoraestrategia.messengeracademico.prueba.domain.usecase.UploadImage;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
+import com.google.firebase.auth.FirebaseUser;
 import com.zhihu.matisse.Matisse;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -52,7 +54,6 @@ public class ChatPresenterImpl implements ChatPresenter {
     private ChatView view;
 
     private final UseCaseHandler useCaseHandler;
-    private final DefaultSharedPreferencesHelper preferencesHelper;
 
     private final LoadMessages useCaseLoadMessages;
     private final GetContact useCaseGetContact;
@@ -71,13 +72,14 @@ public class ChatPresenterImpl implements ChatPresenter {
     private final Resources resources;
 
 
+    private FirebaseUser mainUser;
     private Contact emisor;
     private Contact receptor;
     private Chat chat;
 
-    public ChatPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources) {
+    public ChatPresenterImpl(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources) {
+        this.mainUser = mainUser;
         this.useCaseHandler = useCaseHandler;
-        this.preferencesHelper = preferencesHelper;
         this.useCaseLoadMessages = useCaseLoadMessages;
         this.useCaseGetContact = useCaseGetContact;
         this.useCaseGetChat = useCaseGetChat;
@@ -175,7 +177,15 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void loadEmisor() {
         Log.d(TAG, "loadEmisor");
-        emisor = preferencesHelper.getContact();
+        //emisor = preferencesHelper.getContact();
+        this.emisor = new Contact();
+        this.emisor.setUid(mainUser.getUid());
+        this.emisor.setPhoneNumber(mainUser.getPhoneNumber());
+        this.emisor.setName(mainUser.getDisplayName());
+        this.emisor.setPhotoUrl(mainUser.getPhotoUrl() != null ? mainUser.getPhotoUrl().toString() : "");
+        this.emisor.setEmail(mainUser.getEmail());
+        this.emisor.setDisplayName(mainUser.getDisplayName());
+
     }
 
     private boolean contactsAreLoaded = false;
@@ -318,6 +328,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         Log.d(TAG, "sendMessageText");
         text = text.trim();
         if (!text.isEmpty()) {
+
             ChatMessage message = new ChatMessage();
             message.setEmisor(emisor);
             message.setReceptor(receptor);
@@ -327,11 +338,36 @@ public class ChatPresenterImpl implements ChatPresenter {
             message.setMessageUri("");
             message.setTimestamp(new Date().getTime());
             message.setChatKey(chat.getChatKey());
+            /*
+            ChatMessage message = new ChatMessage();
+            message.setEmisor(emisor);
+            message.setReceptor(receptor);
+            message.setMessageText(text);
+            message.setMessageStatus(ChatMessage.STATUS_WRITED);
+            message.setMessageType(ChatMessage.TYPE_TEXT_OFFICIAL);
+            message.setMessageUri("");
+            message.setTimestamp(new Date().getTime());
+            message.setChatKey(chat.getChatKey());
+            OfficialMessage officialMessage = new OfficialMessage(
+                    "id",
+                    "Autorización de Salida",
+                    "Viaje de Estudias a Ica",
+                    "Hijo: Russel M",
+                    "Fecha: 20/08/207\nHora: 02:30 PM",
+                    "",
+                    "",
+                    "5to Año\nSección A",
+                    "Atte.\nProfesor Guillermo Mamani A.",
+                    OfficialMessage.ACTION_TYPE_CONFIRM,
+                    OfficialMessage.STATE_WAITING
+            );
+            message.setOfficialMessage(officialMessage);*/
 
             sendMessage(message);
         }
 
     }
+
 
     private void sendMessage(ChatMessage message) {
 

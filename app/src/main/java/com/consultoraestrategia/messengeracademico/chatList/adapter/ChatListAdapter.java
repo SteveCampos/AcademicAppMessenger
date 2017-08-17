@@ -11,6 +11,8 @@ import com.consultoraestrategia.messengeracademico.chatList.holder.ChatItemHolde
 import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListener;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,10 +29,11 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context context;
     private List<Chat> chats;
     private ChatListener listener;
-    private Contact me;
+    private FirebaseUser mainUser;
+    //private Contact me;
 
-    public ChatListAdapter(Context context, Contact contact, List<Chat> chats, ChatListener listener) {
-        this.me = contact;
+    public ChatListAdapter(Context context, List<Chat> chats, ChatListener listener) {
+        this.mainUser = FirebaseAuth.getInstance().getCurrentUser();
         this.context = context;
         this.chats = chats;
         this.listener = listener;
@@ -60,7 +63,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_CHAT:
                 ChatItemHolder chatItemHolder = (ChatItemHolder) holder;
-                chatItemHolder.bind(me, chat, context, listener);
+                chatItemHolder.bind(mainUser, chat, context, listener);
                 break;
         }
     }

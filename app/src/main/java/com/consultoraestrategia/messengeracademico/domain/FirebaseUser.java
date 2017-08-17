@@ -2,15 +2,9 @@ package com.consultoraestrategia.messengeracademico.domain;
 
 import android.util.Log;
 
-import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -19,20 +13,24 @@ import java.util.Map;
 
 public class FirebaseUser extends FirebaseHelper {
 
-    public static final String CHILD_NOTIFICATIONS = "NOTIFICATIONS";
-    public static final String CHILD_USER = "USER";
-    public static final String CHILD_PROFILE = "PROFILE";
-    public static final String CHILD_CONNECTION = "CONNECTION";
-    private static final String CHILD_DEVICE = "DEVICE";
-    public static final String CHILD_INCOMING_MESSAGES = "INCOMING_MESSAGES";
-    public static final String CHILD_ALL_MESSAGES = "ALL_MESSAGES";
+    public static final String CHILD_NOTIFICATIONS = "notifications";
+    public static final String CHILD_USERS = "users";
+    public static final String CHILD_USERS_MESSAGES = "users-messages";
+    public static final String CHILD_PROFILE = "profile";
+    public static final String CHILD_LASTCONNECTION = "lastConnection";
+    private static final String CHILD_DEVICES = "devices";
+    public static final String CHILD_MESSAGES = "messages";
+    public static final String CHILD_USER_MESSAGES = "users-messages";
+
     private static final String TAG = FirebaseUser.class.getSimpleName();
     private static FirebaseUser instance;
 
     private static FirebaseUser INSTANCE = null;
+    private com.google.firebase.auth.FirebaseUser mainUser;
 
     public FirebaseUser() {
         super();
+        mainUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
 
@@ -44,57 +42,45 @@ public class FirebaseUser extends FirebaseHelper {
     }
 
 
-    public void changeConnection(Contact contact, Connection connection) {
+    public void changeConnection(Connection connection) {
         Log.d(TAG, "changeConnection");
-        if (contact != null) {
-            String keyUser = contact.getUserKey();
-            getDatabase().getReference()
-                    .child(CHILD_USER)
-                    .child(keyUser)
-                    .child(CHILD_CONNECTION)
-                    .updateChildren(connection.toMap());
-        }
+        getDatabase().getReference()
+                .child(CHILD_USERS)
+                .child(mainUser.getUid())
+                .child(CHILD_LASTCONNECTION)
+                .updateChildren(connection.toMap());
     }
 
-    public void onDisconnect(Contact contact, Connection connection) {
+    public void onDisconnect() {
         Log.d(TAG, "onDisconnect");
-        if (contact != null) {
-            String keyUser = contact.getUserKey();
-            getDatabase().getReference()
-                    .child(CHILD_USER)
-                    .child(keyUser)
-                    .child(CHILD_CONNECTION)
-                    .child("online")
-                    .onDisconnect()
-                    .setValue(false);
-        }
+        getDatabase().getReference()
+                .child(CHILD_USERS)
+                .child(mainUser.getUid())
+                .child(CHILD_LASTCONNECTION)
+                .child("online")
+                .onDisconnect()
+                .setValue(false);
     }
 
     private ChildEventListener listenerAllMessages;
 
-    public void listenForAllUserMessages(Contact contact, ChildEventListener listener) {
+    public void listenForAllUserMessages(com.google.firebase.auth.FirebaseUser mainUser, ChildEventListener listener) {
         Log.d(TAG, "listenForAllUserMessages");
         this.listenerAllMessages = listener;
-        if (contact != null) {
-            String keyUser = contact.getUserKey();
-            getDatabase().getReference()
-                    .child(CHILD_USER)
-                    .child(keyUser)
-                    .child(CHILD_ALL_MESSAGES)
-                    .limitToLast(100)
-                    .addChildEventListener(listener);
-        }
+        getDatabase().getReference()
+                .child(CHILD_USERS_MESSAGES)
+                .child(mainUser.getUid())
+                .limitToLast(100)
+                .addChildEventListener(listener);
     }
 
 
-    public void removeListenerAllMessages(Contact contact) {
+    public void removeListenerAllMessages() {
         Log.d(TAG, "removeListenerAllMessages");
         if (listenerAllMessages != null) {
-            String keyUser = contact.getUserKey();
             getDatabase().getReference()
-                    .child(CHILD_USER)
-                    .child(keyUser)
-                    .child(CHILD_ALL_MESSAGES)
+                    .child(CHILD_USERS_MESSAGES)
+                    .child(mainUser.getUid())
                     .removeEventListener(listenerAllMessages);
         }
     }

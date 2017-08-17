@@ -1,7 +1,9 @@
 package com.consultoraestrategia.messengeracademico.loadProfile;
 
+import android.content.Intent;
 import android.net.Uri;
 
+import com.consultoraestrategia.messengeracademico.BasePresenter;
 import com.consultoraestrategia.messengeracademico.loadProfile.event.LoadProfileEvent;
 
 
@@ -9,13 +11,13 @@ import com.consultoraestrategia.messengeracademico.loadProfile.event.LoadProfile
  * Created by kike on 24/02/2017.
  */
 
-    public interface LoadProfilePresenter {
-    void onDestroy();
-    void onCreate();
-    void initInputsView();
-    void updateProfile(Uri uriPhotoProfile, String mName, String mPhoneNumber);
-    void profileVerificated(String phoneNumber);
+public interface LoadProfilePresenter extends BasePresenter {
 
+    void checkCurrentUser();
+
+    void updateUser(String name);
 
     void onEventMainThread(LoadProfileEvent loadProfileEvent);
+
+    void onActivityResult(int requestCode, int resultCode, Intent data);
 }

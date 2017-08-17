@@ -7,13 +7,12 @@ import com.consultoraestrategia.messengeracademico.data.source.remote.ChatRemote
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
-import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingPresenter;
 import com.consultoraestrategia.messengeracademico.postEvent.ChatListPostEvent;
 import com.consultoraestrategia.messengeracademico.postEvent.ChatPostEvent;
 import com.consultoraestrategia.messengeracademico.utils.StringUtils;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +45,7 @@ public class ChatRepository implements ChatDataSource {
      *
      */
     Chat chat;
-    Contact mainUser;
+    FirebaseUser mainUser;
     Contact receptor;
 
     /**
@@ -57,13 +56,13 @@ public class ChatRepository implements ChatDataSource {
     private boolean isListenForIncomingMessages = false;
 
     // Prevent direct instantiation.
-    private ChatRepository(ChatLocalDataSource chatLocalDataSource, ChatRemoteDataSource chatRemoteDataSource, ChatListPostEvent chatListPostEvent, ChatPostEvent chatPostEvent, Contact mainUser) {
+    private ChatRepository(ChatLocalDataSource chatLocalDataSource, ChatRemoteDataSource chatRemoteDataSource, ChatListPostEvent chatListPostEvent, ChatPostEvent chatPostEvent, FirebaseUser mainUser) {
         this.chatLocalDataSource = chatLocalDataSource;
         this.chatRemoteDataSource = chatRemoteDataSource;
         this.chatListPostEvent = chatListPostEvent;
         this.chatPostEvent = chatPostEvent;
         this.mainUser = mainUser;
-        listenForAllUserMessages(mainUser, new ListenMessagesCallback() {
+        listenForAllUserMessages(new ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
             }
@@ -85,7 +84,7 @@ public class ChatRepository implements ChatDataSource {
                                              ChatRemoteDataSource chatRemoteDataSource,
                                              ChatListPostEvent chatListPostEvent,
                                              ChatPostEvent chatPostEvent,
-                                             Contact mainUser) {
+                                             FirebaseUser mainUser) {
         if (INSTANCE == null) {
             INSTANCE = new ChatRepository(chatLocalDataSource, chatRemoteDataSource, chatListPostEvent, chatPostEvent, mainUser);
         }
@@ -93,7 +92,7 @@ public class ChatRepository implements ChatDataSource {
     }
 
     /**
-     * Used to force {@link #getInstance(ChatLocalDataSource, ChatRemoteDataSource, ChatListPostEvent, ChatPostEvent, Contact)} to create a new instance
+     * Used to force {@link #getInstance(ChatLocalDataSource, ChatRemoteDataSource, ChatListPostEvent, ChatPostEvent, FirebaseUser)} to create a new instance
      * next time it's called.
      */
     public static void destroyInstance() {
@@ -109,7 +108,7 @@ public class ChatRepository implements ChatDataSource {
         }
         //this.mainUser = emisor;
         this.receptor = receptor;
-        String orderedKeys[] = StringUtils.sortAlphabetical(mainUser.getUserKey(), receptor.getUserKey());
+        String orderedKeys[] = StringUtils.sortAlphabetical(mainUser.getUid(), receptor.getUid());
         getChat(orderedKeys[0] + "_" + orderedKeys[1], new GetChatCallback() {
             @Override
             public void onChatLoaded(Chat chatLoaded) {
@@ -572,11 +571,11 @@ public class ChatRepository implements ChatDataSource {
     }
 
     @Override
-    public void listenForAllUserMessages(Contact contact, final ListenMessagesCallback callback) {
+    public void listenForAllUserMessages(final ListenMessagesCallback callback) {
         Log.d(TAG, "listenForAllUserMessages");
         if (!isListenForIncomingMessages) {
             isListenForIncomingMessages = true;
-            chatRemoteDataSource.listenForAllUserMessages(contact, new ListenMessagesCallback() {
+            chatRemoteDataSource.listenForAllUserMessages(new ListenMessagesCallback() {
                 @Override
                 public void onMessageChanged(ChatMessage message) {
                     onIncomingMessageChanged(message);
@@ -775,7 +774,7 @@ public class ChatRepository implements ChatDataSource {
 
 
     private boolean iAmEmisor(ChatMessage message) {
-        return message.getEmisor().equals(mainUser);
+        return message.getEmisor().getUid().equals(mainUser.getUid());
     }
 
 }

@@ -19,11 +19,10 @@ import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
+import com.google.firebase.auth.FirebaseUser;
 import com.vanniktech.emoji.EmojiTextView;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,7 +68,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
         if (contact != null) {
             String name = contact.getName();
             String phoneNumber = contact.getPhoneNumber();
-            String uriProfile = contact.getPhotoUri();
+            String uriProfile = contact.getPhotoUrl();
 
             title = !TextUtils.isEmpty(name) ? name : phoneNumber;
             uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "";
@@ -90,7 +89,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void setLastMessage(Contact receptor, ChatMessage lastMessage, Context context) {
+    private void setLastMessage(FirebaseUser mainUser, ChatMessage lastMessage, Context context) {
         if (lastMessage != null) {
             Contact messageSender = lastMessage.getEmisor();
             messageSender.load();
@@ -114,7 +113,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
             txtMessage.setText(message);
 
             int statusMessage = lastMessage.getMessageStatus();
-            setStatusMessage(receptor, messageSender, imgStatusMessage, statusMessage, context);
+            setStatusMessage(mainUser, messageSender, imgStatusMessage, statusMessage, context);
             long timeStamp = lastMessage.getTimestamp();
             setTime(txtTime, timeStamp, context.getResources());
 
@@ -122,9 +121,9 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
 
     }
 
-    private void setStatusMessage(Contact me, Contact messageSender, AppCompatImageView imgStatusMessage, int statusMessage, Context context) {
-        if (messageSender != null && me != null && messageSender.getPhoneNumber() != null && me.getPhoneNumber() != null) {
-            if (messageSender.getPhoneNumber().equals(me.getPhoneNumber())) {
+    private void setStatusMessage(FirebaseUser mainUser, Contact messageSender, AppCompatImageView imgStatusMessage, int statusMessage, Context context) {
+        if (messageSender != null && mainUser != null && messageSender.getUid() != null) {
+            if (messageSender.getUid().equals(mainUser.getUid())) {
                 showStatusMessage(imgStatusMessage, statusMessage, context);
             } else {
                 hideImageView(imgStatusMessage);
@@ -132,7 +131,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void bind(Contact me, final Chat chat, Context context, final ChatListener listener) {
+    public void bind(FirebaseUser mainUser, final Chat chat, Context context, final ChatListener listener) {
         Log.d(TAG, "bind");
 
         Contact receptor = chat.getReceptor();
@@ -146,22 +145,21 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
 
             Contact temp = null;
 
-            if (!emisor.getUserKey().equals(me.getUserKey())) {
+            if (!emisor.getUid().equals(mainUser.getUid())) {
                 temp = receptor;
                 receptor = emisor;
                 emisor = temp;
-
             }
 
             setReceptorProfile(receptor, context, listener);
 
 
             ChatMessage lastMessage = chat.getLastMessage();
-            setLastMessage(me, lastMessage, context);
+            setLastMessage(mainUser, lastMessage, context);
 
             Log.d(TAG, "chatKey: " + chat.getChatKey());
 
-            long countMessagesNoReaded = chat.countMessagesNoReaded(me.getUserKey());
+            long countMessagesNoReaded = chat.countMessagesNoReaded(mainUser.getUid());
             setCountMessages(txtCounter, countMessagesNoReaded);
             /*setNotificationState(imgNotificationState);*/
         }

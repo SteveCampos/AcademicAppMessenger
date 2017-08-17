@@ -16,8 +16,8 @@ class ChatListInteractorImpl implements ChatListInteractor {
     public ChatListInteractorImpl() {
         this.repository = new ChatListRepositoryImpl();
     }
-
-    @Override
+/*
+    @Ov erride
     public void getPhoneNumber(SharedPreferences preferences) {
         repository.getPhoneNumber(preferences);
     }
@@ -25,11 +25,11 @@ class ChatListInteractorImpl implements ChatListInteractor {
     @Override
     public void getContact(String phoneNumber) {
         repository.getContact(phoneNumber);
-    }
+    }*/
 
     @Override
-    public void getChats(Contact contact) {
-        repository.getChats(contact);
+    public void getChats() {
+        repository.getChats();
     }
 
     @Override

@@ -24,6 +24,7 @@ import static com.consultoraestrategia.messengeracademico.main.event.MainEvent.T
 
 class MainRepositoryImpl implements MainRepository {
 
+    /*
     private static final String TAG = MainRepositoryImpl.class.getSimpleName();
     private EventBus eventBus;
     private FirebaseUser firebaseUser;
@@ -33,8 +34,9 @@ class MainRepositoryImpl implements MainRepository {
     public MainRepositoryImpl() {
         this.eventBus = GreenRobotEventBus.getInstance();
         this.firebaseUser = new FirebaseUser();
-    }
+    }*/
 
+    /*
     @Override
     public void getPhoneNumber(SharedPreferences preferences) {
         String phoneNumber = preferences.getString(VerificationActivity.PREF_PHONENUMBER, null);
@@ -59,7 +61,7 @@ class MainRepositoryImpl implements MainRepository {
                 .where(Contact_Table.phoneNumber.eq(phoneNumber))
                 .querySingle();
         this.me = contact;
-        post(contact);
+        post();
     }
 
     private void manageSnapshot(DataSnapshot dataSnapshot) {
@@ -116,7 +118,7 @@ class MainRepositoryImpl implements MainRepository {
 
     private void post(Contact contact) {
         post(TYPE_CONTACT, null, contact);
-    }
+    }*/
 
 
 }

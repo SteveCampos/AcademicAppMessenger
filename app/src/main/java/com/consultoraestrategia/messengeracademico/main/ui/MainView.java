@@ -11,6 +11,5 @@ import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;
 
 public interface MainView extends BaseView<MainPresenterImpl> {
     void startChat(Contact contact);
-
     void fireNotification(ChatMessage message);
 }

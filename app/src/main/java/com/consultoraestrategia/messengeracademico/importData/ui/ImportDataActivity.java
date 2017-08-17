@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -16,15 +17,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.importData.DatosGeneralesAsyntask;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.importData.ImportDataPresenter;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.importData.ImportDataPresenterImpl;
-import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
-import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,7 +61,7 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    private ImportDataPresenterImpl presenter;
+    private ImportDataPresenter presenter;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -73,40 +72,70 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import_data);
         ButterKnife.bind(this);
-        manageIntent(getIntent());
-        presenter = new ImportDataPresenterImpl(this, getActivity());
-        presenter.onCreate();
+        initPresenter();
     }
 
-    private void manageIntent(Intent intent) {
-        if (intent.hasExtra(EXTRA_NAME) && intent.hasExtra(EXTRA_PHOTO_URI) && intent.hasExtra(EXTRA_PHONENUMBER)) {
-            String name = intent.getStringExtra(EXTRA_NAME);
-            String uri = intent.getStringExtra(EXTRA_PHOTO_URI);
-            String phoneNumber = intent.getStringExtra(EXTRA_PHONENUMBER);
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return presenter;
+    }
 
-            Contact contact = new Contact();
-            contact.setName(name);
-            contact.setPhotoUri(uri);
-            contact.setPhoneNumber(phoneNumber);
+    private void initPresenter() {
+        presenter = (ImportDataPresenter) getLastCustomNonConfigurationInstance();
+        if (presenter == null) {
+            presenter = new ImportDataPresenterImpl(getActivity());
+            presenter.onCreate();
+        }
+        presenter.attachView(this);
+    }
 
-            setProfile(contact);
-        } else {
-            DefaultSharedPreferencesHelper helper = new DefaultSharedPreferencesHelper(PreferenceManager.getDefaultSharedPreferences(this));
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+        if (presenter != null) {
+            presenter.onResume();
+        }
+    }
 
-            Contact mainContact = helper.getContact();
-            if (mainContact != null) {
-                setProfile(mainContact);
-            }
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart");
+        super.onStart();
+        if (presenter != null) {
+            presenter.onStart();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        super.onPause();
+        if (presenter != null) {
+            presenter.onPause();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop");
+        super.onStop();
+        if (presenter != null) {
+            presenter.onStop();
         }
     }
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
-        presenter.onDestroy();
+        if (presenter != null) {
+            presenter.onDestroy();
+        }
     }
 
 
@@ -118,8 +147,8 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
 
     @NeedsPermission({Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS})
     public void importData() {
-        presenter.handleClick(getPhoneNumberFromPreferences());
-        new DatosGeneralesAsyntask().execute(getPhoneNumberFromPreferences());
+        presenter.handleClick();
+        //new DatosGeneralesAsyntask().execute(getPhoneNumberFromPreferences());
     }
 
     private String getPhoneNumberFromPreferences() {
@@ -132,12 +161,12 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
     }
 
     @Override
-    public void setProfile(Contact contact) {
-        String title = String.format(getString(R.string.importdata_title), contact.getName());
+    public void setMainUser(FirebaseUser mainUser) {
+        String title = String.format(getString(R.string.importdata_title), mainUser.getDisplayName());
         txtTitle.setText(title);
         Glide
                 .with(this)
-                .load(contact.getPhotoUri())
+                .load(mainUser.getPhotoUrl())
                 .error(R.drawable.ic_users)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgProfile);
@@ -221,6 +250,9 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
 
     @Override
     public void onImportError() {
+        Log.d(TAG, "onImportError");
+        btnGo.setVisibility(View.VISIBLE);
+        txtNotice.setVisibility(View.VISIBLE);
         btnGo.setText(R.string.importdata_button_go);
         txtNotice.setText(R.string.importdata_notice_error);
     }
@@ -242,5 +274,10 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    public void setPresenter(ImportDataPresenterImpl presenter) {
+
     }
 }

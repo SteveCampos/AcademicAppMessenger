@@ -5,5 +5,5 @@ package com.consultoraestrategia.messengeracademico.importData;
  */
 
 public interface ImportDataInteractor {
-    void executeImportData(String phoneNumber);
+    void executeImportData();
 }

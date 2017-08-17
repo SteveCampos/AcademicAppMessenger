@@ -13,6 +13,7 @@ import com.consultoraestrategia.messengeracademico.main.domain.usecase.ListenFor
 import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
 import com.consultoraestrategia.messengeracademico.main.ui.MainView;
 import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -29,21 +30,21 @@ public class MainPresenterImpl implements MainPresenter {
     private MainView view;
 
     private final UseCaseHandler useCaseHandler;
-    private final DefaultSharedPreferencesHelper preferencesHelper;
     private final ListenForUserMessages listenForUserMessages;
     private final EventBus eventBus;
     private final ConnectionInteractor connectionInteractor;
     private final Long timestamp;
 
     private boolean forwardToAnotherActivity = false;
+    private final FirebaseUser mainUser;
 
-    public MainPresenterImpl(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, ListenForUserMessages listenForUserMessages, EventBus eventBus, ConnectionInteractor connectionInteractor, Long timestamp) {
+    public MainPresenterImpl(UseCaseHandler useCaseHandler, ListenForUserMessages listenForUserMessages, EventBus eventBus, ConnectionInteractor connectionInteractor, Long timestamp, FirebaseUser mainUser) {
         this.useCaseHandler = useCaseHandler;
-        this.preferencesHelper = preferencesHelper;
         this.listenForUserMessages = listenForUserMessages;
         this.eventBus = eventBus;
         this.connectionInteractor = connectionInteractor;
         this.timestamp = timestamp;
+        this.mainUser = mainUser;
     }
 
     @Override
@@ -99,30 +100,27 @@ public class MainPresenterImpl implements MainPresenter {
     @Override
     public void listenForMessages() {
         Log.d(TAG, "listenForAllUserMessages");
-        Contact mainContact = preferencesHelper.getContact();
-        if (mainContact != null) {
-            useCaseHandler.execute(
-                    listenForUserMessages,
-                    new ListenForUserMessages.RequestValues(mainContact),
-                    new UseCase.UseCaseCallback<ListenForUserMessages.ResponseValue>() {
-                        @Override
-                        public void onSuccess(ListenForUserMessages.ResponseValue response) {
-                        }
+        useCaseHandler.execute(
+                listenForUserMessages,
+                new ListenForUserMessages.RequestValues(),
+                new UseCase.UseCaseCallback<ListenForUserMessages.ResponseValue>() {
+                    @Override
+                    public void onSuccess(ListenForUserMessages.ResponseValue response) {
+                    }
 
-                        @Override
-                        public void onError() {
+                    @Override
+                    public void onError() {
 
-                        }
-                    });
-        }
-        suscribeToNotifications(mainContact);
+                    }
+                });
+        suscribeToNotifications(mainUser);
     }
 
     @Override
-    public void suscribeToNotifications(Contact mainContact) {
+    public void suscribeToNotifications(FirebaseUser mainUser) {
         Log.d(TAG, "suscribeToNotifications");
         FirebaseMessaging.getInstance()
-                .subscribeToTopic(USER_TOPIC + mainContact.getUserKey());
+                .subscribeToTopic(USER_TOPIC + mainUser.getUid());
 
     }
 

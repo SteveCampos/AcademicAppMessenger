@@ -101,7 +101,7 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
                         emisor = response.getContact();
                         useCaseHandler.execute(
                                 getBitmap,
-                                new GetBitmap.RequestValues(emisor.getPhotoUri(), context),
+                                new GetBitmap.RequestValues(emisor.getPhotoUrl(), context),
                                 new UseCase.UseCaseCallback<GetBitmap.ResponseValue>() {
                                     @Override
                                     public void onSuccess(GetBitmap.ResponseValue response) {
@@ -194,7 +194,7 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
 
 
         notificationInbox.setLargeIcon(bitmap);
-        notificationInbox.setLargeIconUri(emisor.getPhotoUri() != null ? emisor.getPhotoUri() : null);
+        notificationInbox.setLargeIconUri(emisor.getPhotoUrl() != null ? emisor.getPhotoUrl() : null);
         notificationInbox.setSmallIcon(R.drawable.ic_twitter_white);
         notificationInbox.setContentText(messageText);
         notificationInbox.setContentTitle(emisorName);

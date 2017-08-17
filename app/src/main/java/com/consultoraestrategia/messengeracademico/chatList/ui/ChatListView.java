@@ -1,7 +1,6 @@
 package com.consultoraestrategia.messengeracademico.chatList.ui;
 
 import com.consultoraestrategia.messengeracademico.entities.Chat;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 import java.util.List;
 
@@ -19,9 +18,10 @@ public interface ChatListView {
 
     void onChatsChanged(List<Chat> chats);
 
+    /*
     void setContact(Contact contact);
 
-    void setPhoneNumber(String phoneNumber);
+    void setPhoneNumber(String phoneNumber);*/
 
 
 }

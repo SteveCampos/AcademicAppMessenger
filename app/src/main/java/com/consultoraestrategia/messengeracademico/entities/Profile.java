@@ -68,11 +68,11 @@ public class Profile {
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("photoUri", photo.getUrl());//Entidad ToMap
+        result.put("photoUrl", photo.getUrl());//Entidad ToMap
         result.put("status", mStatus);
         result.put("phoneNumber", mPhoneNumber);
         result.put("name", mName);
-        result.put("userKey", userKey);
+        result.put("uid", userKey);
         return result;
     }
 }

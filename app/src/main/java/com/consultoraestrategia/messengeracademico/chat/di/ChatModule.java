@@ -15,7 +15,6 @@ import com.consultoraestrategia.messengeracademico.data.ContactRepository;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseChat;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseImageStorage;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.main.ConnectionInteractor;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ChangeStateWriting;
@@ -27,7 +26,7 @@ import com.consultoraestrategia.messengeracademico.chat.domain.usecase.LoadMessa
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ReadMessage;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.SendMessage;
 import com.consultoraestrategia.messengeracademico.prueba.domain.usecase.UploadImage;
-import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,8 +51,8 @@ public class ChatModule {
 
     @Provides
     @Singleton
-    ChatMessageAdapter provideChatMessageAdapter(Contact emisor, List<ChatMessage> messages, ChatMessageListener listener, Context context) {
-        return new ChatMessageAdapter(emisor, messages, listener, context);
+    ChatMessageAdapter provideChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, Context context) {
+        return new ChatMessageAdapter(mainUser, messages, listener, context);
     }
 
     @Provides
@@ -70,8 +69,8 @@ public class ChatModule {
 
     @Provides
     @Singleton
-    ChatPresenter providePresenter(UseCaseHandler useCaseHandler, DefaultSharedPreferencesHelper preferencesHelper, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources) {
-        return new ChatPresenterImpl(useCaseHandler, preferencesHelper, useCaseLoadMessages, useCaseGetContact, useCaseGetChat, useCaseSendMessage, useCaseReadMessage, useCaseChangeStateWriting, useCaseListenReceptorConnection, useCaseListenReceptorAction, eventBus, connectionInteractor, generateMessageKey, cacheDir, uploadImage, contentResolver, resources);
+    ChatPresenter providePresenter(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources) {
+        return new ChatPresenterImpl(mainUser, useCaseHandler, useCaseLoadMessages, useCaseGetContact, useCaseGetChat, useCaseSendMessage, useCaseReadMessage, useCaseChangeStateWriting, useCaseListenReceptorConnection, useCaseListenReceptorAction, eventBus, connectionInteractor, generateMessageKey, cacheDir, uploadImage, contentResolver, resources);
     }
 
     @Provides

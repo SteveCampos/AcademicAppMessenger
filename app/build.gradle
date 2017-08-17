@@ -11,6 +11,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        resConfigs "auto"
     }
     buildTypes {
         release {
@@ -28,12 +29,22 @@ android {
     }
 }
 
+/*
 configurations.all {
     resolutionStrategy {
         force "com.android.support:support-annotations:$rootProject.ext.supportLibraryVersion"
     }
+}*/
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '26.0.1'
+            }
+        }
+    }
 }
-
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -49,6 +60,8 @@ dependencies {
     compile "com.google.firebase:firebase-auth:$rootProject.ext.firebaseVersion"
     compile "com.google.firebase:firebase-storage:$rootProject.ext.firebaseVersion"
     compile "com.google.firebase:firebase-messaging:$rootProject.ext.firebaseVersion"
+    // FirebaseUI Auth only
+    compile "com.firebaseui:firebase-ui-auth:$rootProject.ext.firebaseUiVersion"
 
     compile "com.android.support:support-v4:$rootProject.ext.supportLibraryVersion"
     compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"

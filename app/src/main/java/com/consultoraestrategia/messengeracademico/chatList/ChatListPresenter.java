@@ -24,17 +24,17 @@ public interface ChatListPresenter {
 
     void onResume();
 
-    void getPhoneNumber(SharedPreferences preferences);
+    //void getPhoneNumber(SharedPreferences preferences);
 
-    void getContact(String phoneNumber);
+    //void getContact(String phoneNumber);
 
-    void getChats(Contact contact);
+    void getChats(/*Contact contact*/);
 
     void onEventMainThread(ChatListEvent event);
 
-    void onPhoneNumberRetreived(String phoneNumber);
+    //void onPhoneNumberRetreived(String phoneNumber);
 
-    void onContactRetreived(Contact contact);
+    //void onContactRetreived(Contact contact);
 
     void onChatsRetreived(List<Chat> chats);
 

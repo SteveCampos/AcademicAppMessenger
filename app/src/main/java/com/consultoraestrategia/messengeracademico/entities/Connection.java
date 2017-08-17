@@ -1,5 +1,7 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
+import org.parceler.Parcel;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -7,6 +9,8 @@ import java.util.Objects;
 /**
  * Created by @stevecampos on 9/03/2017.
  */
+
+@Parcel(analyze = {Contact.class})
 public class Connection {
     private boolean online;
     private long timestamp;

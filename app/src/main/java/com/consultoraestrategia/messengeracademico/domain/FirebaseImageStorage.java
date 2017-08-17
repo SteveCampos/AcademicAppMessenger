@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 
 public class FirebaseImageStorage {
 
-    private static final String REF_CHAT_IMAGES = "chat_images";
+    private static final String REF_CHAT_IMAGES = "chat-images";
     private FirebaseStorage storage;
     private static FirebaseImageStorage INSTANCE;
 

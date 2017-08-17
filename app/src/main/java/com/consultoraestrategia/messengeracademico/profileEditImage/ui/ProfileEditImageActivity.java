@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,18 +19,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
-import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
-import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
-import com.consultoraestrategia.messengeracademico.entities.MediaFile;
-import com.consultoraestrategia.messengeracademico.entities.Profile;
-import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
-import com.consultoraestrategia.messengeracademico.profileEditName.ui.ProfileEditNameActivity;
 import com.consultoraestrategia.messengeracademico.profileEditImage.ProfileEditImagePresenter;
 import com.consultoraestrategia.messengeracademico.profileEditImage.ProfileEditImagePresenterImpl;
-import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -47,11 +40,11 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.imgProfile)
-    CircleImageView imageView;
+    CircleImageView imgPhoto;
     @BindView(R.id.txt_nameUser)
-    TextView nameUser;
+    TextView txtUsername;
     @BindView(R.id.txt_phoneNumber)
-    TextView phoneNumber;
+    TextView txtPhonenumber;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
@@ -59,14 +52,61 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_image);
         ButterKnife.bind(this);
-        presenter = new ProfileEditImagePresenterImpl(this, this);
-        presenter.onCreate();
+        setupToolbar();
+        setupPresenter();
     }
 
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(R.string.profile_title);
+        }
+    }
 
+    private void setupPresenter() {
+        presenter = (ProfileEditImagePresenter) getLastCustomNonConfigurationInstance();
+        if (presenter == null) {
+            presenter = new ProfileEditImagePresenterImpl(getResources(), getCacheDir(), getContentResolver());
+            presenter.onCreate();
+        }
+        presenter.attachView(this);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return presenter;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.onStart();
+    }
+
+    /*
     public void setToolbar() {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -77,12 +117,13 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
         }
     }
 
+
     String celpho, name, imageUrl;
 
     private void manageIntent(Intent intent) {
         if (intent.hasExtra(ImportDataActivity.EXTRA_PHONENUMBER)) {
             celpho = intent.getStringExtra(ImportDataActivity.EXTRA_PHONENUMBER);
-            imageUrl = getContact(celpho).getPhotoUri();
+            imageUrl = getContact(celpho).getPhotoUrl();
             name = getContact(celpho).getName();
             getContact(celpho);
             phoneNumber.setText(celpho);
@@ -103,16 +144,12 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
                 .from(Contact.class)
                 .where(Contact_Table.phoneNumber.eq(phoneNumber))
                 .querySingle();
-
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        Log.d(TAG, "onBackPressed");
+        presenter.onBackPressed();
     }
 
 
@@ -126,6 +163,60 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
         progressBar.setVisibility(View.GONE);
     }
 
+    @Override
+    public void showUserDisplayName(String displayName) {
+        Log.d(TAG, "showUserDisplayName");
+        txtUsername.setText(displayName);
+    }
+
+    @Override
+    public void showUserPhoto(Uri photoUri) {
+        Log.d(TAG, "showUserPhoto");
+        Glide
+                .with(this)
+                .load(photoUri)
+                .error(R.drawable.ic_users)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .fitCenter()
+                .into(imgPhoto);
+    }
+
+    @Override
+    public void showUserPhoneNumber(String phoneNumber) {
+        Log.d(TAG, "showUserPhoneNumber");
+        txtPhonenumber.setText(phoneNumber);
+    }
+
+
+    @OnClick(R.id.relative)
+    @Override
+    public void startSelectImageActivity() {
+        Log.d(TAG, "startSelectImageActivity");
+        startCropImageActivity(null);
+        hideSoftboard();
+    }
+
+    private void hideSoftboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
+
+    @Override
+    public void showMessage(@StringRes int message) {
+        Snackbar.make(toolbar, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void startMainActivity() {
+        Log.d(TAG, "startMainActivity");
+        Intent intent = new Intent(this, MainActivity.class);
+        intent
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    /*
     @Override
     public void onProfileEditImageError(String message) {
         Log.e(TAG, "onProfileEditImageError :" + message);
@@ -156,18 +247,11 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
         Intent intent = new Intent(this, ProfileEditNameActivity.class);
         intent.putExtra("nameUser", name);
         intent.putExtra("phoneNumber", celpho);
-        intent.putExtra("photoUri", imageUrl);
+        intent.putExtra("photoUrl", imageUrl);
 
         Log.d(TAG, "editButtonName " + name + "celpho" + celpho);
         startActivity(intent);
-    }
-
-    @OnClick(R.id.relative)
-    public void onClickImage() {
-        startCropImageActivity(null);
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-    }
+    }*/
 
     private void startCropImageActivity(Uri imageUri) {
         CropImage.activity(imageUri)
@@ -178,12 +262,34 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        Log.d(TAG, "onDestroy");
         presenter.onDestroy();
+        super.onDestroy();
     }
 
-    Uri imageUri;
+    @Override
+    public void setPresenter(ProfileEditImagePresenterImpl presenter) {
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            presenter.onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
+        presenter.onActivityResult(requestCode, resultCode, data);
+//        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /*
+    Uri imageUri;
     private void compressImage(Uri imageUri) {
         ImageCompression imageCompression = new ImageCompression(this.getCacheDir(), this.getContentResolver()) {
 
@@ -211,15 +317,6 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
             }
         }
     }
+    */
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            default:
-                onBackPressed();
-                return super.onOptionsItemSelected(item);
-        }
-    }
 }

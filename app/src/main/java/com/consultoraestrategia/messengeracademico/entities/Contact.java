@@ -3,6 +3,7 @@ package com.consultoraestrategia.messengeracademico.entities;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
+import com.google.firebase.database.Exclude;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -26,7 +27,7 @@ public class Contact extends BaseModel {
 
     @Column
     @PrimaryKey
-    public String userKey;
+    public String uid;
 
     @Column
     public String phoneNumber;
@@ -35,10 +36,22 @@ public class Contact extends BaseModel {
     public String name;
 
     @Column
-    public String photoUri;
+    public String displayName;
+
+
+    @Column
+    public String photoUrl;
+
+    @Column
+    public String email;
 
     @Column
     public int type;
+
+
+    @Exclude
+    public Connection lastConnection;
+
 
     public static final int TYPE_MAIN_CONTACT = 100;
     public static final int TYPE_NOT_ADDED = 1;
@@ -48,16 +61,26 @@ public class Contact extends BaseModel {
     public Contact() {
     }
 
-    public Contact(String userKey) {
-        this.userKey = userKey;
+    public Contact(String uid) {
+        this.uid = uid;
         this.load();
     }
 
-    public Contact(String userKey, String phoneNumber, String name, String photoUri) {
-        this.userKey = userKey;
+    public Contact(String uid, String phoneNumber, String name, String photoUrl) {
+        this.uid = uid;
         this.phoneNumber = phoneNumber;
         this.name = name;
-        this.photoUri = photoUri;
+        this.photoUrl = photoUrl;
+    }
+
+    public Contact(String uid, String phoneNumber, String name, String displayName, String photoUrl, String email, int type) {
+        this.uid = uid;
+        this.phoneNumber = phoneNumber;
+        this.name = name;
+        this.displayName = displayName;
+        this.photoUrl = photoUrl;
+        this.email = email;
+        this.type = type;
     }
 
     public String getName() {
@@ -80,20 +103,20 @@ public class Contact extends BaseModel {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getUserKey() {
-        return userKey;
+    public String getUid() {
+        return uid;
     }
 
-    public void setUserKey(String userKey) {
-        this.userKey = userKey;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
-    public String getPhotoUri() {
-        return photoUri;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setPhotoUri(String photoUri) {
-        this.photoUri = photoUri;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public int getType() {
@@ -104,14 +127,38 @@ public class Contact extends BaseModel {
         this.type = type;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Connection getLastConnection() {
+        return lastConnection;
+    }
+
+    public void setLastConnection(Connection lastConnection) {
+        this.lastConnection = lastConnection;
+    }
+
     @Override
     public boolean equals(Object obj) {
         boolean equal = false;
         if (obj instanceof Contact) {
             Contact contactObj = (Contact) obj;
-            Log.d(TAG, "chatKey: " + getUserKey());
-            Log.d(TAG, "objChat id: " + contactObj.getUserKey());
-            equal = this.getUserKey().equals(contactObj.getUserKey());
+            Log.d(TAG, "uid: " + getUid());
+            Log.d(TAG, "objChat id: " + contactObj.getUid());
+            equal = this.getUid().equals(contactObj.getUid());
         }
         return equal;
     }
@@ -119,16 +166,18 @@ public class Contact extends BaseModel {
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("userKey", userKey);
+        result.put("uid", uid);
         result.put("phoneNumber", phoneNumber);
         return result;
     }
 
     @Override
     public String toString() {
-        return "userKey: " + userKey +
+        return "uid: " + uid +
                 ", phoneNumber: " + phoneNumber +
                 ", name: " + name +
-                ", photoUri: " + photoUri;
+                ", displayName: " + displayName +
+                ", photoUrl: " + photoUrl +
+                ", email: " + email;
     }
 }

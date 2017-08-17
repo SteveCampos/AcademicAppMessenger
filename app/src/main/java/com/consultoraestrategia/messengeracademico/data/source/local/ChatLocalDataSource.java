@@ -8,15 +8,13 @@ import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage_Table;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.storage.ChatDbFlowStorage;
 import com.consultoraestrategia.messengeracademico.storage.ChatStorage;
 import com.consultoraestrategia.messengeracademico.utils.StringUtils;
+import com.google.firebase.auth.FirebaseUser;
 import com.raizlabs.android.dbflow.sql.language.CursorResult;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction;
 import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
-
-import java.util.List;
 
 /**
  * Created by @stevecampos on 18/05/2017.
@@ -26,16 +24,16 @@ public class ChatLocalDataSource implements ChatDataSource {
 
     private static final String TAG = ChatLocalDataSource.class.getSimpleName();
     private ChatStorage chatStorage;
-    private Contact mainUser;
+    private FirebaseUser mainUser;
 
-    public ChatLocalDataSource(ChatStorage chatStorage, Contact mainUser) {
+    public ChatLocalDataSource(ChatStorage chatStorage, FirebaseUser mainUser) {
         this.chatStorage = chatStorage;
         this.mainUser = mainUser;
     }
 
     @Override
     public void getChat(final Contact from, final Contact to, final GetChatCallback callback) {
-        String[] sort = StringUtils.sortAlphabetical(from.getUserKey(), to.getUserKey());
+        String[] sort = StringUtils.sortAlphabetical(from.getUid(), to.getUid());
         final String chatKey = sort[0] + "_" + sort[1];
         getChat(chatKey, new GetChatCallback() {
             @Override
@@ -115,7 +113,7 @@ public class ChatLocalDataSource implements ChatDataSource {
     public void getMessagesNoReaded(Chat chat, GetMessageCallback callback) {
         Log.d(TAG, "getMessagesNoReaded");
         if (chat != null) {
-            callback.onMessagesLoaded(chat.getMessageNoReadedList(mainUser.getUserKey()));
+            callback.onMessagesLoaded(chat.getMessageNoReadedList(mainUser.getUid()));
         }
     }
 
@@ -153,7 +151,7 @@ public class ChatLocalDataSource implements ChatDataSource {
 
 
     @Override
-    public void listenForAllUserMessages(Contact mainContact, ListenMessagesCallback callback) {
+    public void listenForAllUserMessages(ListenMessagesCallback callback) {
 
     }
 

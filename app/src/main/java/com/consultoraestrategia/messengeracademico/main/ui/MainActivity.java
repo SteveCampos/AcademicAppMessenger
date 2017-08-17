@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.NotificationCompat;
@@ -38,6 +39,11 @@ import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagin
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingView;
 import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingComponent;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -81,8 +87,19 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
             forwardToStep();
             return;
         }
-        setupInjection();
-        setupViewPager();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            setupInjection();
+            setupViewPager();
+        } else {
+            startLoadProfile();
+        }
+    }
+
+    private void startLoadProfile() {
+        forwardToClass(LoadProfileActivity.class);
     }
 
 
@@ -199,9 +216,10 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         Class stepClass = null;
         boolean completed = false;
         switch (step) {
+            /*
             case VerificationActivity.PREF_STEP_VERIFICATION:
                 stepClass = VerificationActivity.class;
-                break;
+                break;*/
             case LoadProfileActivity.PREF_STEP_LOAD_PROFILE:
                 stepClass = LoadProfileActivity.class;
                 break;
@@ -210,6 +228,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
                 break;
             case PREF_STEP_COMPLETED:
                 completed = true;
+                break;
+            default:
+                stepClass = LoadProfileActivity.class;
                 break;
         }
 
@@ -247,11 +268,20 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, ImportDataActivity.class));
             return true;
-        }else if (id == R.id.action_profile){
+        } else if (id == R.id.action_profile) {
             Intent intent = new Intent(this, ProfileEditImageActivity.class);
             intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER, getPhoneNumberFromPreferences());
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+        } else if (id == R.id.action_logout) {
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        public void onComplete(@NonNull Task<Void> task) {
+                            // user is now signed out
+                            forwardToClass(LoadProfileActivity.class);
+                        }
+                    });
         }
 
         return super.onOptionsItemSelected(item);
@@ -260,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
     public AppCompatActivity getActivity() {
         return this;
     }
-    Contact contacts;
+
     @Override
     public void startChat(Contact contact) {
         Log.d(TAG, "startChat");
@@ -268,7 +298,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         intent.putExtra(ChatActivity.EXTRA_RECEPTOR_PHONENUMBER, contact.getPhoneNumber());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        contacts = contact;
     }
 
     @Override
@@ -292,16 +321,16 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
     public void setPresenter(MainPresenterImpl presenter) {
 
     }
-    String phoneNumber;
-    private void getSharedPreferences (){
-      /*  SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        phoneNumber = settings.getString(MainActivity.PREF_STEP, "");
-        */
 
+    String phoneNumber;
+
+    private void getSharedPreferences() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        phoneNumber = settings.getString(MainActivity.PREF_STEP, "");
 
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         phoneNumber = sharedPref.getString(VerificationActivity.PREF_PHONENUMBER, "+51993061806");
-        Log.d(TAG, " phoneNumber : "+phoneNumber);
+        Log.d(TAG, " phoneNumber : " + phoneNumber);
     }
 
 

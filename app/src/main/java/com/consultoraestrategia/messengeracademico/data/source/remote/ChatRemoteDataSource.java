@@ -25,11 +25,13 @@ public class ChatRemoteDataSource implements ChatDataSource {
     private static final String TAG = ChatRemoteDataSource.class.getSimpleName();
     private FirebaseChat firebaseChat;
     private FirebaseUser firebaseUser;
+    private com.google.firebase.auth.FirebaseUser mainUser;
 
 
-    public ChatRemoteDataSource(FirebaseChat firebaseChat, FirebaseUser firebaseUser) {
+    public ChatRemoteDataSource(FirebaseChat firebaseChat, FirebaseUser firebaseUser, com.google.firebase.auth.FirebaseUser mainUser) {
         this.firebaseChat = firebaseChat;
         this.firebaseUser = firebaseUser;
+        this.mainUser = mainUser;
     }
 
     @Override
@@ -98,9 +100,9 @@ public class ChatRemoteDataSource implements ChatDataSource {
     }
 
     @Override
-    public void listenForAllUserMessages(Contact mainContact, final ListenMessagesCallback callback) {
+    public void listenForAllUserMessages(final ListenMessagesCallback callback) {
         Log.d(TAG, "listenForAllUserMessages");
-        firebaseUser.listenForAllUserMessages(mainContact, new ChildEventListener() {
+        firebaseUser.listenForAllUserMessages(mainUser, new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded");
@@ -140,7 +142,7 @@ public class ChatRemoteDataSource implements ChatDataSource {
     public void changeStateWriting(Chat chat, boolean writing) {
         Log.d(TAG, "changeStateWriting");
         if (chat != null) {
-            firebaseChat.changeAction(chat.getChatKey(), chat.getEmisor().getUserKey(), writing ? Action.ACTION_WRITING : Action.ACTION_NO_ACTION);
+            firebaseChat.changeAction(chat.getChatKey(), writing ? Action.ACTION_WRITING : Action.ACTION_NO_ACTION);
         }
     }
 

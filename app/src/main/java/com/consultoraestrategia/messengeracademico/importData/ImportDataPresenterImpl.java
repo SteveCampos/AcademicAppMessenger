@@ -1,11 +1,15 @@
 package com.consultoraestrategia.messengeracademico.importData;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.consultoraestrategia.messengeracademico.BaseView;
 import com.consultoraestrategia.messengeracademico.importData.events.ImportDataEvent;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataView;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -14,42 +18,84 @@ import org.greenrobot.eventbus.Subscribe;
  */
 
 public class ImportDataPresenterImpl implements ImportDataPresenter {
+    private static final String TAG = ImportDataPresenterImpl.class.getSimpleName();
     private ImportDataView view;
     private ImportDataInteractor interactor;
     private EventBus eventBus;
+    private FirebaseUser mainUser;
 
     private boolean importFinished = false;
 
-    public ImportDataPresenterImpl(ImportDataView view, Context context) {
-        this.view = view;
+    public ImportDataPresenterImpl(Context context) {
         this.interactor = new ImportDataInteractorImpl(context);
         this.eventBus = GreenRobotEventBus.getInstance();
+        this.mainUser = FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    @Override
+    public void attachView(BaseView view) {
+        Log.d(TAG, "onCreate");
+        this.view = (ImportDataView) view;
     }
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "onCreate");
         eventBus.register(this);
+    }
 
+    @Override
+    public void onStart() {
+        Log.d(TAG, "onStart");
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        showMainUser();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause");
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop");
     }
 
     @Override
     public void onDestroy() {
-        view = null;
+        Log.d(TAG, "onDestroy");
         eventBus.unregister(this);
+        view = null;
     }
 
     @Override
-    public void importData(String phoneNumber) {
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+    }
+
+    private void showMainUser() {
+        Log.d(TAG, "showMainUser");
+        if (view != null) {
+            view.setMainUser(mainUser);
+        }
+    }
+
+    @Override
+    public void importData() {
+        Log.d(TAG, "importData");
         initCounters();
         if (view != null) {
             view.showProgress();
         }
-        interactor.executeImportData(phoneNumber);
+        interactor.executeImportData();
     }
 
     private void initCounters() {
         contactsSucess = 0;
-
     }
 
     @Subscribe
@@ -136,11 +182,11 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
     }
 
     @Override
-    public void handleClick(String phoneNumber) {
+    public void handleClick() {
         if (importFinished) {
             goToMain();
         } else {
-            importData(phoneNumber);
+            importData();
         }
     }
 

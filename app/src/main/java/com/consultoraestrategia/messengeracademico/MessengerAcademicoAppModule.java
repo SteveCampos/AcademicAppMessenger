@@ -11,7 +11,6 @@ import com.consultoraestrategia.messengeracademico.data.source.local.ChatLocalDa
 import com.consultoraestrategia.messengeracademico.data.source.remote.ChatRemoteDataSource;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseChat;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseUser;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.main.ConnectionInteractor;
@@ -23,7 +22,7 @@ import com.consultoraestrategia.messengeracademico.postEvent.ChatListPostEventIm
 import com.consultoraestrategia.messengeracademico.postEvent.ChatPostEvent;
 import com.consultoraestrategia.messengeracademico.postEvent.ChatPostEventImpl;
 import com.consultoraestrategia.messengeracademico.storage.ChatDbFlowStorage;
-import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 
@@ -74,11 +73,12 @@ public class MessengerAcademicoAppModule {
         return this.sharedPreferences;
     }
 
+    /*
     @Provides
     @Singleton
     DefaultSharedPreferencesHelper provideDefaultSharedPreferencesHelper() {
         return new DefaultSharedPreferencesHelper(sharedPreferences);
-    }
+    }*/
 
     @Provides
     @Singleton
@@ -101,13 +101,15 @@ public class MessengerAcademicoAppModule {
     }
 
 
+    /*
     @Provides
     @Named("main_phonenumber")
     @Singleton
     String provideMainPhoneNumber(DefaultSharedPreferencesHelper preferencesHelper) {
         return preferencesHelper.getDefaultPhoneNumber();
-    }
+    }*/
 
+    /*
     @Provides
     @Singleton
     Contact provideMainContact(DefaultSharedPreferencesHelper preferencesHelper) {
@@ -117,6 +119,12 @@ public class MessengerAcademicoAppModule {
             Log.d(TAG, "contact = null!!!");
         }
         return contact;
+    }*/
+
+    @Provides
+    @Singleton
+    com.google.firebase.auth.FirebaseUser provideMainUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
     }
 
     @Provides
@@ -128,8 +136,8 @@ public class MessengerAcademicoAppModule {
 
     @Provides
     @Singleton
-    ChatRepository provideChatRepository(ChatLocalDataSource localDataSource, ChatRemoteDataSource remoteDataSource, ChatListPostEvent chatListPostEvent, ChatPostEvent chatPostEvent, Contact mainContact) {
-        return ChatRepository.getInstance(localDataSource, remoteDataSource, chatListPostEvent, chatPostEvent, mainContact);
+    ChatRepository provideChatRepository(ChatLocalDataSource localDataSource, ChatRemoteDataSource remoteDataSource, ChatListPostEvent chatListPostEvent, ChatPostEvent chatPostEvent, com.google.firebase.auth.FirebaseUser mainUser) {
+        return ChatRepository.getInstance(localDataSource, remoteDataSource, chatListPostEvent, chatPostEvent, mainUser);
     }
 
     @Provides
@@ -146,8 +154,8 @@ public class MessengerAcademicoAppModule {
 
     @Provides
     @Singleton
-    ChatLocalDataSource provideChatLocalDataSource(ChatDbFlowStorage chatDbFlowStorage, Contact mainContact) {
-        return new ChatLocalDataSource(chatDbFlowStorage, mainContact);
+    ChatLocalDataSource provideChatLocalDataSource(ChatDbFlowStorage chatDbFlowStorage, com.google.firebase.auth.FirebaseUser mainUser) {
+        return new ChatLocalDataSource(chatDbFlowStorage, mainUser);
     }
 
     @Provides
@@ -158,8 +166,8 @@ public class MessengerAcademicoAppModule {
 
     @Provides
     @Singleton
-    ChatRemoteDataSource provideChatRemoteDataSource(FirebaseChat firebaseChat, FirebaseUser firebaseUser) {
-        return new ChatRemoteDataSource(firebaseChat, firebaseUser);
+    ChatRemoteDataSource provideChatRemoteDataSource(FirebaseChat firebaseChat, FirebaseUser firebaseUser, com.google.firebase.auth.FirebaseUser mainUser) {
+        return new ChatRemoteDataSource(firebaseChat, firebaseUser, mainUser);
     }
 
     @Provides
@@ -189,8 +197,8 @@ public class MessengerAcademicoAppModule {
 
     @Provides
     @Singleton
-    ConnectionRepository provideConnectionRepository(FirebaseUser firebaseUser, Contact mainContact) {
-        return new ConnectionRepositoryImpl(firebaseUser, mainContact);
+    ConnectionRepository provideConnectionRepository(FirebaseUser firebaseUser, com.google.firebase.auth.FirebaseUser mainUser) {
+        return new ConnectionRepositoryImpl(firebaseUser, mainUser);
     }
 
 }

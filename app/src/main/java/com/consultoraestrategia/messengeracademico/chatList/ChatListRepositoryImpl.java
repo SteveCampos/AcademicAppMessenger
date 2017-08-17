@@ -1,16 +1,15 @@
 package com.consultoraestrategia.messengeracademico.chatList;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.chatList.event.ChatListEvent;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
-import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import java.util.List;
@@ -23,14 +22,16 @@ public class ChatListRepositoryImpl implements ChatListRepository {
 
     private static final String TAG = ChatListRepositoryImpl.class.getSimpleName();
     private EventBus eventBus;
-    private Contact contact;
+    private FirebaseUser mainUser;
 
     public ChatListRepositoryImpl() {
         this.eventBus = GreenRobotEventBus.getInstance();
+        this.mainUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     private int counter = 0;
 
+    /*
     @Override
     public void getPhoneNumber(SharedPreferences preferences) {
         Log.d(TAG, "getPhoneNumber");
@@ -52,50 +53,39 @@ public class ChatListRepositoryImpl implements ChatListRepository {
     @Override
     public void getContact(String phoneNumber) {
         Log.d(TAG, "getContact");
-        Contact contact = SQLite.select()
+        Contact mainUser = SQLite.select()
                 .from(Contact.class)
                 .where(Contact_Table.phoneNumber.eq(phoneNumber))
-                .and(Contact_Table.userKey.isNotNull())
+                .and(Contact_Table.uid.isNotNull())
                 .querySingle();
-        this.contact = contact;
-        post(contact);
-    }
+        this.mainUser = mainUser;
+        post(mainUser);
+    }*/
 
     @Override
-    public void getChats(Contact contact) {
+    public void getChats(/*Contact mainUser*/) {
         Log.d(TAG, "getChats");
-        if (contact != null) {
-            List<Chat> chats = SQLite.select()
-                    .from(Chat.class)
-                    .queryList();
-            post(chats);
-        }
+        List<Chat> chats = SQLite.select()
+                .from(Chat.class)
+                .queryList();
+        post(chats);
     }
 
     @Override
     public void onChatClicked(Chat chat) {
         Log.d(TAG, "onChatClicked");
-        String phoneNumber = contact.getPhoneNumber();
-        if (contact.equals(chat.getEmisor())) {
+        String phoneNumber = mainUser.getPhoneNumber();
+        Contact emisor = chat.getEmisor();
+        Contact receptor = chat.getReceptor();
+        if (mainUser == null || emisor == null || receptor == null) {
+            return;
+        }
+
+        if (mainUser.getUid().equals(emisor.getUid())) {
             postToMain(chat.getReceptor());
-        } else if (contact.equals(chat.getReceptor())) {
+        } else if (mainUser.getUid().equals(receptor.getUid())) {
             postToMain(chat.getEmisor());
         }
-        /*String emisorPhoneNumber = chat.getEmisor().getPhoneNumber();
-        String receptorPhoneNumber = chat.getReceptor().getPhoneNumber();
-
-        Log.d(TAG, "emisorPhoneNumber: " + emisorPhoneNumber);
-        Log.d(TAG, "receptorPhoneNumber: " + receptorPhoneNumber);
-        if (phoneNumber.equals(emisorPhoneNumber)) {
-            Log.d(TAG, "soy el emisor");
-            Log.d(TAG, "to chat: " + receptorPhoneNumber);
-            postToMain(chat.getReceptor());
-        } else if (phoneNumber.equals(receptorPhoneNumber)) {
-            Log.d(TAG, "soy el receptor");
-            Log.d(TAG, "to chat: " + emisorPhoneNumber);
-            postToMain(chat.getEmisor());
-        }*/
-
     }
 
     private void postToMain(Contact contact) {

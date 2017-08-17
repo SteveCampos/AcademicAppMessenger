@@ -48,7 +48,7 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
         if (contact != null) {
             String name = contact.getName();
             phoneNumber = contact.getPhoneNumber();
-            String uriProfile = contact.getPhotoUri();
+            String uriProfile = contact.getPhotoUrl();
 
             title = !TextUtils.isEmpty(name) ? name : phoneNumber;
             uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "";
@@ -66,6 +66,7 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
 
         Glide.with(context)
                 .load(uri)
+                .centerCrop()
                 .error(R.drawable.ic_users)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgProfile);

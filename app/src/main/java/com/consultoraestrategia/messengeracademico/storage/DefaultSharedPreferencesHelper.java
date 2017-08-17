@@ -25,6 +25,7 @@ public class DefaultSharedPreferencesHelper implements SharedPreferencesHelper {
         this.sharedPreferences = sharedPreferences;
     }
 
+    /*
     @Override
     public void savePhoneNumber(String phoneNumber) {
         SharedPreferences.Editor editor = editor();
@@ -49,12 +50,12 @@ public class DefaultSharedPreferencesHelper implements SharedPreferencesHelper {
             return SQLite.select()
                     .from(Contact.class)
                     .where(Contact_Table.phoneNumber.eq(phoneNumber))
-                    .and(Contact_Table.userKey.isNotNull())
+                    .and(Contact_Table.uid.isNotNull())
                     .querySingle();
         }
         Log.d(TAG, "getContact = null");
         return null;
-    }
+    }*/
 
     private SharedPreferences.Editor editor() {
         return sharedPreferences.edit();

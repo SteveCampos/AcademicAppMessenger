@@ -5,7 +5,6 @@ import android.util.Log;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseContactsHelper;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
-import com.consultoraestrategia.messengeracademico.importData.ExistsPhonenumbersAsyncTask;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -43,7 +42,7 @@ public class ContactRepository implements ContactDataSource {
         return SQLite.select()
                 .from(Contact.class)
                 .where(Contact_Table.phoneNumber.eq(phoneNumber))
-                .and(Contact_Table.userKey.isNotNull())
+                .and(Contact_Table.uid.isNotNull())
                 .querySingle();
     }
 

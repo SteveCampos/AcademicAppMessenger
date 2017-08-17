@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 public class LoadProfileRepositoryImpl implements LoadProfileRepository {
 
 
+    /*
     private static String TAG = LoadProfilePresenterImpl.class.getSimpleName();
     private FirebaseLoadProfile helper;
 
@@ -131,6 +132,5 @@ public class LoadProfileRepositoryImpl implements LoadProfileRepository {
             photo.setUrl(uri.toString());
         }
     }
-
-
+*/
 }

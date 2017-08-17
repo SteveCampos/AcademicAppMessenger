@@ -11,9 +11,8 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 public interface ChatListInteractor {
 
-    void getPhoneNumber(SharedPreferences preferences);
-    void getContact(String phoneNumber);
-    void getChats(Contact contact);
-
+    /*void getPhoneNumber(SharedPreferences preferences);
+    void getContact(String phoneNumber);*/
+    void getChats(/*Contact contact*/);
     void onChatClicked(Chat chat);
 }

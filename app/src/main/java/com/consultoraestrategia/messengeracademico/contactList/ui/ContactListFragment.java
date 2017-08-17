@@ -1,7 +1,6 @@
 package com.consultoraestrategia.messengeracademico.contactList.ui;
 
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -58,9 +57,6 @@ public class ContactListFragment extends Fragment implements ContactListView, Co
     private String mParam1;
     private String mParam2;*/
 
-    private Contact me;
-
-
     public ContactListFragment() {
         // Required empty public constructor
     }
@@ -102,17 +98,18 @@ public class ContactListFragment extends Fragment implements ContactListView, Co
         unbinder = ButterKnife.bind(this, view);
         setRetainInstance(true);
         init();
-        initContact();
+        //initContact();
         return view;
     }
 
+    /*
     private void initContact() {
         String phoneNumber = getPhoneNumberFromPreferences();
         Log.d(TAG, "phoneNumber: " + phoneNumber);
         if (phoneNumber != null) {
             me = getContact(phoneNumber);
         }
-    }
+    }*/
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -150,26 +147,26 @@ public class ContactListFragment extends Fragment implements ContactListView, Co
 
     @Override
     public void onContactSelected(Contact contact) {
-        Log.d(TAG, "onContactSelected: " + contact.getUserKey());
+        Log.d(TAG, "onContactSelected: " + contact.getUid());
 
         presenter.onContactSelected(contact);/*
         Intent intent = new Intent(getActivity(), ChatActivity.class);
-        intent.putExtra(ChatActivity.EXTRA_EMISOR_PHONENUMBER, me.getUserKey());
-        intent.putExtra(ChatActivity.EXTRA_RECEPTOR_PHONENUMBER, contact.getUserKey());
+        intent.putExtra(ChatActivity.EXTRA_EMISOR_PHONENUMBER, me.getUid());
+        intent.putExtra(ChatActivity.EXTRA_RECEPTOR_PHONENUMBER, contact.getUid());
         getActivity().startActivity(intent);*/
     }
 
     @Override
     public void onImageClickdListener(Contact contact) {
         Bundle args = new Bundle();
-        args.putString("imageUri", contact.getPhotoUri());
+        args.putString("imageUri", contact.getPhotoUrl());
         args.putString("nameContact", contact.getName());
         args.putString("phoneNumber",contact.getPhoneNumber());
         DialogProfile newFragment = new DialogProfile();
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "TAG");
     }
-
+/*
     private String getPhoneNumberFromPreferences() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return preferences.getString(VerificationActivity.PREF_PHONENUMBER, "+51993061806");
@@ -180,5 +177,5 @@ public class ContactListFragment extends Fragment implements ContactListView, Co
                 .from(Contact.class)
                 .where(Contact_Table.phoneNumber.eq(phoneNumber))
                 .querySingle();
-    }
+    }*/
 }

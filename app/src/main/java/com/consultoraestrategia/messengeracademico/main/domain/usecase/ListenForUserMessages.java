@@ -24,8 +24,7 @@ public class ListenForUserMessages extends UseCase<ListenForUserMessages.Request
     @Override
     protected void executeUseCase(RequestValues requestValues) {
         Log.d(TAG, "executeUseCase");
-        Contact mainContact = requestValues.getMainContact();
-        repository.listenForAllUserMessages(mainContact, new ChatDataSource.ListenMessagesCallback() {
+        repository.listenForAllUserMessages(new ChatDataSource.ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
 
@@ -43,14 +42,5 @@ public class ListenForUserMessages extends UseCase<ListenForUserMessages.Request
     }
 
     public static final class RequestValues implements UseCase.RequestValues {
-        private final Contact mainContact;
-
-        public RequestValues(Contact mainContact) {
-            this.mainContact = mainContact;
-        }
-
-        public Contact getMainContact() {
-            return mainContact;
-        }
     }
 }

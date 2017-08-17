@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,16 +17,11 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,7 +32,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
@@ -55,7 +48,6 @@ import com.consultoraestrategia.messengeracademico.chat.ChatPresenter;
 import com.consultoraestrategia.messengeracademico.chat.adapters.ChatMessageAdapter;
 import com.consultoraestrategia.messengeracademico.chat.di.ChatComponent;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
-import com.consultoraestrategia.messengeracademico.dialogProfile.DialogProfile;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
@@ -63,8 +55,6 @@ import com.consultoraestrategia.messengeracademico.fullScreen.FullscreenActivity
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity;
 import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiImageView;
 import com.vanniktech.emoji.EmojiPopup;
@@ -78,7 +68,6 @@ import com.vanniktech.emoji.listeners.OnSoftKeyboardOpenListener;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
-import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 
 import java.text.SimpleDateFormat;
@@ -375,7 +364,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         txtName.setText(receptor.getName());
         Glide
                 .with(this)
-                .load(receptor.getPhotoUri())
+                .load(receptor.getPhotoUrl())
                 .error(R.drawable.ic_users)
                 .into(imgProfile);
         contact = receptor;
@@ -603,7 +592,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @OnClick(R.id.linear_StartProfile)
     public void onContactReceptorSelected() {
         Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI, contact.getPhotoUri());
+        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI, contact.getPhotoUrl());
         intent.putExtra(ImportDataActivity.EXTRA_NAME, contact.getName());
         intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER, contact.getPhoneNumber());
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

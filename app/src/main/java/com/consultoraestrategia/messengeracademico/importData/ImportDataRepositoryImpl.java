@@ -34,7 +34,7 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
     }
 
     @Override
-    public void getData(String phoneNumber) {
+    public void getData() {
         Log.d(TAG, "ImportDataRepositoryImpl getData");
         new FetchContacts(this).execute(resolver);
     }
@@ -47,7 +47,6 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
     }
 
     private void saveContact(final Contact c) {
-
         DatabaseDefinition database = FlowManager.getDatabase(MessengerAcademicoDatabase.class);
         Transaction transaction = database.beginTransactionAsync(new ITransaction() {
             @Override
@@ -58,20 +57,20 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
         }).success(new Transaction.Success() {
             @Override
             public void onSuccess(Transaction transaction) {
+                Log.d(TAG, "onSuccess");
                 countContactsSaved++;
                 //NOT EXIST -> NEW CONTACT!
-                if (c.getUserKey() == null) {
+                if (c.getUid() != null) {
                     post(ImportDataEvent.OnContactImported);
                 }
 
-                if (countContacts == (countContactsSaved)) {
+                if (countContactsSaved >= countContacts) {
                     onFinish();
                 }
 
-
                 /*
                 //EXIST -> UPDATED
-                if (exist && c.getUserKey() != null) {
+                if (exist && c.getUid() != null) {
                     post(ImportDataEvent.OnContactImported);
                     Log.d(TAG, "ALREADY EXIST!");
                 }*/
@@ -93,6 +92,8 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
         Log.d(TAG, "onContactsAdded");
         if (contacts != null && !contacts.isEmpty()) {
             new ExistsPhonenumbersAsyncTask(context, this).execute(contacts);
+        } else {
+            onFinish();
         }
     }
 
@@ -104,12 +105,14 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
 
     @Override
     public void onContactInstalled(Contact contact) {
+        Log.d(TAG, "onContactInstalled");
         countContacts++;
         saveContact(contact);
     }
 
     @Override
     public void onFinish() {
+        Log.d(TAG, "onFinish");
         post(ImportDataEvent.OnImportFinish);
     }
 }

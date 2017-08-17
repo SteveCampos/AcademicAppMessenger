@@ -31,10 +31,17 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".prueba.TestActivity"
+            android:label="@string/app_name">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+        <activity
             android:name=".verification.ui.VerificationActivity"
-            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"
-            />
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver
             android:name=".verification.sms.SmsReceiver"
@@ -44,19 +51,10 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".loadProfile.ui.LoadProfileActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize"/>
+        <activity
+            android:name=".loadProfile.ui.LoadProfileActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".importData.ui.ImportDataActivity" />
-        <!--<activity
-            android:name=".prueba.PruebaActivity"
-            android:label="@string/title_activity_test"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>-->
         <activity
             android:name=".chat.ui.ChatActivity"
             android:parentActivityName=".main.ui.MainActivity">
@@ -97,14 +95,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity" />
         </activity>
-        <activity android:name=".profile.ui.ProfileActivity"
-            android:configChanges="orientation|screenSize"></activity>
-        <activity android:name=".customNotification.CustomNotificationActivity"/>
-        <activity android:name=".profileEditImage.ui.ProfileEditImageActivity"
-            android:configChanges="orientation|screenSize"></activity>
-        <activity android:name=".profileEditName.ui.ProfileEditNameActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize"></activity>
+        <activity
+            android:name=".profile.ui.ProfileActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".customNotification.CustomNotificationActivity" />
+        <activity
+            android:name=".profileEditImage.ui.ProfileEditImageActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".profileEditName.ui.ProfileEditNameActivity"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -113,7 +114,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths_public"></meta-data>
+                android:resource="@xml/file_paths_public" />
         </provider>
     </application>
 

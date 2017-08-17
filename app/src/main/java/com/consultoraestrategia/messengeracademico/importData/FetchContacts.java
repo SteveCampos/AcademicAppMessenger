@@ -84,7 +84,6 @@ public class FetchContacts extends AsyncTask<ContentResolver, Void, ArrayList<Co
 
     @Override
     protected void onPostExecute(ArrayList<Contact> contacts) {
-
         if (listener != null) {
             if (errorMessage == null) {
                 listener.onContactsAdded(contacts);

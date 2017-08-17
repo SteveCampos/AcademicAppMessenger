@@ -10,9 +10,9 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 public interface MainRepository {
 
-    void getPhoneNumber(SharedPreferences preferences);
+    /*void getPhoneNumber(SharedPreferences preferences);
 
     void getContact(String phoneNumber);
 
-    void listenForIncomingMessages(Contact contact);
+    void listenForIncomingMessages(Contact contact);*/
 }

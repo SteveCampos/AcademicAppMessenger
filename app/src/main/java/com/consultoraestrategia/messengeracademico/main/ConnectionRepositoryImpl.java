@@ -1,17 +1,10 @@
 package com.consultoraestrategia.messengeracademico.main;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.consultoraestrategia.messengeracademico.MessengerAcademicoApp;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseUser;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
-import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
-import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
-import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
-import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import java.util.Date;
 
@@ -23,18 +16,18 @@ public class ConnectionRepositoryImpl implements ConnectionRepository {
 
     private static final String TAG = ConnectionRepositoryImpl.class.getSimpleName();
     private final FirebaseUser firebaseUser;
-    private final Contact mainContact;
+    private final com.google.firebase.auth.FirebaseUser mainUser;
 
 
-    public ConnectionRepositoryImpl(FirebaseUser firebaseUser, Contact mainContact) {
+    public ConnectionRepositoryImpl(FirebaseUser firebaseUser, com.google.firebase.auth.FirebaseUser mainUser) {
         this.firebaseUser = firebaseUser;
-        this.mainContact = mainContact;
+        this.mainUser = mainUser;
         onDisconnect();
     }
 
     private void onDisconnect() {
         Log.d(TAG, "onDisconnect");
-        firebaseUser.onDisconnect(mainContact, new Connection(false, 0));
+        firebaseUser.onDisconnect();
     }
 
     @Override
@@ -52,6 +45,6 @@ public class ConnectionRepositoryImpl implements ConnectionRepository {
     private void setConnection(boolean online) {
         long timeStamp = new Date().getTime();
         Connection connection = new Connection(online, timeStamp);
-        firebaseUser.changeConnection(mainContact, connection);
+        firebaseUser.changeConnection(connection);
     }
 }

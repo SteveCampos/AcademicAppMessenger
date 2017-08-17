@@ -1,8 +1,6 @@
 package com.consultoraestrategia.messengeracademico.chatList.ui;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,8 +44,6 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
     private ChatListAdapter adapter;
     private ChatListPresenter presenter;
 
-    private String phoneNumber;
-    private Contact me;
     FragmentManager fm = getFragmentManager();
 
     public ChatListFragment() {
@@ -102,16 +98,17 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
     }
 
     private void init() {
+        setupRecycler();
         presenter = new ChatListPresenterImpl(this);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         presenter.onCreateView();
-        presenter.getPhoneNumber(preferences);
+        //presenter.getPhoneNumber(preferences);
     }
 
-    private void setupRecycler(Contact contact) {
+    private void setupRecycler() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         myRecyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ChatListAdapter(getActivity(), contact, new ArrayList<Chat>(), this);
+        adapter = new ChatListAdapter(getActivity(), new ArrayList<Chat>(), this);
         mDividerItemDecoration = new DividerItemDecoration(myRecyclerView.getContext(),
                 linearLayoutManager.getOrientation());
         //myRecyclerView.addItemDecoration(mDividerItemDecoration);
@@ -138,6 +135,7 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
         adapter.setChats(chats);
     }
 
+    /*
     @Override
     public void setContact(Contact contact) {
         if (contact != null) {
@@ -145,8 +143,9 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
             setupRecycler(me);
             presenter.getChats(me);
         }
-    }
+    }*/
 
+    /*
     @Override
     public void setPhoneNumber(String phoneNumber) {
         Log.d(TAG, "setPhoneNumber");
@@ -154,7 +153,7 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
             this.phoneNumber = phoneNumber;
             presenter.getContact(phoneNumber);
         }
-    }
+    }*/
 
     @Override
     public void onChatClickedListener(Chat chat) {
@@ -170,9 +169,9 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
             */
 
         Bundle args = new Bundle();
-        args.putString("imageUri", contact.getPhotoUri());
+        args.putString("imageUri", contact.getPhotoUrl());
         args.putString("nameContact", contact.getName());
-        args.putString("phoneNumber",contact.getPhoneNumber());
+        args.putString("phoneNumber", contact.getPhoneNumber());
         DialogProfile newFragment = new DialogProfile();
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "TAG");

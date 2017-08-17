@@ -1,22 +1,27 @@
 package com.consultoraestrategia.messengeracademico.chat.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageImageEmisorHolder;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageImageReceptorHolder;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageTextEmisorHolder;
+import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageTextOfficialEmisorHolder;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageTextReceptorHolder;
+import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessagetextOfficialReceptorHolder;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -36,17 +41,21 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_RECEPTOR_IMAGE = 201;
 
 
+    private static final int TYPE_EMISOR_TEXT_OFFICIAL = 301;
+    private static final int TYPE_RECEPTOR_TEXT_OFFICIAL = 302;
+
+
     private static final String TAG = ChatMessageAdapter.class.getSimpleName();
 
     private List<ChatMessage> messages;
     private ChatMessageListener listener;
     private Context context;
-    private Contact emisor;
+    private FirebaseUser mainUser;
     private RecyclerView recyclerView;
 
-    public ChatMessageAdapter(Contact emisor, List<ChatMessage> messages, ChatMessageListener listener, Context context) {
+    public ChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, Context context) {
         Log.d(TAG, "ChatMessageAdapter new Instance: " + this.hashCode());
-        this.emisor = emisor;
+        this.mainUser = mainUser;
         this.messages = messages;
         this.listener = listener;
         this.context = context;
@@ -60,18 +69,27 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
         ChatMessage message = messages.get(position);
         if (message.getMessageType().equals(ChatMessage.TYPE_TEXT)) {
-            if (message.getEmisor().equals(emisor)) {
+            if (message.getEmisor().getUid().equals(mainUser.getUid())) {
                 return TYPE_EMISOR_TEXT;
             } else {
                 return TYPE_RECEPTOR_TEXT;
             }
         }
         if (message.getMessageType().equals(ChatMessage.TYPE_IMAGE)) {
-            if (message.getEmisor().equals(emisor)) {
+            if (message.getEmisor().getUid().equals(mainUser.getUid())) {
                 return TYPE_EMISOR_IMAGE;
             } else {
                 return TYPE_RECEPTOR_IMAGE;
             }
+        }
+
+        if (message.getMessageType().equals(ChatMessage.TYPE_TEXT_OFFICIAL)) {
+            if (message.getEmisor().getUid().equals(mainUser.getUid())) {
+                return TYPE_EMISOR_TEXT_OFFICIAL;
+            } else {
+                return TYPE_RECEPTOR_TEXT_OFFICIAL;
+            }
+
         }
 
         return TYPE_EMISOR_TEXT;
@@ -98,6 +116,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TYPE_RECEPTOR_IMAGE:
                 View v4 = inflater.inflate(R.layout.chat_item_image_receptor, parent, false);
                 viewHolder = new MessageImageReceptorHolder(v4);
+                break;
+            case TYPE_EMISOR_TEXT_OFFICIAL:
+                View v5 = inflater.inflate(R.layout.item_officialtext_emisor, parent, false);
+                viewHolder = new MessageTextOfficialEmisorHolder(v5);
+                break;
+            case TYPE_RECEPTOR_TEXT_OFFICIAL:
+                View v6 = inflater.inflate(R.layout.item_officialtext_receptor, parent, false);
+                viewHolder = new MessagetextOfficialReceptorHolder(v6);
                 break;
         }
         return viewHolder;
@@ -127,6 +153,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TYPE_RECEPTOR_IMAGE:
                 MessageImageReceptorHolder vh4 = (MessageImageReceptorHolder) holder;
                 vh4.bind(message, previousMessage, listener, context);
+                break;
+            case TYPE_EMISOR_TEXT_OFFICIAL:
+                MessageTextOfficialEmisorHolder vh5 = (MessageTextOfficialEmisorHolder) holder;
+                vh5.bind(message, previousMessage, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context), context.getResources());
+                break;
+            case TYPE_RECEPTOR_TEXT_OFFICIAL:
+                MessagetextOfficialReceptorHolder vh6 = (MessagetextOfficialReceptorHolder) holder;
+                vh6.bind(message, previousMessage, listener, context.getResources());
                 break;
         }
     }
@@ -181,4 +215,5 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void scrollToLastItem() {
         recyclerView.scrollToPosition(getItemCount() - 1);
     }
+
 }

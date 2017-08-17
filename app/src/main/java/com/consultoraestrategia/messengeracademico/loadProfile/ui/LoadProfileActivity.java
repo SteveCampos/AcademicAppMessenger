@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.MainThread;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -19,18 +21,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
-import com.consultoraestrategia.messengeracademico.domain.FirebaseContactsHelper;
-import com.consultoraestrategia.messengeracademico.entities.MediaFile;
-import com.consultoraestrategia.messengeracademico.entities.Profile;
+import com.bumptech.glide.Glide;
+import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenter;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenterImpl;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
-import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
-import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
+import com.firebase.ui.auth.AuthUI;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
+import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,10 +39,10 @@ import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity.PREF_STEP_IMPORT_DATA;
+import static com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenterImpl.RC_SIGN_IN;
 
 
 public class LoadProfileActivity extends AppCompatActivity implements LoadProfileView {
-
 
     private static final String TAG = LoadProfileActivity.class.getSimpleName();
     public static final String PREF_STEP_LOAD_PROFILE = "PREF_STEP_LOAD_PROFILE";
@@ -56,57 +57,87 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     @BindView(R.id.imgEmoji)
     AppCompatImageView imgEmoji;
     @BindView(R.id.activity_load_profile)
-    RelativeLayout activityLoadProfile;
+    RelativeLayout rootView;
 
     @BindView(R.id.btnGo)
     AppCompatButton btnGo;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    private FirebaseContactsHelper firebaseContactsHelper;
-    private Uri imageUri;
     private LoadProfilePresenter presenter;
 
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return presenter;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_profile);
         ButterKnife.bind(this);
-        Log.d(TAG, "phone_number: " + getPhoneNumber());
-        firebaseContactsHelper = new FirebaseContactsHelper();
-        presenter = new LoadProfilePresenterImpl(this, this);
-        presenter.onCreate();
-
+        setupInjection();
     }
 
-    private void initViews() {
-        edtName.setText("Yo");
-    }
-
-
-    public String getPhoneNumber() {
-        String phoneNumber = null;
-        Intent intent = getIntent();
-        if (intent.hasExtra(VerificationActivity.EXTRA_PHONENUMBER)) {
-            phoneNumber = intent.getStringExtra(VerificationActivity.EXTRA_PHONENUMBER);
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+        if (presenter != null) {
+            presenter.onResume();
         }
-        if (phoneNumber == null) {
-            phoneNumber = getPhoneNumberFromPreferences();
-        }
-        return phoneNumber;
     }
 
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        super.onPause();
+        if (presenter != null) {
+            presenter.onPause();
+        }
+    }
 
-    private String getPhoneNumberFromPreferences() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return preferences.getString(VerificationActivity.PREF_PHONENUMBER, null);
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart");
+        super.onStart();
+        if (presenter != null) {
+            presenter.onStart();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop");
+        super.onStop();
+        if (presenter != null) {
+            presenter.onStop();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        if (presenter != null) {
+            presenter.onDestroy();
+        }
+        super.onDestroy();
+    }
+
+    private void setupInjection() {
+        Log.d(TAG, "setupInjection");
+        presenter = (LoadProfilePresenter) getLastCustomNonConfigurationInstance();
+        if (presenter == null) {
+            presenter = new LoadProfilePresenterImpl(getResources(), getCacheDir(), getContentResolver());
+            presenter.onCreate();
+        }
+        presenter.attachView(this);
     }
 
     @OnClick(R.id.btnGo)
     public void btnGo() {
-        String mName = edtName.getText().toString();
-        onRegisterNewProfile(compreUri, mName, getPhoneNumber());
+        String name = edtName.getText().toString();
+        presenter.updateUser(name);
     }
 
 
@@ -159,85 +190,53 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
 
     @OnClick(R.id.imgProfile)
     @Override
-    public void showDialog() {
+    public void startSelectImageActivity() {
         startCropImageActivity(null);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-
     }
 
     @Override
-    public void onUpladProfileError(String error) {
-        showSnackbar(error);
+    public void showMessage(@StringRes int message) {
+        Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
-                imgProfile.setImageURI(result.getUri());
-                imageUri = result.getUri();
-                compressImage(imageUri);
-                Log.d(TAG, "ResulURi: " + result.getUri());
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Log.d(TAG, "Cropping failed: " + result.getError());
-            }
-        }
+    public void startAuthActivity() {
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(
+                                Collections.singletonList(new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+                        .build(),
+                RC_SIGN_IN);
     }
 
     @Override
-    public void onRegisterNewProfile(Uri myUri, String mName, String mPhoneNumber) {
-        Log.d(TAG, "myUri: " + myUri);
-        presenter.updateProfile(myUri, mName, mPhoneNumber);
-    }
-
-    @Override
-    public void onRegisterNewProfileError(String message) {
+    public void showErrorUpdateUser(String message) {
         showSnackbar(message);
     }
 
     @Override
-    public void onProfileVerificated(String phoneNumber) {
-        if (phoneNumber != null) {
-            presenter.profileVerificated(phoneNumber);
-        } else {
-            Log.d(TAG, "NewProfile");
-        }
+    public void showUserCurrentDisplayName(String displayName) {
+        Log.d(TAG, "showUserCurrentDisplayName");
+        edtName.setText(displayName);
     }
 
     @Override
-    public void forwardToImportData(Profile profile) {
-        Log.d(TAG, "forwardToImportData");
-        if (profile != null) {
-            try {
-                saveStep();
-            } catch (Exception ex) {
-                Log.d(TAG, "ex: " + ex);
-                onUpladProfileError(ex.getMessage());
-                return;
-            }
-
-
-            goToImport(profile);
-
-        } else {
-
-            onUpladProfileError("profile null");
-        }
+    public void showUserCurrentPhoto(Uri photoUri) {
+        Log.d(TAG, "showUserCurrentPhoto");
+        Glide.with(this)
+                .load(photoUri)
+                .fitCenter()
+                .into(imgProfile);
     }
 
 
-    private void showSnackbar(CharSequence message) {
-        Snackbar.make(imgEmoji, message, Snackbar.LENGTH_LONG).show();
-    }
-
-
-    public void goToImport(Profile profile) {
+    @Override
+    public void startImportDataActivity() {
+        saveStep();
         Intent intent = new Intent(this, ImportDataActivity.class);
-        intent.putExtra(ImportDataActivity.EXTRA_NAME, profile.getmName());
-        intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER, getPhoneNumber());
-        intent.putExtra(ImportDataActivity.EXTRA_PHOTO_URI, profile.getPhoto().getUrl());
         intent
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -245,20 +244,25 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         startActivity(intent);
     }
 
-    Uri compreUri;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        presenter.onActivityResult(requestCode, resultCode, data);
+    }
 
-    private void compressImage(Uri imageUri) {
-        ImageCompression imageCompression = new ImageCompression(this.getCacheDir(), this.getContentResolver()) {
-            @Override
-            protected void onPostExecute(MediaFile mediaFile) {
-
-                compreUri = mediaFile.getLocalUri();
-                // image here is compressed & ready to be sent to the server
-                Log.d(TAG, "imageCompression path: " + compreUri);
-            }
-        };
-        imageCompression.execute(imageUri);// imagePath as a string
+    @MainThread
+    private void showSnackbar(@StringRes int errorMessageRes) {
+        Snackbar.make(rootView, errorMessageRes, Snackbar.LENGTH_LONG).show();
     }
 
 
+    private void showSnackbar(CharSequence message) {
+        Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+    }
+
+
+    @Override
+    public void setPresenter(LoadProfilePresenterImpl presenter) {
+
+    }
 }

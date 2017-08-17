@@ -48,7 +48,7 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
         List<Contact> contacts = params[0];
         for (Contact contact : contacts) {
             final String phoneNumber = formatPhoneNumber(context, contact.getPhoneNumber());
-            final String name = contact.getName();
+            final String displayNameOnPhone = contact.getName();
             if (phoneNumber != null) {
                 contact.setPhoneNumber(phoneNumber);
 
@@ -56,7 +56,7 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         counterParseDataSnapshotInstance++;
-                        new ParseDataSnapshot(phoneNumber, name).execute(dataSnapshot);
+                        new ParseDataSnapshot(phoneNumber, displayNameOnPhone).execute(dataSnapshot);
                     }
 
                     @Override
@@ -111,30 +111,30 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
     private class ParseDataSnapshot extends AsyncTask<DataSnapshot, Void, Contact> {
 
         private String phoneNumber;
-        private String name;
+        private String displayNameOnPhone;
 
-        public ParseDataSnapshot(String phoneNumber, String name) {
+        public ParseDataSnapshot(String phoneNumber, String displayNameOnPhone) {
             counterParseDataSnapshotExecuted++;
             this.phoneNumber = phoneNumber;
-            this.name = name;
+            this.displayNameOnPhone = displayNameOnPhone;
         }
 
         @Override
         protected Contact doInBackground(DataSnapshot... params) {
             DataSnapshot dataSnapshot = params[0];
             Log.d(TAG, "dataSnapshot: " + dataSnapshot);
-            String userKey = null;
+            String uid = null;
 
 
             if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-                userKey = dataSnapshot.getValue().toString();
-                if (userKey != null) {
-                    final String finalUserKey = userKey;
-                    firebaseContactsHelper.listenUserProfile(userKey, new ValueEventListener() {
+                uid = dataSnapshot.getValue().toString();
+                if (uid != null) {
+                    final String finalUid = uid;
+                    firebaseContactsHelper.listenUserProfile(finalUid, new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             counterParseProfileInstance++;
-                            new ParseProfile(phoneNumber, finalUserKey, name).execute(dataSnapshot);
+                            new ParseProfile(phoneNumber, finalUid, displayNameOnPhone).execute(dataSnapshot);
                         }
 
                         @Override
@@ -164,13 +164,13 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
     private class ParseProfile extends AsyncTask<DataSnapshot, Void, Contact> {
 
         private String phoneNumber;
-        private String userKey;
-        private String name;
+        private String UserUid;
+        private String displayNameOnPhone;
 
-        public ParseProfile(String phoneNumber, String userKey, String name) {
+        public ParseProfile(String phoneNumber, String UserUid, String displayNameOnPhone) {
             this.phoneNumber = phoneNumber;
-            this.userKey = userKey;
-            this.name = name;
+            this.UserUid = UserUid;
+            this.displayNameOnPhone = displayNameOnPhone;
         }
 
         @Override
@@ -181,13 +181,16 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
 
             Contact contact = new Contact();
             contact.setPhoneNumber(phoneNumber);
-            contact.setName(name);
-            contact.setUserKey(userKey);
+            contact.setName(displayNameOnPhone);
+            contact.setUid(UserUid);
 
             if (dataSnapshot != null) {
-                Contact contactProfile = dataSnapshot.getValue(Contact.class);
-                if (contactProfile != null) {
-                    contact.setPhotoUri(contactProfile.getPhotoUri());
+                Contact contactParsed = dataSnapshot.getValue(Contact.class);
+                if (contactParsed != null) {
+                    Log.d(TAG, "contact parsed: " + contactParsed.toString());
+                    contact.setDisplayName(contactParsed.getDisplayName());
+                    contact.setPhotoUrl(contactParsed.getPhotoUrl());
+                    contact.setEmail(contactParsed.getEmail());
                 }
             }
             return contact;

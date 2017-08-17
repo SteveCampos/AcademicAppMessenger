@@ -13,9 +13,9 @@ class MainInteractorImpl implements MainInteractor {
     private MainRepository repository;
 
     public MainInteractorImpl() {
-        this.repository = new MainRepositoryImpl();
+        //this.repository = new MainRepositoryImpl();
     }
-
+/*
     @Override
     public void getPhoneNumber(SharedPreferences preferences) {
         repository.getPhoneNumber(preferences);
@@ -29,5 +29,5 @@ class MainInteractorImpl implements MainInteractor {
     @Override
     public void listenForIncomingMessages(Contact contact) {
         repository.listenForIncomingMessages(contact);
-    }
+    }*/
 }

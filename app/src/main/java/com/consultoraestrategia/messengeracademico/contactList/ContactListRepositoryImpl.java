@@ -28,7 +28,7 @@ public class ContactListRepositoryImpl implements ContactListRepository {
         SQLite
                 .select()
                 .from(Contact.class)
-                .where(Contact_Table.userKey.isNotNull())
+                .where(Contact_Table.uid.isNotNull())
                 .and(Contact_Table.type.eq(Contact.TYPE_ADDED_AND_VISIBLE))
                 .orderBy(Contact_Table.name, true)
                 .async()

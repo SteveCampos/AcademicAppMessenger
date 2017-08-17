@@ -4,6 +4,7 @@ import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -64,7 +65,7 @@ public interface ChatDataSource {
     void saveMessageWithStatusReaded(ChatMessage message, Chat chat, ListenMessagesCallback callback);
 
 
-    void listenForAllUserMessages(Contact mainContact, ListenMessagesCallback callback);
+    void listenForAllUserMessages(ListenMessagesCallback callback);
 
     void stopListenMessages();
 
