@@ -50,9 +50,6 @@ public class ChatDbFlowStorage implements ChatStorage {
             @Override
             public void execute(DatabaseWrapper databaseWrapper) {
                 chat.save();
-                if (message.getMediaFile() != null && !message.getMediaFile().exists()) {
-                    message.getMediaFile().save();
-                }
                 message.save();
                 Log.d(TAG, "message.getMessageText(): " + message.getMessageText());
                 Log.d(TAG, "message.getEmisor().getPhoneNumber(): " + message.getEmisor().getPhoneNumber());
@@ -68,6 +65,14 @@ public class ChatDbFlowStorage implements ChatStorage {
                 if (!existsReceptor && message.getReceptor().getPhoneNumber() != null) {
                     message.getReceptor().setType(Contact.TYPE_NOT_ADDED);
                     message.getReceptor().save();
+                }
+
+                if (message.getMediaFile() != null && !message.getMediaFile().exists()) {
+                    message.getMediaFile().save();
+                }
+
+                if (message.getOfficialMessage() != null) {
+                    message.getOfficialMessage().save();
                 }
 
             }

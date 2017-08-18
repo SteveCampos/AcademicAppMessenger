@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginEnd="48dp"
     android:layout_marginRight="48dp"
-    android:background="@drawable/balloom_receptor"
-    android:padding="8dp">
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp">
 
     <TextView
         android:id="@+id/txt_day_group"
@@ -19,143 +20,154 @@
         android:textAllCaps="true"
         android:visibility="gone" />
 
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardview"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt_day_group"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="2dp">
+        android:background="@drawable/balloom_receptor"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        >
 
-        <RelativeLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/border_left"
-            android:paddingLeft="8dp">
+            android:layout_height="wrap_content"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardElevation="2dp">
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/txt_subject"
-                style="@style/Base.TextAppearance.AppCompat.Title"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Autorización de Salida."
-                android:textColor="@color/md_light_blue_900" />
+                android:layout_height="match_parent"
+                android:background="@drawable/border_left"
+                android:padding="8dp">
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/txt_official_title"
-                style="@style/TextAppearance.AppCompat.Tooltip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/txt_subject"
-                android:text="Viaje de estudios a Ica"
-                android:textColor="@color/md_light_blue_900" />
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/txt_subject"
+                    style="@style/Base.TextAppearance.AppCompat.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Autorización de Salida."
+                    android:textColor="@color/md_light_blue_900" />
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/txt_additional1"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/txt_official_title"
-                android:layout_marginTop="16dp"
-                android:text="Hijo: Russel Machaca" />
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/txt_official_title"
+                    style="@style/TextAppearance.AppCompat.Tooltip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt_subject"
+                    android:text="Viaje de estudios a Ica"
+                    android:textColor="@color/md_light_blue_900" />
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/txt_additional2"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/txt_additional1"
-                android:layout_marginBottom="4dp"
-                android:layout_toLeftOf="@+id/txt_important_reference"
-                android:layout_toStartOf="@+id/txt_important_reference"
-                android:text="Fecha: 20/08/2017" />
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/txt_additional1"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt_official_title"
+                    android:layout_marginTop="16dp"
+                    android:text="Hijo: Russel Machaca" />
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/txt_important_reference"
-                style="@style/Base.TextAppearance.AppCompat.Caption"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/txt_additional2"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:text="5to Año\nSección A" />
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/txt_additional2"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/txt_additional1"
+                    android:layout_marginBottom="4dp"
+                    android:layout_toLeftOf="@+id/txt_important_reference"
+                    android:layout_toStartOf="@+id/txt_important_reference"
+                    android:text="Fecha: 20/08/2017" />
 
-        </RelativeLayout>
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/txt_important_reference"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/txt_additional2"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:text="5to Año\nSección A" />
+
+            </RelativeLayout>
 
 
-    </android.support.v7.widget.CardView>
-
-    <TextView
-        android:id="@+id/message_text"
-        style="@style/chat_text_message_style"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/cardview"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Estimado Sr. Juan le comento que su hijo Russel hoy a demostrado en la clase que puede unir un grupo y dirigir de manera ordenada par ael desarrollo de algunos ejercicios."
-        android:textColor="@color/md_grey_900" />
-
-    <TextView
-        android:id="@+id/txt_official_emisor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/message_text"
-        android:layout_toLeftOf="@+id/txt_time"
-        android:background="@drawable/border_top"
-        android:paddingTop="2dp"
-        android:text="Atte.\nProfesor Guillermo Mamani A." />
-
-    <TextView
-        android:id="@+id/txt_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/txt_official_emisor"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:text="14:29 PM" />
-
-    <LinearLayout
-        android:id="@+id/container_action_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txt_official_emisor"
-        android:layout_marginTop="8dp">
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btn_deny"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="DENEGAR"
-            android:textColor="@color/md_grey_700"
-            android:visibility="visible" />
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btn_accept"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="ACEPTAR"
-            android:visibility="visible" />
+        </android.support.v7.widget.CardView>
 
         <TextView
-            android:id="@+id/txt_action_respone"
-            style="@style/TextAppearance.AppCompat.Headline"
+            android:id="@+id/message_text"
+            style="@style/chat_text_message_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Confirmado"
-            android:textColor="@color/colorPrimary"
-            android:visibility="gone" />
+            android:layout_below="@+id/cardview"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Estimado Sr. Juan le comento que su hijo Russel hoy a demostrado en la clase que puede unir un grupo y dirigir de manera ordenada par ael desarrollo de algunos ejercicios."
+            android:textColor="@color/md_grey_900" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/txt_official_emisor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/message_text"
+            android:layout_toLeftOf="@+id/txt_time"
+            android:background="@drawable/border_top"
+            android:paddingTop="2dp"
+            android:text="Atte.\nProfesor Guillermo Mamani A." />
+
+        <TextView
+            android:id="@+id/txt_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/txt_official_emisor"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="14:29 PM" />
+
+        <LinearLayout
+            android:id="@+id/container_action_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_official_emisor"
+            android:background="@color/white"
+            android:layout_marginTop="8dp">
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_deny"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="DENEGAR"
+                android:textColor="@color/md_grey_700"
+                android:visibility="visible" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_accept"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ACEPTAR"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/txt_action_respone"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Confirmado"
+                android:textColor="@color/colorPrimary"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
 
 </RelativeLayout>

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 
 import com.consultoraestrategia.messengeracademico.BaseView;
 import com.consultoraestrategia.messengeracademico.R;
@@ -338,31 +339,6 @@ public class ChatPresenterImpl implements ChatPresenter {
             message.setMessageUri("");
             message.setTimestamp(new Date().getTime());
             message.setChatKey(chat.getChatKey());
-            /*
-            ChatMessage message = new ChatMessage();
-            message.setEmisor(emisor);
-            message.setReceptor(receptor);
-            message.setMessageText(text);
-            message.setMessageStatus(ChatMessage.STATUS_WRITED);
-            message.setMessageType(ChatMessage.TYPE_TEXT_OFFICIAL);
-            message.setMessageUri("");
-            message.setTimestamp(new Date().getTime());
-            message.setChatKey(chat.getChatKey());
-            OfficialMessage officialMessage = new OfficialMessage(
-                    "id",
-                    "Autorización de Salida",
-                    "Viaje de Estudias a Ica",
-                    "Hijo: Russel M",
-                    "Fecha: 20/08/207\nHora: 02:30 PM",
-                    "",
-                    "",
-                    "5to Año\nSección A",
-                    "Atte.\nProfesor Guillermo Mamani A.",
-                    OfficialMessage.ACTION_TYPE_CONFIRM,
-                    OfficialMessage.STATE_WAITING
-            );
-            message.setOfficialMessage(officialMessage);*/
-
             sendMessage(message);
         }
 
@@ -526,6 +502,48 @@ public class ChatPresenterImpl implements ChatPresenter {
             }
         }
     }
+
+    @Override
+    public void onOfficialMessageActionClicked(ChatMessage message, View view) {
+        Log.d(TAG, "onOfficialMessageActionClicked");
+        int id = view.getId();
+        if (id == R.id.btn_accept) {
+            showDialogToConfirm(message);
+            return;
+        }
+        if (id == R.id.btn_deny) {
+            showDialogToEnsureDeny(message);
+        }
+    }
+
+    @Override
+    public void officialMessageConfirmed(ChatMessage message) {
+        OfficialMessage officialMessage = message.getOfficialMessage();
+        officialMessage.setState(OfficialMessage.STATE_CONFIRM);
+        message.setOfficialMessage(officialMessage);
+        readMessage(message);
+    }
+
+    @Override
+    public void officialMessageDenied(ChatMessage message) {
+        OfficialMessage officialMessage = message.getOfficialMessage();
+        officialMessage.setState(OfficialMessage.STATE_DENY);
+        message.setOfficialMessage(officialMessage);
+        readMessage(message);
+    }
+
+    private void showDialogToConfirm(ChatMessage message) {
+        if (view != null) {
+            view.showDialogToConfirmOfficialMessage(message);
+        }
+    }
+
+    private void showDialogToEnsureDeny(ChatMessage message) {
+        if (view != null) {
+            view.showDialogToEnsureDenyOfficialMessage(message);
+        }
+    }
+
 
     private void showErrorPickingImage(Exception error) {
         if (view != null) {

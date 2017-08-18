@@ -3,6 +3,7 @@ package com.consultoraestrategia.messengeracademico;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.multidex.MultiDex;
 import android.support.v4.app.FragmentManager;
 
 import com.consultoraestrategia.messengeracademico.chat.di.ChatComponent;
@@ -34,6 +35,12 @@ public class MessengerAcademicoApp extends Application {
         initEmojis();
         initFirebase();
         initDb();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     private void initEmojis() {

@@ -89,7 +89,11 @@ public class FirebaseChat extends FirebaseHelper {
 
 
     public void listenReceptorAction(Chat chat, ValueEventListener listener) {
-        listenChatAction(chat.getChatKey(), chat.getReceptor().getUid(), listener);
+        Contact receptor = chat.getReceptor();
+        if (mainUser.getUid().equals(receptor.getUid())) {
+            receptor = chat.getEmisor();
+        }
+        listenChatAction(chat.getChatKey(), receptor.getUid(), listener);
     }
 
     public void listenChatAction(String keyChat, String receptorUid, ValueEventListener valueEventListener) {
@@ -135,6 +139,7 @@ public class FirebaseChat extends FirebaseHelper {
 
         String[] sortUids = StringUtils.sortAlphabetical(emisorUid, receptorUid);
         String uidChat = sortUids[0] + "_" + sortUids[1];
+        message.setChatKey(uidChat);
 
         String keyMessage = message.getKeyMessage();
         message.setMessageStatus(messageStatus);
@@ -145,14 +150,76 @@ public class FirebaseChat extends FirebaseHelper {
             message.setOfficialMessage(officialMessage);
         }
 
-        Map<String, Object> map = new HashMap<>();
+
+        Map<String, Object> map;
+        if (message.getMessageStatus() == ChatMessage.STATUS_WRITED) {
+            //Write all Message
+            map = buildMessageMap(message, online);
+        } else {
+            //Only update timestamps!
+            map = buildTimestampMap(message);
+        }
+        /*
         map.put("/chats-messages/" + uidChat + "/" + keyMessage, message.toMap());
         map.put("/users-messages/" + from.getUid() + "/" + keyMessage, message.toMap());
         map.put("/users-messages/" + to.getUid() + "/" + keyMessage, message.toMap());
         if (!online) {
             map.put("/notifications/" + keyMessage, message.toMap());
         }
+
+
+        if (message.getMessageType().equals(ChatMessage.TYPE_TEXT_OFFICIAL)) {
+            map.put("/official-messages/" + message.getKeyMessage(), message.toMap());
+        }*/
+
         getDatabase().getReference().updateChildren(map, listener);
+    }
+
+    private Map<String, Object> buildMessageMap(ChatMessage message, boolean online) {
+        String uidChat = message.getChatKey();
+        String keyMessage = message.getKeyMessage();
+        Map<String, Object> map = new HashMap<>();
+        map.put("/chats-messages/" + uidChat + "/" + keyMessage, message.toMap());
+        map.put("/users-messages/" + message.getEmisor().getUid() + "/" + keyMessage, message.toMap());
+        map.put("/users-messages/" + message.getReceptor().getUid() + "/" + keyMessage, message.toMap());
+        if (!online) {
+            map.put("/notifications/" + keyMessage, message.toMap());
+        }
+
+
+        if (message.getMessageType().equals(ChatMessage.TYPE_TEXT_OFFICIAL)) {
+            map.put("/official-messages/" + keyMessage, message.toMap());
+        }
+        return map;
+    }
+
+
+    private Map<String, Object> buildTimestampMap(ChatMessage message) {
+        Map<String, Object> map = new HashMap<>();
+        String uidChat = message.getChatKey();
+        String keyMessage = message.getKeyMessage();
+        long timestamp = new Date().getTime();
+        String statusName = "sendTimestamp";
+        int messageStatus = message.getMessageStatus();
+        if (messageStatus == ChatMessage.STATUS_DELIVERED) {
+            statusName = "deliverTimestamp";
+        }
+        if (messageStatus == ChatMessage.STATUS_READED) {
+            statusName = "readTimestamp";
+        }
+
+        map.put("/chats-messages/" + uidChat + "/" + keyMessage + "/" + statusName, timestamp);
+        map.put("/chats-messages/" + uidChat + "/" + keyMessage + "/messageStatus", messageStatus);
+        map.put("/users-messages/" + message.getEmisor().getUid() + "/" + keyMessage + "/" + statusName, timestamp);
+        map.put("/users-messages/" + message.getEmisor().getUid() + "/" + keyMessage + "/messageStatus", messageStatus);
+        map.put("/users-messages/" + message.getReceptor().getUid() + "/" + keyMessage + "/" + statusName, timestamp);
+        map.put("/users-messages/" + message.getReceptor().getUid() + "/" + keyMessage + "/messageStatus", messageStatus);
+
+        if (message.getMessageType().equals(ChatMessage.TYPE_TEXT_OFFICIAL)) {
+            map.put("/official-messages/" + keyMessage + "/" + statusName, timestamp);
+            map.put("/official-messages/" + keyMessage + "/messageStatus", messageStatus);
+        }
+        return map;
     }
 
     private void sendMessageWithPhoneNumbers(String phoneNumberFrom, final String phoneNumberTo, final String messageText) {

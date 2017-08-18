@@ -96,7 +96,7 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
 
             String message = null;
             switch (lastMessage.getMessageType()) {
-                case ChatMessage.TYPE_TEXT:
+                default:
                     message = lastMessage.getMessageText();
                     break;
                 case ChatMessage.TYPE_IMAGE:
@@ -111,12 +111,10 @@ public class ChatItemHolder extends RecyclerView.ViewHolder {
 
             }
             txtMessage.setText(message);
-
             int statusMessage = lastMessage.getMessageStatus();
             setStatusMessage(mainUser, messageSender, imgStatusMessage, statusMessage, context);
             long timeStamp = lastMessage.getTimestamp();
             setTime(txtTime, timeStamp, context.getResources());
-
         }
 
     }

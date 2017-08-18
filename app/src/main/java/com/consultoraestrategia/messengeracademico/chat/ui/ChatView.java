@@ -50,4 +50,8 @@ public interface ChatView extends BaseView<ChatPresenter> {
     void showFatalError(String error);
 
     void showAcademicInformation(String data);
+
+    void showDialogToConfirmOfficialMessage(ChatMessage message);
+
+    void showDialogToEnsureDenyOfficialMessage(ChatMessage message);
 }

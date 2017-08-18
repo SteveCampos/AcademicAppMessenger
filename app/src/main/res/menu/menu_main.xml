@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.consultoraestrategia.messengeracademico.main.ui.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_import"
         android:orderInCategory="100"
         android:title="@string/action_import"
         app:showAsAction="never" />
@@ -13,10 +13,15 @@
         android:title="Ajustes"
         app:showAsAction="never" />
 
-<item
+    <item
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:title="@string/logout"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_test"
+        android:orderInCategory="100"
+        android:title="Test"
         app:showAsAction="never" />
 
 

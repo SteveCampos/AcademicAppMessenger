@@ -152,7 +152,7 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
     private String getTextFromMessage(ChatMessage message) {
         String messageText = "";
         switch (message.getMessageType()) {
-            case ChatMessage.TYPE_TEXT:
+            default:
                 messageText = message.getMessageText();
                 break;
             case ChatMessage.TYPE_IMAGE:

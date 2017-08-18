@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.chat;
 
 import android.content.Intent;
+import android.view.View;
 
 import com.consultoraestrategia.messengeracademico.BasePresenter;
 import com.consultoraestrategia.messengeracademico.chat.events.ChatEvent;
@@ -37,4 +38,10 @@ public interface ChatPresenter extends BasePresenter {
     void pickImage();
 
     void onActivityResult(int requestCode, int resultCode, Intent data);
+
+    void onOfficialMessageActionClicked(ChatMessage message, View view);
+
+    void officialMessageConfirmed(ChatMessage message);
+
+    void officialMessageDenied(ChatMessage message);
 }

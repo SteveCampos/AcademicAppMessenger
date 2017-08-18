@@ -4,6 +4,7 @@ import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.parceler.Parcel;
 
@@ -15,7 +16,7 @@ import java.util.Map;
  */
 @Table(database = MessengerAcademicoDatabase.class)
 @Parcel(analyze = {OfficialMessage.class})
-public class OfficialMessage {
+public class OfficialMessage extends BaseModel {
     public static final String TAG = OfficialMessage.class.getSimpleName();
 
     @PrimaryKey
@@ -45,7 +46,6 @@ public class OfficialMessage {
     public static final int STATE_WAITING = 100;
     public static final int STATE_CONFIRM = 101;
     public static final int STATE_DENY = 102;
-
 
     public OfficialMessage() {
     }

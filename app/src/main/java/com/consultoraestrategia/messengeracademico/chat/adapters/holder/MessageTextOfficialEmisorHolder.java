@@ -119,6 +119,7 @@ public class MessageTextOfficialEmisorHolder extends RecyclerView.ViewHolder {
                                            AppCompatButton btnConfirm, AppCompatButton btnDeny) {
         Log.d(TAG, "showOfficialMessage");
         if (officialMessage != null) {
+            officialMessage.load();
             String subject = officialMessage.getSubject();
             String title = officialMessage.getTitle();
             String reference1 = officialMessage.getReference1();

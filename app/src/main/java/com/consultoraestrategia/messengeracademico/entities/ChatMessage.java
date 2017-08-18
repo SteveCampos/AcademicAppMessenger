@@ -75,6 +75,16 @@ public class ChatMessage extends BaseModel {
     @ForeignKey(stubbedRelationship = true)
     public OfficialMessage officialMessage;
 
+    @Column
+    public long writeTimestamp;
+    @Column
+    public long sendTimestamp;
+    @Column
+    public long deliverTimestamp;
+    @Column
+    public long readTimestamp;
+
+
     public ChatMessage() {
     }
 
@@ -231,6 +241,24 @@ public class ChatMessage extends BaseModel {
         if (officialMessage != null) {
             result.put("officialMessage", officialMessage.toMap());
         }
+        result.put("writeTimestamp", timestamp);
+        result.put("sendTimestamp", timestamp);
+        /*
+        switch (messageStatus) {
+            default:
+                result.put("writeTimestamp", writeTimestamp);
+                break;
+            case STATUS_SEND:
+                result.put("sendTimestamp", sendTimestamp);
+                break;
+            case STATUS_DELIVERED:
+                result.put("deliverTimestamp", deliverTimestamp);
+                break;
+            case STATUS_READED:
+                result.put("readTimestamp", readTimestamp);
+                break;
+
+        }*/
         return result;
     }
 

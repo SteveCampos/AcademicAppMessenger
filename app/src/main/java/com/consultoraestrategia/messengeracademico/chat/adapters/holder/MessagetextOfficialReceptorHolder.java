@@ -68,7 +68,7 @@ public class MessagetextOfficialReceptorHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(ChatMessage message, ChatMessage previousMessage, ChatMessageListener listener, Resources resources) {
+    public void bind(final ChatMessage message, ChatMessage previousMessage, final ChatMessageListener listener, Resources resources) {
         Log.d(TAG, "MessageTextReceptorHolder bind");
         messageText.setText(message.getMessageText());
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
@@ -93,6 +93,23 @@ public class MessagetextOfficialReceptorHolder extends RecyclerView.ViewHolder {
         if (listener != null && message.getMessageStatus() != ChatMessage.STATUS_READED) {
             listener.onMessageReaded(message);
         }
+
+        btnAccept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) {
+                    listener.onOfficialMesageListener(message, view);
+                }
+            }
+        });
+        btnDeny.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) {
+                    listener.onOfficialMesageListener(message, view);
+                }
+            }
+        });
     }
 
 

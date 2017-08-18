@@ -38,6 +38,7 @@ import com.consultoraestrategia.messengeracademico.profileEditImage.ui.ProfileEd
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingPresenter;
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingView;
 import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingComponent;
+import com.consultoraestrategia.messengeracademico.prueba.TestActivity;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -265,26 +266,35 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, ImportDataActivity.class));
-            return true;
-        } else if (id == R.id.action_profile) {
-            Intent intent = new Intent(this, ProfileEditImageActivity.class);
-            intent.putExtra(ImportDataActivity.EXTRA_PHONENUMBER, getPhoneNumberFromPreferences());
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        } else if (id == R.id.action_logout) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        public void onComplete(@NonNull Task<Void> task) {
-                            // user is now signed out
-                            forwardToClass(LoadProfileActivity.class);
-                        }
-                    });
+        switch (id) {
+            default:
+                break;
+            case R.id.action_import:
+                startActivity(new Intent(this, ImportDataActivity.class));
+                break;
+            case R.id.action_profile:
+                startActivity(new Intent(this, ProfileEditImageActivity.class));
+                break;
+            case R.id.action_logout:
+                logout();
+                break;
+            case R.id.action_test:
+                startActivity(new Intent(this, TestActivity.class));
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // user is now signed out
+                        forwardToClass(LoadProfileActivity.class);
+                    }
+                });
     }
 
     public AppCompatActivity getActivity() {

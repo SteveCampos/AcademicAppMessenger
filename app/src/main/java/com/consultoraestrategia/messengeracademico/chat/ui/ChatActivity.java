@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
@@ -21,6 +22,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -396,6 +398,67 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     public void onImageClick(ChatMessage message, View view) {
         Log.d(TAG, "onImageClick uiri: " + message.getMessageUri());
         startFullImageActivity(message, view);
+    }
+
+    @Override
+    public void onOfficialMesageListener(ChatMessage message, View view) {
+        Log.d(TAG, "onOfficialMesageListener: " + message.toMap());
+        presenter.onOfficialMessageActionClicked(message, view);
+    }
+
+
+    @Override
+    public void showDialogToConfirmOfficialMessage(final ChatMessage message) {
+        Log.d(TAG, "showDialogToConfirmOfficialMessage");
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Confirmación")
+                .setMessage("¿Está seguro de confirmar la solicitud?\nSe enviará un mensaje de respuesta.")
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                onConfirmOfficialMessage(message);
+                            }
+                        })
+                .setNegativeButton("CANCELAR",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+        builder.create().show();
+    }
+
+    @Override
+    public void showDialogToEnsureDenyOfficialMessage(final ChatMessage message) {
+        Log.d(TAG, "showDialogToEnsureDenyOfficialMessage");
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Denegación")
+                .setMessage("¿Está seguro de denegar la solicitud?\nSe enviará un mensaje de respuesta.")
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                onDenyOfficialMessage(message);
+                            }
+                        })
+                .setNegativeButton("CANCELAR",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+        builder.create().show();
+    }
+
+    public void onConfirmOfficialMessage(ChatMessage message) {
+        presenter.officialMessageConfirmed(message);
+    }
+
+    public void onDenyOfficialMessage(ChatMessage message) {
+        presenter.officialMessageDenied(message);
     }
 
 
