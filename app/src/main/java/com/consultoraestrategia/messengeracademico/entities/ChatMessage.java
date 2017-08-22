@@ -224,6 +224,38 @@ public class ChatMessage extends BaseModel {
         this.officialMessage = officialMessage;
     }
 
+    public long getWriteTimestamp() {
+        return writeTimestamp;
+    }
+
+    public void setWriteTimestamp(long writeTimestamp) {
+        this.writeTimestamp = writeTimestamp;
+    }
+
+    public long getSendTimestamp() {
+        return sendTimestamp;
+    }
+
+    public void setSendTimestamp(long sendTimestamp) {
+        this.sendTimestamp = sendTimestamp;
+    }
+
+    public long getDeliverTimestamp() {
+        return deliverTimestamp;
+    }
+
+    public void setDeliverTimestamp(long deliverTimestamp) {
+        this.deliverTimestamp = deliverTimestamp;
+    }
+
+    public long getReadTimestamp() {
+        return readTimestamp;
+    }
+
+    public void setReadTimestamp(long readTimestamp) {
+        this.readTimestamp = readTimestamp;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("emisor", emisor.toMap());

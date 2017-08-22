@@ -21,7 +21,7 @@ import org.greenrobot.eventbus.Subscribe;
 import static com.consultoraestrategia.messengeracademico.notification.MyFirebaseInstanceIdService.USER_TOPIC;
 
 /**
- * Created by jairc on 27/03/2017.
+ * Created by stevecampos on 27/07/2017.
  */
 
 public class MainPresenterImpl implements MainPresenter {

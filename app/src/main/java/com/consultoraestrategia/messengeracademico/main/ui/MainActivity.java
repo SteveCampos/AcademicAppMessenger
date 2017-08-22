@@ -278,9 +278,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
             case R.id.action_logout:
                 logout();
                 break;
-            case R.id.action_test:
+            /*case R.id.action_test:
                 startActivity(new Intent(this, TestActivity.class));
-                break;
+                break;*/
         }
 
         return super.onOptionsItemSelected(item);

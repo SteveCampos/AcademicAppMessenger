@@ -186,7 +186,6 @@ public class FirebaseChat extends FirebaseHelper {
             map.put("/notifications/" + keyMessage, message.toMap());
         }
 
-
         if (message.getMessageType().equals(ChatMessage.TYPE_TEXT_OFFICIAL)) {
             map.put("/official-messages/" + keyMessage, message.toMap());
         }
@@ -198,14 +197,21 @@ public class FirebaseChat extends FirebaseHelper {
         Map<String, Object> map = new HashMap<>();
         String uidChat = message.getChatKey();
         String keyMessage = message.getKeyMessage();
-        long timestamp = new Date().getTime();
-        String statusName = "sendTimestamp";
+        long timestamp = message.getTimestamp();
+        String statusName = "readTimestamp";
         int messageStatus = message.getMessageStatus();
         if (messageStatus == ChatMessage.STATUS_DELIVERED) {
             statusName = "deliverTimestamp";
+            timestamp = message.getDeliverTimestamp() == 0 ? new Date().getTime() : message.getDeliverTimestamp();
         }
         if (messageStatus == ChatMessage.STATUS_READED) {
             statusName = "readTimestamp";
+            timestamp = message.getReadTimestamp() == 0 ? new Date().getTime() : message.getReadTimestamp();
+        }
+
+        int state = OfficialMessage.STATE_WAITING;
+        if (message.getOfficialMessage() != null) {
+            state = message.getOfficialMessage().getState();
         }
 
         map.put("/chats-messages/" + uidChat + "/" + keyMessage + "/" + statusName, timestamp);
@@ -216,8 +222,22 @@ public class FirebaseChat extends FirebaseHelper {
         map.put("/users-messages/" + message.getReceptor().getUid() + "/" + keyMessage + "/messageStatus", messageStatus);
 
         if (message.getMessageType().equals(ChatMessage.TYPE_TEXT_OFFICIAL)) {
+            long actionTimestamp = message.getOfficialMessage().getActionTimestamp();
+
             map.put("/official-messages/" + keyMessage + "/" + statusName, timestamp);
             map.put("/official-messages/" + keyMessage + "/messageStatus", messageStatus);
+
+            map.put("/official-messages/" + keyMessage + "/officialMessage/state", state);
+            map.put("/official-messages/" + keyMessage + "/officialMessage/actionTimestamp", actionTimestamp);
+
+            map.put("/chats-messages/" + uidChat + "/" + keyMessage + "/officialMessage/state", state);
+            map.put("/chats-messages/" + uidChat + "/" + keyMessage + "/officialMessage/actionTimestamp", actionTimestamp);
+
+            map.put("/users-messages/" + message.getEmisor().getUid() + "/" + keyMessage + "/officialMessage/state", state);
+            map.put("/users-messages/" + message.getEmisor().getUid() + "/" + keyMessage + "/officialMessage/actionTimestamp", actionTimestamp);
+
+            map.put("/users-messages/" + message.getReceptor().getUid() + "/" + keyMessage + "/officialMessage/state", state);
+            map.put("/users-messages/" + message.getReceptor().getUid() + "/" + keyMessage + "/officialMessage/actionTimestamp", actionTimestamp);
         }
         return map;
     }

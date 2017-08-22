@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.R;
@@ -18,6 +19,10 @@ import com.consultoraestrategia.messengeracademico.notification.domain.usecase.G
 import com.consultoraestrategia.messengeracademico.notification.domain.usecase.GetMessagesNoReaded;
 import com.consultoraestrategia.messengeracademico.notification.domain.usecase.SaveMessageOnLocal;
 import com.consultoraestrategia.messengeracademico.utils.MapperHelper;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
@@ -59,15 +64,32 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
 
     @Override
     public void onMessageReceived(final RemoteMessage remoteMessage) {
-        Log.d(TAG, "onMessageReceived");
-        MapperHelper mapperHelper = new MapperHelper();
-        message = mapperHelper.mapToObject(remoteMessage.getData(), ChatMessage.class);
-        onMessageReceived(message);
+        Log.d(TAG, "onMessageReceived : " + remoteMessage.toString());
+        String keyMessage = remoteMessage.getData().get("keyMessage");
+        if (keyMessage != null && !TextUtils.isEmpty(keyMessage)) {
+            FirebaseDatabase.getInstance().getReference("notifications").child(keyMessage).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "onDataChange");
+                    if (dataSnapshot != null) {
+                        ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
+                        onMessageReceived(message);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d(TAG, "onCancelled");
+                }
+            });
+        }
+        //MapperHelper mapperHelper = new MapperHelper();
+        //message = mapperHelper.mapToObject(remoteMessage.getData(), ChatMessage.class);
     }
 
     @Override
     public void onMessageReceived(final ChatMessage message) {
-        Log.d(TAG, "onMessageReceived: " + message);
+        Log.d(TAG, "onMessageReceived: " + message.toString());
         this.emisor = null;
         this.messagesNoReaded = null;
         this.bitmap = null;

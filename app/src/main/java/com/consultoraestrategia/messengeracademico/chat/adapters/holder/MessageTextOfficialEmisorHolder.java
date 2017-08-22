@@ -3,7 +3,9 @@ package com.consultoraestrategia.messengeracademico.chat.adapters.holder;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
@@ -30,6 +32,7 @@ import butterknife.ButterKnife;
 
 import static com.consultoraestrategia.messengeracademico.entities.OfficialMessage.STATE_CONFIRM;
 import static com.consultoraestrategia.messengeracademico.entities.OfficialMessage.STATE_DENY;
+import static com.consultoraestrategia.messengeracademico.entities.OfficialMessage.STATE_NO_ACTION;
 import static com.consultoraestrategia.messengeracademico.entities.OfficialMessage.STATE_WAITING;
 
 /**
@@ -148,6 +151,10 @@ public class MessageTextOfficialEmisorHolder extends RecyclerView.ViewHolder {
     }
 
     public static void showStateEmisor(int stateAction, TextView txtActionRespone, Resources resources) {
+        if (stateAction == STATE_NO_ACTION) {
+            hideActionResponse(txtActionRespone);
+            return;
+        }
         showActionResponse(txtActionRespone);
         setActionResponse(stateAction, txtActionRespone, resources);
     }
@@ -155,22 +162,33 @@ public class MessageTextOfficialEmisorHolder extends RecyclerView.ViewHolder {
     public static void setActionResponse(int stateAction, TextView txtActionRespone, Resources res) {
 
         String textState;
+        @ColorRes int color;
         switch (stateAction) {
             default:
                 textState = res.getString(R.string.officialmessage_state_waiting);
+                color = ResourcesCompat.getColor(res, R.color.md_grey_500, null);
                 break;
             case STATE_CONFIRM:
                 textState = res.getString(R.string.officialmessage_state_confirm);
+                color = ResourcesCompat.getColor(res, R.color.colorPrimary, null);
                 break;
             case STATE_DENY:
                 textState = res.getString(R.string.officialmessage_state_deny);
+                color = ResourcesCompat.getColor(res, R.color.md_red_900, null);
                 break;
         }
 
         txtActionRespone.setText(textState);
+        txtActionRespone.setTextColor(color);
     }
 
     public static void showStateReceptor(int stateAction, AppCompatButton btnConfirm, AppCompatButton btnDeny, TextView txtActionRespone, Resources resources) {
+
+        if (stateAction == STATE_NO_ACTION) {
+            hideActionResponse(txtActionRespone);
+            hideButtonActions(btnConfirm, btnDeny);
+            return;
+        }
 
         if (stateAction == STATE_WAITING) {
             showButtonActions(btnConfirm, btnDeny);

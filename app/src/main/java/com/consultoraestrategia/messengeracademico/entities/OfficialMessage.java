@@ -41,11 +41,14 @@ public class OfficialMessage extends BaseModel {
     public String actionType;
     @Column
     public int state;
+    @Column
+    public long actionTimestamp;
 
     public static final String ACTION_TYPE_CONFIRM = "ACTION_CONFIRM";
     public static final int STATE_WAITING = 100;
     public static final int STATE_CONFIRM = 101;
     public static final int STATE_DENY = 102;
+    public static final int STATE_NO_ACTION = 103;
 
     public OfficialMessage() {
     }
@@ -150,6 +153,14 @@ public class OfficialMessage extends BaseModel {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public long getActionTimestamp() {
+        return actionTimestamp;
+    }
+
+    public void setActionTimestamp(long actionTimestamp) {
+        this.actionTimestamp = actionTimestamp;
     }
 
     public Map<String, Object> toMap() {

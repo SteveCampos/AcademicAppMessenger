@@ -370,9 +370,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         );
     }
 
-    @Override
-    public void readMessage(ChatMessage message) {
-        Log.d(TAG, "readMessage");
+    private void sendReadMessage(ChatMessage message) {
         useCaseHandler.execute(
                 useCaseReadMessage,
                 new ReadMessage.RequestValues(message),
@@ -387,6 +385,13 @@ public class ChatPresenterImpl implements ChatPresenter {
                         Log.d(TAG, "readMessage onError");
                     }
                 });
+    }
+
+    @Override
+    public void readMessage(ChatMessage message) {
+        Log.d(TAG, "readMessage");
+        message.setReadTimestamp(new Date().getTime());
+        sendReadMessage(message);
     }
 
     private boolean isWriting = false;
@@ -520,16 +525,18 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void officialMessageConfirmed(ChatMessage message) {
         OfficialMessage officialMessage = message.getOfficialMessage();
         officialMessage.setState(OfficialMessage.STATE_CONFIRM);
+        officialMessage.setActionTimestamp(new Date().getTime());
         message.setOfficialMessage(officialMessage);
-        readMessage(message);
+        sendReadMessage(message);
     }
 
     @Override
     public void officialMessageDenied(ChatMessage message) {
         OfficialMessage officialMessage = message.getOfficialMessage();
         officialMessage.setState(OfficialMessage.STATE_DENY);
+        officialMessage.setActionTimestamp(new Date().getTime());
         message.setOfficialMessage(officialMessage);
-        readMessage(message);
+        sendReadMessage(message);
     }
 
     private void showDialogToConfirm(ChatMessage message) {
