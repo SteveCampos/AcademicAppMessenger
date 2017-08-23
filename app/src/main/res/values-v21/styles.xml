@@ -38,4 +38,15 @@
     </style>
 
 
+    <!--<style name="Widget.Button.Simple" parent="android:Widget">-->
+        <!--<item name="android:background">@drawable/simple_button</item>-->
+        <!--<item name="android:textStyle">bold</item>-->
+
+    <!--</style>-->
+
+    <style name="Widget.Button.Simple" parent="android:Widget">
+        <item name="android:background">@drawable/border</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
 </resources>

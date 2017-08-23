@@ -233,7 +233,7 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
     /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
+     * Schedules a call to hide() in [delay] milliseconds,ch canceling any
      * previously scheduled calls.
      */
     private void delayedHide(int delayMillis) {

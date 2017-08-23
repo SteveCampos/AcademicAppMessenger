@@ -113,4 +113,8 @@
     </style>
 
 
+    <style name="Widget.Button.Simple" parent="android:Widget">
+        <item name="android:background">@drawable/border</item>
+    </style>
+
 </resources>

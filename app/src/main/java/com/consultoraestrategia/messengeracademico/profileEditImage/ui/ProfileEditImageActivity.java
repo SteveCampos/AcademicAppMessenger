@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +48,8 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
     TextView txtPhonenumber;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    @BindView(R.id.relative)
+    RelativeLayout relativeLayoutButtonImage;
 
     private ProfileEditImagePresenter presenter;
 
@@ -238,6 +241,18 @@ public class ProfileEditImageActivity extends AppCompatActivity implements Profi
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .fitCenter()
                 .into(imageView);
+    }
+
+    @Override
+    public void disableViews() {
+        relativeLayoutButtonImage.setEnabled(false);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(false);
+    }
+
+    @Override
+    public void enableViews() {
+        relativeLayoutButtonImage.setEnabled(true);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
     }
 
 

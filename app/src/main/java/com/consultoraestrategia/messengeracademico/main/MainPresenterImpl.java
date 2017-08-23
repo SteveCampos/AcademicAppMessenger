@@ -57,6 +57,7 @@ public class MainPresenterImpl implements MainPresenter {
     public void onCreate() {
         Log.d(TAG, "onCreate");
         eventBus.register(this);
+        view.checkGooglePlayServicesAvailable();
     }
 
     @Override
@@ -69,6 +70,7 @@ public class MainPresenterImpl implements MainPresenter {
         Log.d(TAG, "onResume");
         forwardToAnotherActivity = false;
         connectionInteractor.setOnline();
+        view.checkGooglePlayServicesAvailable();
     }
 
     @Override

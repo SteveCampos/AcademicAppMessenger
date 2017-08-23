@@ -45,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Gallery" />
+                    android:text="Galería" />
             </LinearLayout>
 
             <LinearLayout
@@ -65,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Photo" />
+                    android:text="Foto" />
             </LinearLayout>
 
             <LinearLayout
@@ -137,7 +137,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Location" />
+                    android:text="Locación" />
             </LinearLayout>
 
             <LinearLayout
@@ -157,7 +157,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Contact" />
+                    android:text="Contactos" />
             </LinearLayout>
 
         </LinearLayout>

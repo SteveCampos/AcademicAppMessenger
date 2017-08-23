@@ -74,6 +74,7 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
     public void attachView(BaseView view) {
         Log.d(TAG, "attachView");
         this.view = (LoadProfileView) view;
+        checkCurrentUser();
     }
 
     @Override
@@ -90,7 +91,7 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
     @Override
     public void onResume() {
         Log.d(TAG, "onResume");
-        checkCurrentUser();
+
     }
 
     @Override
@@ -127,6 +128,7 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
 
     @Override
     public void checkCurrentUser() {
+        Log.d(TAG, "checkCurrentUser");
         if (currentUser != null) {
             showCurrentUser();
         } else {

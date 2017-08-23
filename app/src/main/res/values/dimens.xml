@@ -15,9 +15,10 @@
     <dimen name="relative_view_size">60dp</dimen>
     <dimen name="view_margin_top_5dp">5dp</dimen>
 
-    <dimen name="dialog_profile_width">272dp</dimen>
+    <dimen name="dialog_profile_width">250dp</dimen>
     <dimen name="dialog_profile_height">272dp</dimen>
     <dimen name="grid_expected_size">120dp</dimen>
 
     <dimen name="image_default_size">198dp</dimen>
+    <dimen name="image_emoji_size">20dp</dimen>
 </resources>

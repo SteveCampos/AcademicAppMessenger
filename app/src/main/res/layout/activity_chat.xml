@@ -161,7 +161,8 @@
                     android:scrollHorizontally="false"
                     android:scrollbars="vertical"
                     android:textColorHint="@color/md_grey_500"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    app:emojiSize="@dimen/image_emoji_size"/>
                 <!--
                                 </android.support.design.widget.TextInputLayout>-->
 

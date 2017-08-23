@@ -66,35 +66,35 @@
         >
 
         <RelativeLayout
-            android:id="@+id/image.start.chat"
+            android:id="@+id/button.cancelar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/border"
+            style="@style/Widget.Button.Simple"
             android:layout_weight="1">
 
             <Button
-                android:id="@+id/button.cancelar"
+                android:clickable="false"
+                style="@style/Base.Widget.AppCompat.ActionButton.CloseMode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:text="Cancelar" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/image.start.info"
+            android:id="@+id/button.ok"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/border"
+            style="@style/Widget.Button.Simple"
             android:layout_weight="1">
 
             <Button
-                android:id="@+id/button.ok"
+                android:clickable="false"
+                style="@style/Base.Widget.AppCompat.ActionButton.CloseMode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/action_change_background"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:text="OK" />
 
         </RelativeLayout>

@@ -1,7 +1,9 @@
 package com.consultoraestrategia.messengeracademico.main.ui;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -16,6 +18,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -38,9 +41,11 @@ import com.consultoraestrategia.messengeracademico.profileEditImage.ui.ProfileEd
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingPresenter;
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingView;
 import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingComponent;
-import com.consultoraestrategia.messengeracademico.prueba.TestActivity;
+//import com.consultoraestrategia.messengeracademico.prueba.TestActivity;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -327,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         }
     }
 
+
     @Override
     public void setPresenter(MainPresenterImpl presenter) {
 
@@ -349,6 +355,48 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         return preferences.getString(VerificationActivity.PREF_PHONENUMBER, "+51993061806");
     }
 
+    @Override
+    public boolean checkGooglePlayServicesAvailable() {
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        final int status = googleAPI.isGooglePlayServicesAvailable(this);
+        if (status == ConnectionResult.SUCCESS) {
+            return true;
+        }
+        if (googleAPI.isUserResolvableError(status)) {
+            final Dialog errorDialog = googleAPI.getErrorDialog(this, status, 1);
+            if (errorDialog != null) {
+                inflateDialog();
+            }
+        }
+        return false;
+    }
+
+    private void inflateDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.google_play_services_title));
+        builder.setMessage(getString(R.string.google_play_services_message));
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.marker_google_services))));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.playstore_google_services))));
+                }
+                dialog.dismiss();
+                checkGooglePlayServicesAvailable();
+            }
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        });
+
+        AlertDialog alert11 = builder.create();
+        alert11.setCancelable(false);
+        alert11.show();
+    }
     @Override
     public void createNotification(NotificationInbox notification) {
         Log.d(TAG, "createNotification");

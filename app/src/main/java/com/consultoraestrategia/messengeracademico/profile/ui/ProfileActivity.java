@@ -87,6 +87,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileView {
             Glide.with(this)
                     .load(imageUrl)
                     .centerCrop()
+                    .fitCenter()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(imageCollapsing);
         }else {

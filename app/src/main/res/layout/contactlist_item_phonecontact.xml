@@ -48,7 +48,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/txt_name"
-        android:text="phone"
+        android:text="MÓVIL"
         android:textAllCaps="true" />
 
     <TextView

@@ -218,7 +218,7 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
 
     @Override
     public void onContactsImported(final int count) {
-        final String message = String.format(getString(R.string.importdata_message_contacts_imported), count);
+        final String message = String.format(getString(R.string.importdata_message_contacts_imported));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

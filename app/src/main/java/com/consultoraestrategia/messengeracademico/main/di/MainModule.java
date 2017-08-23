@@ -2,6 +2,8 @@ package com.consultoraestrategia.messengeracademico.main.di;
 
 import android.content.res.Resources;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.UseCaseHandler;
@@ -31,6 +33,8 @@ import dagger.Provides;
 @Module
 public class MainModule {
 
+    private static String  TAG = MainModule.class.getSimpleName();
+
     FragmentManager fragmentManager;
 
 
@@ -41,8 +45,13 @@ public class MainModule {
     @Provides
     @Singleton
     MyFragmentAdapter provideMyFragmentAdapter(Resources resources, FragmentManager supportFragmentManager, ChatsFragment chatsFragment, ChatListFragment chatListFragment, ContactListFragment contactListFragment) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_principal, chatsFragment);
+        fragmentTransaction.commit();
+
+
         MyFragmentAdapter adapter = new MyFragmentAdapter(supportFragmentManager);
-        adapter.addFragment(chatsFragment, "CALL");
+        // adapter.addFragment(chatsFragment, "CALL");
         adapter.addFragment(chatListFragment, resources.getString(R.string.fragment_chatlist_title));
         adapter.addFragment(contactListFragment, resources.getString(R.string.fragment_contacts_title));
         return adapter;

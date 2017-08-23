@@ -35,5 +35,9 @@ public interface ProfileEditImageView extends BaseView<ProfileEditImagePresenter
 
     void startMainActivity();
 
+  /*  void disableViews();
+
+    void enableViews();*/
+
 
 }
