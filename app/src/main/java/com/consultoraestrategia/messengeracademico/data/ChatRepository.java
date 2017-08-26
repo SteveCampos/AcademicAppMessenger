@@ -62,7 +62,7 @@ public class ChatRepository implements ChatDataSource {
         this.chatListPostEvent = chatListPostEvent;
         this.chatPostEvent = chatPostEvent;
         this.mainUser = mainUser;
-        listenForAllUserMessages(new ListenMessagesCallback() {
+        listenForAllUserMessages(null, new ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
             }
@@ -571,22 +571,37 @@ public class ChatRepository implements ChatDataSource {
     }
 
     @Override
-    public void listenForAllUserMessages(final ListenMessagesCallback callback) {
+    public void listenForAllUserMessages(String lastMessageKey, final ListenMessagesCallback callback) {
         Log.d(TAG, "listenForAllUserMessages");
         if (!isListenForIncomingMessages) {
             isListenForIncomingMessages = true;
-            chatRemoteDataSource.listenForAllUserMessages(new ListenMessagesCallback() {
+            getLastMessage(new ListenMessagesCallback() {
                 @Override
                 public void onMessageChanged(ChatMessage message) {
-                    onIncomingMessageChanged(message);
+                    Log.d(TAG, "message: " + message.toString());
+                    listenMessages(message.getKeyMessage());
                 }
 
                 @Override
                 public void onError(String error) {
-                    Log.d(TAG, "listenMessages onError: " + error);
+                    listenMessages("");
                 }
             });
         }
+    }
+
+    private void listenMessages(String lastKey){
+        chatRemoteDataSource.listenForAllUserMessages(lastKey, new ListenMessagesCallback() {
+            @Override
+            public void onMessageChanged(ChatMessage message) {
+                onIncomingMessageChanged(message);
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.d(TAG, "listenMessages onError: " + error);
+            }
+        });
     }
 
     private void onIncomingMessageChanged(ChatMessage message) {
@@ -770,6 +785,27 @@ public class ChatRepository implements ChatDataSource {
                 Log.d(TAG, "save Message failed!");
             }
         });
+    }
+
+    @Override
+    public void getLastMessage(final ListenMessagesCallback callback) {
+        chatLocalDataSource.getLastMessage(new ListenMessagesCallback() {
+            @Override
+            public void onMessageChanged(ChatMessage message) {
+                Log.d(TAG, "getLastMessage message: " + message.toString());
+                callback.onMessageChanged(message);
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.d(TAG, "getLastMessage onError: " + error);
+                getLastMessageRemote(callback);
+            }
+        });
+    }
+
+    private void getLastMessageRemote(ListenMessagesCallback callback) {
+        chatRemoteDataSource.getLastMessage(callback);
     }
 
 

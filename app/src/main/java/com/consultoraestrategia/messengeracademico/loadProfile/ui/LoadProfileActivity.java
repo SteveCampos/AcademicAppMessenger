@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
@@ -199,6 +200,12 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     @Override
     public void showMessage(@StringRes int message) {
         Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showErrorSingin(@StringRes int message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        finish();
     }
 
     @Override

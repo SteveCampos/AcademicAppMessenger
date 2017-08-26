@@ -327,27 +327,33 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
             // Sign in failed
             if (response == null) {
                 // User pressed back button
-                showMessage(R.string.sign_in_cancelled);
+                showErrorSignin(R.string.sign_in_cancelled);
                 return;
             }
 
             if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                showMessage(R.string.no_internet_connection);
+                showErrorSignin(R.string.no_internet_connection);
                 return;
             }
 
             if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                showMessage(R.string.unknown_error);
+                showErrorSignin(R.string.unknown_error);
                 return;
             }
         }
 
-        showMessage(R.string.unknown_sign_in_response);
+        showErrorSignin(R.string.unknown_sign_in_response);
     }
 
     private void showMessage(@StringRes int resource) {
         if (view != null) {
             view.showMessage(resource);
+        }
+    }
+
+    private void showErrorSignin(@StringRes int error){
+        if (view != null){
+            view.showErrorSingin(error);
         }
     }
 

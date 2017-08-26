@@ -64,12 +64,14 @@ public class FirebaseUser extends FirebaseHelper {
 
     private ChildEventListener listenerAllMessages;
 
-    public void listenForAllUserMessages(com.google.firebase.auth.FirebaseUser mainUser, ChildEventListener listener) {
-        Log.d(TAG, "listenForAllUserMessages");
+    public void listenForAllUserMessages(String lastKey, ChildEventListener listener) {
+        Log.d(TAG, "listenForAllUserMessages lastKey: " + lastKey);
         this.listenerAllMessages = listener;
         getDatabase().getReference()
                 .child(CHILD_USERS_MESSAGES)
                 .child(mainUser.getUid())
+                .orderByKey()
+                .startAt(lastKey)
                 .limitToLast(100)
                 .addChildEventListener(listener);
     }
@@ -83,5 +85,14 @@ public class FirebaseUser extends FirebaseHelper {
                     .child(mainUser.getUid())
                     .removeEventListener(listenerAllMessages);
         }
+    }
+
+    public void listenLastMessage(ChildEventListener listener) {
+        Log.d(TAG, "listenLastMessage");
+        getDatabase().getReference()
+                .child(CHILD_USERS_MESSAGES)
+                .child(mainUser.getUid())
+                .limitToLast(1)
+                .addChildEventListener(listener);
     }
 }

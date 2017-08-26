@@ -151,7 +151,7 @@ public class ChatLocalDataSource implements ChatDataSource {
 
 
     @Override
-    public void listenForAllUserMessages(ListenMessagesCallback callback) {
+    public void listenForAllUserMessages(String messageKey, ListenMessagesCallback callback) {
 
     }
 
@@ -178,5 +178,20 @@ public class ChatLocalDataSource implements ChatDataSource {
     @Override
     public void saveMessageOnLocal(ChatMessage message, Chat chat, ListenMessagesCallback callback) {
 
+    }
+
+    @Override
+    public void getLastMessage(ListenMessagesCallback callback) {
+        ChatMessage message = SQLite.select()
+                .from(ChatMessage.class)
+                .orderBy(ChatMessage_Table.timestamp, false)
+                .querySingle();
+
+        if (message != null) {
+            Log.d(TAG, "message: " + message.toString());
+            callback.onMessageChanged(message);
+        } else {
+            callback.onError("error retrieving last message!");
+        }
     }
 }

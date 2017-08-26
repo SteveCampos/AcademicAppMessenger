@@ -27,7 +27,6 @@ public interface ChatDataSource {
 
     interface ListenMessagesCallback {
         void onMessageChanged(ChatMessage message);
-
         void onError(String error);
     }
 
@@ -65,7 +64,7 @@ public interface ChatDataSource {
     void saveMessageWithStatusReaded(ChatMessage message, Chat chat, ListenMessagesCallback callback);
 
 
-    void listenForAllUserMessages(ListenMessagesCallback callback);
+    void listenForAllUserMessages(String lastMessageKey, ListenMessagesCallback callback);
 
     void stopListenMessages();
 
@@ -77,5 +76,8 @@ public interface ChatDataSource {
 
 
     void saveMessageOnLocal(ChatMessage message, Chat chat, ListenMessagesCallback callback);
+
+
+    void getLastMessage(ListenMessagesCallback callback);
 
 }

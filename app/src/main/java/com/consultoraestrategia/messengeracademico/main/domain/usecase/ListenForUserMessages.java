@@ -24,7 +24,7 @@ public class ListenForUserMessages extends UseCase<ListenForUserMessages.Request
     @Override
     protected void executeUseCase(RequestValues requestValues) {
         Log.d(TAG, "executeUseCase");
-        repository.listenForAllUserMessages(new ChatDataSource.ListenMessagesCallback() {
+        repository.listenForAllUserMessages(null, new ChatDataSource.ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
 

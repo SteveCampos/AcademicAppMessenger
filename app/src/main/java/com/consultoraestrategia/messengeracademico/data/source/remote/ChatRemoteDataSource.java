@@ -100,9 +100,14 @@ public class ChatRemoteDataSource implements ChatDataSource {
     }
 
     @Override
-    public void listenForAllUserMessages(final ListenMessagesCallback callback) {
+    public void listenForAllUserMessages(String lastMessageKey, final ListenMessagesCallback callback) {
         Log.d(TAG, "listenForAllUserMessages");
-        firebaseUser.listenForAllUserMessages(mainUser, new ChildEventListener() {
+        listenMessages(lastMessageKey, callback);
+
+    }
+
+    private void listenMessages(String lastMessageKey, final ListenMessagesCallback callback){
+        firebaseUser.listenForAllUserMessages(lastMessageKey, new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "onChildAdded");
@@ -196,10 +201,42 @@ public class ChatRemoteDataSource implements ChatDataSource {
 
     }
 
+    @Override
+    public void getLastMessage(final ListenMessagesCallback callback) {
+        firebaseUser.listenLastMessage(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                parseAndFire(callback, dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                parseAndFire(callback, dataSnapshot);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onError(databaseError.getMessage());
+            }
+        });
+    }
+
     private void parseAndFire(ListenMessagesCallback callback, DataSnapshot dataSnapshot) {
         ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
         if (message != null) {
             callback.onMessageChanged(message);
+        }else{
+            callback.onError("message is null!");
         }
     }
 

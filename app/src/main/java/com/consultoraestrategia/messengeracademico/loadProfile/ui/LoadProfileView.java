@@ -35,6 +35,8 @@ public interface LoadProfileView extends BaseView<LoadProfilePresenterImpl> {
 
     void showMessage(@StringRes int message);
 
+    void showErrorSingin(@StringRes int message);
+
     /*void showDialog();
 
     void onRegisterNewProfile(Uri myUri, String mName, String mPhoneNumber);

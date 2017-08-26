@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
     @BindView(R.id.viewpager)
     ViewPager viewpager;
 
-    private int currentItem = 1;
+    private int currentItem = 0;
 
     private static final String USER_TOPIC = "user_";
     private static final String PREF_USERKEY = "PREF_USERKEY";
@@ -347,12 +347,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         phoneNumber = sharedPref.getString(VerificationActivity.PREF_PHONENUMBER, "+51993061806");
         Log.d(TAG, " phoneNumber : " + phoneNumber);
-    }
-
-
-    private String getPhoneNumberFromPreferences() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return preferences.getString(VerificationActivity.PREF_PHONENUMBER, "+51993061806");
     }
 
     @Override

@@ -45,6 +45,7 @@ public class OfficialMessage extends BaseModel {
     public long actionTimestamp;
 
     public static final String ACTION_TYPE_CONFIRM = "ACTION_CONFIRM";
+    public static final String ACTION_TYPE_NO_ACTION = "ACTION_NO_ACTION";
     public static final int STATE_WAITING = 100;
     public static final int STATE_CONFIRM = 101;
     public static final int STATE_DENY = 102;
