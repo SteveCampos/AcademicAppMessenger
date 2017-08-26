@@ -80,4 +80,7 @@ public interface ChatDataSource {
 
     void getLastMessage(ListenMessagesCallback callback);
 
+
+    void listenSingleMessage(ChatMessage message, ListenMessagesCallback callback);
+
 }

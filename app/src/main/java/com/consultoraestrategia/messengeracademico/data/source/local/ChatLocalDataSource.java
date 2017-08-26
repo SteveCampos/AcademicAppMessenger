@@ -194,4 +194,9 @@ public class ChatLocalDataSource implements ChatDataSource {
             callback.onError("error retrieving last message!");
         }
     }
+
+    @Override
+    public void listenSingleMessage(ChatMessage message, ListenMessagesCallback callback) {
+
+    }
 }

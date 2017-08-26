@@ -406,6 +406,11 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         presenter.onOfficialMessageActionClicked(message, view);
     }
 
+    @Override
+    public void onMessageWrited(ChatMessage message) {
+
+    }
+
 
     @Override
     public void showDialogToConfirmOfficialMessage(final ChatMessage message) {

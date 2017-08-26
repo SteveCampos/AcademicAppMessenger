@@ -13,4 +13,6 @@ public interface ChatMessageListener {
     void onImageClick(ChatMessage message, View view);
 
     void onOfficialMesageListener(ChatMessage message, View view);
+
+    void onMessageWrited(ChatMessage message);
 }

@@ -2,9 +2,11 @@ package com.consultoraestrategia.messengeracademico.domain;
 
 import android.util.Log;
 
+import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -72,7 +74,7 @@ public class FirebaseUser extends FirebaseHelper {
                 .child(mainUser.getUid())
                 .orderByKey()
                 .startAt(lastKey)
-                .limitToLast(100)
+                //.limitToLast(100)
                 .addChildEventListener(listener);
     }
 
@@ -94,5 +96,14 @@ public class FirebaseUser extends FirebaseHelper {
                 .child(mainUser.getUid())
                 .limitToLast(1)
                 .addChildEventListener(listener);
+    }
+
+    public void listenSingleMessage(ChatMessage message, ValueEventListener listener) {
+        Log.d(TAG, "listenLastMessage");
+        getDatabase().getReference()
+                .child(CHILD_USERS_MESSAGES)
+                .child(mainUser.getUid())
+                .child(message.getKeyMessage())
+                .addListenerForSingleValueEvent(listener);
     }
 }

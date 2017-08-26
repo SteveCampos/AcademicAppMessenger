@@ -13,6 +13,7 @@ import com.consultoraestrategia.messengeracademico.UseCase;
 import com.consultoraestrategia.messengeracademico.UseCaseHandler;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.GenerateMessageKey;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
+import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ListenSingleMessage;
 import com.consultoraestrategia.messengeracademico.chat.events.ChatEvent;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatView;
@@ -71,6 +72,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     private final UploadImage uploadImage;
     private final ContentResolver contentResolver;
     private final Resources resources;
+    private final ListenSingleMessage useCaseListenSingleMessage;
 
 
     private FirebaseUser mainUser;
@@ -78,7 +80,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     private Contact receptor;
     private Chat chat;
 
-    public ChatPresenterImpl(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources) {
+    public ChatPresenterImpl(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources, ListenSingleMessage listenSingleMessage) {
         this.mainUser = mainUser;
         this.useCaseHandler = useCaseHandler;
         this.useCaseLoadMessages = useCaseLoadMessages;
@@ -96,6 +98,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         this.uploadImage = uploadImage;
         this.contentResolver = contentResolver;
         this.resources = resources;
+        this.useCaseListenSingleMessage = listenSingleMessage;
     }
 
     @Override

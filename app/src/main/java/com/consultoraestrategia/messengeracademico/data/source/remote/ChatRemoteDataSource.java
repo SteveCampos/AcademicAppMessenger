@@ -231,6 +231,31 @@ public class ChatRemoteDataSource implements ChatDataSource {
         });
     }
 
+    @Override
+    public void listenSingleMessage(final ChatMessage message, final ListenMessagesCallback callback) {
+        firebaseUser.listenSingleMessage(message, new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "dataSnapshot: " + dataSnapshot);
+                if (dataSnapshot != null && dataSnapshot.getValue() != null){
+                    ChatMessage message1 = dataSnapshot.getValue(ChatMessage.class);
+                    if (message1 != null){
+                        callback.onMessageChanged(message1);
+                    }else{
+                        callback.onError("message null");
+                    }
+                }else{
+                    callback.onError("snapshot null");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onError(databaseError.getMessage());
+            }
+        });
+    }
+
     private void parseAndFire(ListenMessagesCallback callback, DataSnapshot dataSnapshot) {
         ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
         if (message != null) {

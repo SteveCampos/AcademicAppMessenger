@@ -804,6 +804,22 @@ public class ChatRepository implements ChatDataSource {
         });
     }
 
+    @Override
+    public void listenSingleMessage(ChatMessage message, ListenMessagesCallback callback) {
+        chatRemoteDataSource.listenSingleMessage(message, new ListenMessagesCallback() {
+            @Override
+            public void onMessageChanged(ChatMessage message) {
+                Log.d(TAG, "listenSingleMessage onMessageChanged message: " + message.toString());
+                onIncomingMessageChanged(message);
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.d(TAG, "onError");
+            }
+        });
+    }
+
     private void getLastMessageRemote(ListenMessagesCallback callback) {
         chatRemoteDataSource.getLastMessage(callback);
     }
