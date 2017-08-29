@@ -10,7 +10,9 @@ import android.util.Log;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by @stevecampos on 1/03/2017.
@@ -72,6 +74,13 @@ public class FetchContacts extends AsyncTask<ContentResolver, Void, ArrayList<Co
                 // clean up cursor
                 cursor.close();
             }
+
+            //Clear Duplicated
+            Set<Contact> hs = new HashSet<>();
+            hs.addAll(contacts);
+            contacts.clear();
+            contacts.addAll(hs);
+
 
             return contacts;
         } catch (Exception ex) {

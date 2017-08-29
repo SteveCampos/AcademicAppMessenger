@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.notification.domain.usecase;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -23,11 +24,14 @@ public class GetBitmap extends UseCase<GetBitmap.RequestValues, GetBitmap.Respon
         if (context != null && uri != null) {
 
             try {
+                Resources res = context.getResources();
+                int height = (int) res.getDimension(android.R.dimen.notification_large_icon_height);
+                int width = (int) res.getDimension(android.R.dimen.notification_large_icon_width);
                 Bitmap bitmap = Glide.with(context)
                         .load(uri)
                         .asBitmap()
                         .centerCrop()
-                        .into(256, 256)
+                        .into(height, width)
                         .get();
                 onSucess(bitmap);
             } catch (Exception e) {

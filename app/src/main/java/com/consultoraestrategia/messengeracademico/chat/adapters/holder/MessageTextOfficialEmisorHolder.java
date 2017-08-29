@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.consultoraestrategia.messengeracademico.R;
+import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.OfficialMessage;
 import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
@@ -91,7 +92,7 @@ public class MessageTextOfficialEmisorHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, view);
     }
 
-    public void bind(ChatMessage message, ChatMessage previousMessage, Drawable drawable, Resources resources) {
+    public void bind(ChatMessage message, ChatMessage previousMessage, Drawable drawable, Resources resources, ChatMessageListener listener) {
         messageText.setText(message.getMessageText());
         imgStatus.setImageDrawable(drawable);
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
@@ -108,6 +109,7 @@ public class MessageTextOfficialEmisorHolder extends RecyclerView.ViewHolder {
                 txtActionRespone,
                 null,
                 null);
+        MessageTextEmisorHolder.fireNotReaded(message, listener);
     }
 
     public static void showOfficialMessage(OfficialMessage officialMessage,

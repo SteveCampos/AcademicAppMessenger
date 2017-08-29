@@ -113,6 +113,45 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:scrollbars="vertical" />
 
+        <RelativeLayout
+            android:id="@+id/layout_croll"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_alignEnd="@+id/recycler"
+            android:layout_alignBottom="@+id/recycler"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/recycler"
+            android:layout_marginBottom="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp">
+
+            <ImageButton
+                android:id="@+id/btn_scroll"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:textSize="24sp"
+                android:textColor="@color/white"
+                android:src="@drawable/ic_expand_more"
+                android:background="@drawable/circled_rounded"
+                />
+
+            <TextView
+                android:id="@+id/txtCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/btn_scroll"
+                android:layout_alignLeft="@id/btn_scroll"
+                android:layout_alignStart="@id/btn_scroll"
+                android:text="1"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:paddingLeft="8dp"
+                android:gravity="center"
+                android:textColor="#FFF"
+                android:textSize="12sp"
+                android:background="@drawable/badge_circle"/>
+        </RelativeLayout>
+
         <android.support.v7.widget.CardView
             android:id="@+id/layout_bottom"
             android:layout_width="match_parent"
@@ -216,5 +255,6 @@
         android:layout_marginRight="4dp"
         android:src="@drawable/ic_keyboard_voice_white_24dp"
         app:fabSize="normal" />
+
 
 </android.support.design.widget.CoordinatorLayout>

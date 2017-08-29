@@ -1,49 +1,12 @@
 package com.consultoraestrategia.messengeracademico.importData;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
-//import com.consultoraestrategia.messengeracademico.api.RestAPI;
-import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
-import com.consultoraestrategia.messengeracademico.entities.Alumno;
-import com.consultoraestrategia.messengeracademico.entities.AnioAcademico;
-import com.consultoraestrategia.messengeracademico.entities.CargaCurso;
-import com.consultoraestrategia.messengeracademico.entities.Curso;
-import com.consultoraestrategia.messengeracademico.entities.Docente;
-import com.consultoraestrategia.messengeracademico.entities.Entidad;
-import com.consultoraestrategia.messengeracademico.entities.GeorefRolPersona;
-import com.consultoraestrategia.messengeracademico.entities.Georeferencia;
-import com.consultoraestrategia.messengeracademico.entities.Grado;
-import com.consultoraestrategia.messengeracademico.entities.Matricula;
-import com.consultoraestrategia.messengeracademico.entities.MatriculaDetalle;
-import com.consultoraestrategia.messengeracademico.entities.NivelesAcademicos;
-import com.consultoraestrategia.messengeracademico.entities.Organigramas;
-import com.consultoraestrategia.messengeracademico.entities.Persona;
-import com.consultoraestrategia.messengeracademico.entities.PersonaGeoref;
-import com.consultoraestrategia.messengeracademico.entities.Relacion;
-import com.consultoraestrategia.messengeracademico.entities.Rol;
-import com.consultoraestrategia.messengeracademico.entities.Seccion;
-import com.consultoraestrategia.messengeracademico.entities.Tipo;
-
-
-import com.consultoraestrategia.messengeracademico.importData.rest.RestAPI;
-import com.consultoraestrategia.messengeracademico.utils.StringUtils;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.raizlabs.android.dbflow.config.DatabaseDefinition;
-import com.raizlabs.android.dbflow.config.FlowManager;
-import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
-import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
-import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
-
-import org.json.JSONObject;
-
 /**
  * Created by kike on 15/06/2017.
  */
 
-public class DatosGeneralesAsyntask extends AsyncTask<String, String, String> {
+public class DatosGeneralesAsyntask /*extends AsyncTask<String, String, String> */ {
 
+    /*
     private static final String TAG = DatosGeneralesAsyntask.class.getSimpleName();
     private BEDatoGenerales beDatoGenerales;
     private JSONObject jsonObject = null;
@@ -119,5 +82,5 @@ public class DatosGeneralesAsyntask extends AsyncTask<String, String, String> {
         super.onPostExecute(s);
         Log.d(TAG, "onPostExecute ");
     }
-
+*/
 }

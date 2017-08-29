@@ -4,28 +4,16 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
-import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.Toolbar;
-import android.transition.AutoTransition;
-import android.transition.ChangeBounds;
-import android.transition.ChangeClipBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.consultoraestrategia.messengeracademico.R;
@@ -147,10 +135,10 @@ public class FullscreenActivity extends AppCompatActivity {
 
     private void showImage() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             postponeEnterTransition();
             getWindow().setEnterTransition(new ChangeImageTransform());
-        }
+        }*/
 
 
         Uri uri = getIntent().getData();
@@ -164,12 +152,12 @@ public class FullscreenActivity extends AppCompatActivity {
                                 @Override
                                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                     mImageView.setImage(ImageSource.bitmap(resource));
-                                    supportStartPostponedEnterTransition();
+                                    //supportStartPostponedEnterTransition();
                                 }
 
                                 @Override
                                 public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                    supportStartPostponedEnterTransition();
+                                    //supportStartPostponedEnterTransition();
                                     super.onLoadFailed(e, errorDrawable);
                                 }
                             });
@@ -191,7 +179,7 @@ public class FullscreenActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             // This ID represents the Home or Up button.
-            supportFinishAfterTransition();
+            //supportFinishAfterTransition();
             //NavUtils.navigateUpFromSameTask(this);
             return true;
         }

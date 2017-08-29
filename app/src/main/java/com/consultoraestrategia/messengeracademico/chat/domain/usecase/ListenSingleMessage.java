@@ -22,6 +22,7 @@ public class ListenSingleMessage extends UseCase<ListenSingleMessage.RequestValu
 
     @Override
     protected void executeUseCase(ListenSingleMessage.RequestValues requestValues) {
+        Log.d(TAG, "ListenSingleMessage executeUseCase");
         ChatMessage message = requestValues.getMessage();
         repository.listenSingleMessage(message, new ChatDataSource.ListenMessagesCallback() {
             @Override

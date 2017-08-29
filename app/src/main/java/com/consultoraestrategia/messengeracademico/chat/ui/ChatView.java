@@ -25,6 +25,8 @@ public interface ChatView extends BaseView<ChatPresenter> {
 
     void addMessage(ChatMessage message);
 
+    void updateMessage(ChatMessage message);
+
     void sendMessageText();
 
     void showConnection(Connection connection);
@@ -54,4 +56,8 @@ public interface ChatView extends BaseView<ChatPresenter> {
     void showDialogToConfirmOfficialMessage(ChatMessage message);
 
     void showDialogToEnsureDenyOfficialMessage(ChatMessage message);
+
+    void dismissNotification(int id);
+
+    void showButtomToScroll(int count);
 }

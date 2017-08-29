@@ -6,13 +6,8 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -54,11 +49,20 @@ public class MessageTextEmisorHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, view);
     }
 
-    public void bind(ChatMessage message, ChatMessage previousMessage, Drawable drawable, Resources resources) {
+    public void bind(ChatMessage message, ChatMessage previousMessage, Drawable drawable, Resources resources, ChatMessageListener listener) {
         messageText.setText(message.getMessageText());
         imgStatus.setImageDrawable(drawable);
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
         setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtTimeTitle, resources);
+        fireNotReaded(message, listener);
+    }
+
+    public static void fireNotReaded(ChatMessage message, ChatMessageListener listener){
+        if (message.getMessageStatus()!=ChatMessage.STATUS_READED){
+            if (listener != null){
+                listener.onMessageNotReaded(message);
+            }
+        }
     }
 
     public static Drawable getDrawableFromMessageStatus(int status, Context context) {

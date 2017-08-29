@@ -106,4 +106,13 @@ public class FirebaseUser extends FirebaseHelper {
                 .child(message.getKeyMessage())
                 .addListenerForSingleValueEvent(listener);
     }
+
+    public void removeListenerSingleMessage(ChatMessage message, ValueEventListener listener){
+        Log.d(TAG, "listenLastMessage");
+        getDatabase().getReference()
+                .child(CHILD_USERS_MESSAGES)
+                .child(mainUser.getUid())
+                .child(message.getKeyMessage())
+                .removeEventListener(listener);
+    }
 }

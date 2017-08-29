@@ -44,4 +44,6 @@ public interface ChatPresenter extends BasePresenter {
     void officialMessageConfirmed(ChatMessage message);
 
     void officialMessageDenied(ChatMessage message);
+
+    void onMessageNotReaded(ChatMessage message);
 }

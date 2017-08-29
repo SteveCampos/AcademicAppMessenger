@@ -52,6 +52,9 @@ public class Chat extends BaseModel {
     @Column
     private long timestamp;
 
+    @Column
+    private long lastAccessedTimestamp;
+
     public String getIdEmisor() {
         return idEmisor;
     }
@@ -117,6 +120,14 @@ public class Chat extends BaseModel {
         this.emisor = emisor;
     }
 
+    public long getLastAccessedTimestamp() {
+        return lastAccessedTimestamp;
+    }
+
+    public void setLastAccessedTimestamp(long lastAccessedTimestamp) {
+        this.lastAccessedTimestamp = lastAccessedTimestamp;
+    }
+
     //@OneToMany(methods = {OneToMany.Method.ALL}, variableName = "messageList")
     public List<ChatMessage> getMessageList() {
         return SQLite.select()
@@ -135,7 +146,7 @@ public class Chat extends BaseModel {
         List<ChatMessage> messages = SQLite.select()
                 .from(ChatMessage.class)
                 .where(ChatMessage_Table.chatKey.eq(chatKey))
-                .and(ChatMessage_Table.timestamp.greaterThanOrEq(timestamp))
+                .and(ChatMessage_Table.timestamp.greaterThanOrEq(lastAccessedTimestamp))
                 .and(ChatMessage_Table.messageStatus.notEq(ChatMessage.STATUS_READED))
                 .and(ChatMessage_Table.emisor_uid.notEq(mainUserKey))
                 .orderBy(ChatMessage_Table.timestamp, false)
@@ -174,6 +185,7 @@ public class Chat extends BaseModel {
                 //.and(ChatMessage_Table.timestamp.greaterThanOrEq(state))
                 .and(ChatMessage_Table.messageStatus.eq(ChatMessage.STATUS_DELIVERED))
                 .and(ChatMessage_Table.emisor_uid.notEq(mainUserKey))
+                .and(ChatMessage_Table.timestamp.greaterThan(lastAccessedTimestamp))
                 .count();
     }
 
@@ -189,4 +201,6 @@ public class Chat extends BaseModel {
         Log.d(TAG, "getLastTimeStamp timestamp: " + timestamp);
         return timestamp;
     }
+
+
 }

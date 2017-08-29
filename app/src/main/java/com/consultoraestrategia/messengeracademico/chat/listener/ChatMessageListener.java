@@ -14,5 +14,7 @@ public interface ChatMessageListener {
 
     void onOfficialMesageListener(ChatMessage message, View view);
 
-    void onMessageWrited(ChatMessage message);
+    void onMessageNotReaded(ChatMessage message);
+
+    void onNewMessageAddedToTheBottom();
 }

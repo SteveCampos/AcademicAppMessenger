@@ -80,8 +80,7 @@ public class MessageImageEmisorHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
-
-
+        MessageTextEmisorHolder.fireNotReaded(message, listener);
     }
 
 }

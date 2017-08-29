@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private Context context;
     private FirebaseUser mainUser;
     private RecyclerView recyclerView;
+    private LinearLayoutManager mLinearLayoutManager;
 
     public ChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, Context context) {
         Log.d(TAG, "ChatMessageAdapter new Instance: " + this.hashCode());
@@ -61,9 +63,56 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.context = context;
     }
 
-    public void setRecyclerView(RecyclerView recyclerView) {
-        this.recyclerView = recyclerView;
+    public void setmLinearLayoutManager(LinearLayoutManager layoutManager){
+        this.mLinearLayoutManager = layoutManager;
     }
+
+
+    public void setRecyclerView(final RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
+        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight,
+                                       int oldBottom) {
+                if (bottom < oldBottom) {
+                    recyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                            scrollToLastItem();
+                        }
+                    });
+                }
+            }
+        });
+        registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int messagesCount = getItemCount();
+                int lastVisiblePosition =
+                        mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+                int lastPosition = mLinearLayoutManager.findLastVisibleItemPosition();
+
+                Log.d(TAG, "messagesCount: " + messagesCount);
+                Log.d(TAG, "itemCount: " + itemCount);
+                Log.d(TAG, "positionStart: " + positionStart);
+                Log.d(TAG, "lastVisiblePosition: " + lastVisiblePosition);
+                Log.d(TAG, "lastPosition: " + lastPosition);
+                // If the recycler view is initially being loaded or the
+                // user is at the bottom of the list, scroll to the bottom
+                // of the list to show the newly added message.
+                if (lastVisiblePosition == -1 ||
+                        (positionStart >= (messagesCount - 1) &&
+                                lastVisiblePosition == (positionStart - 2))) {
+                    scrollToLastItem();
+                }else{
+                    listener.onNewMessageAddedToTheBottom();
+                }
+            }
+        });
+    }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -140,7 +189,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         switch (holder.getItemViewType()) {
             case TYPE_EMISOR_TEXT:
                 MessageTextEmisorHolder vh1 = (MessageTextEmisorHolder) holder;
-                vh1.bind(message, previousMessage, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context), context.getResources());
+                vh1.bind(message, previousMessage, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context), context.getResources(), listener);
                 break;
             case TYPE_RECEPTOR_TEXT:
                 MessageTextReceptorHolder vh2 = (MessageTextReceptorHolder) holder;
@@ -156,7 +205,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
             case TYPE_EMISOR_TEXT_OFFICIAL:
                 MessageTextOfficialEmisorHolder vh5 = (MessageTextOfficialEmisorHolder) holder;
-                vh5.bind(message, previousMessage, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context), context.getResources());
+                vh5.bind(message, previousMessage, MessageTextEmisorHolder.getDrawableFromMessageStatus(message.getMessageStatus(), context), context.getResources(), listener);
                 break;
             case TYPE_RECEPTOR_TEXT_OFFICIAL:
                 MessagetextOfficialReceptorHolder vh6 = (MessagetextOfficialReceptorHolder) holder;
@@ -182,7 +231,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         Log.d(TAG, this.hashCode() + ", addMessage message: " + message);
         messages.add(message);
         notifyItemInserted(getItemCount());
-        scrollToLastItem();
+        //scrollToLastItem();
     }
 
     private void updateMessage(ChatMessage message) {
@@ -190,7 +239,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int position = messages.indexOf(message);
         messages.set(position, message);
         notifyItemChanged(position);
-        scrollToLastItem();
+        //scrollToLastItem();
     }
 
     public void onMessagedChanged(ChatMessage message) {
@@ -212,7 +261,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void scrollToLastItem() {
+    public void scrollToLastItem() {
         recyclerView.scrollToPosition(getItemCount() - 1);
     }
 

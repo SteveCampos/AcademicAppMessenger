@@ -233,7 +233,8 @@ public class ChatRemoteDataSource implements ChatDataSource {
 
     @Override
     public void listenSingleMessage(final ChatMessage message, final ListenMessagesCallback callback) {
-        firebaseUser.listenSingleMessage(message, new ValueEventListener() {
+        Log.d(TAG, "listenSingleMessage message: " + message.toString());
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "dataSnapshot: " + dataSnapshot);
@@ -247,13 +248,15 @@ public class ChatRemoteDataSource implements ChatDataSource {
                 }else{
                     callback.onError("snapshot null");
                 }
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 callback.onError(databaseError.getMessage());
             }
-        });
+        };
+        firebaseUser.listenSingleMessage(message, listener);
     }
 
     private void parseAndFire(ListenMessagesCallback callback, DataSnapshot dataSnapshot) {

@@ -57,7 +57,8 @@
         <activity android:name=".importData.ui.ImportDataActivity" />
         <activity
             android:name=".chat.ui.ChatActivity"
-            android:parentActivityName=".main.ui.MainActivity">
+            android:parentActivityName=".main.ui.MainActivity"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity" />

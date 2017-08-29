@@ -49,8 +49,13 @@ public class ChatDbFlowStorage implements ChatStorage {
         Transaction transaction = databaseDefinition.beginTransactionAsync(new ITransaction() {
             @Override
             public void execute(DatabaseWrapper databaseWrapper) {
-                chat.save();
                 message.save();
+                long timestamp = message.getTimestamp();
+
+                chat.setTimestamp(timestamp);
+                chat.save();
+
+
                 Log.d(TAG, "message.getMessageText(): " + message.getMessageText());
                 Log.d(TAG, "message.getEmisor().getPhoneNumber(): " + message.getEmisor().getPhoneNumber());
                 Log.d(TAG, "message.getReceptor().getPhoneNumber(): " + message.getReceptor().getPhoneNumber());

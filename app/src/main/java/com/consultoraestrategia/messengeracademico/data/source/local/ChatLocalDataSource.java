@@ -16,6 +16,8 @@ import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction;
 import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
 
+import java.util.Date;
+
 /**
  * Created by @stevecampos on 18/05/2017.
  */
@@ -48,6 +50,7 @@ public class ChatLocalDataSource implements ChatDataSource {
                 chat.setChatKey(chatKey);
                 chat.setEmisor(from);
                 chat.setReceptor(to);
+                chat.setLastAccessedTimestamp(new Date().getTime());
                 callback.onChatLoaded(chat);
             }
         });
@@ -74,6 +77,7 @@ public class ChatLocalDataSource implements ChatDataSource {
 
         chat.setEmisor(emisor);
         chat.setReceptor(receptor);
+        chat.setLastAccessedTimestamp(new Date().getTime());
         callback.onChatLoaded(chat);
 
     }
@@ -86,6 +90,7 @@ public class ChatLocalDataSource implements ChatDataSource {
         chat.setEmisor(message.getEmisor());
         chat.setReceptor(message.getReceptor());
         chat.setTimestamp(message.getTimestamp());
+        chat.setLastAccessedTimestamp(new Date().getTime());
         callback.onChatLoaded(chat);
     }
 

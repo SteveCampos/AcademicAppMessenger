@@ -10,11 +10,11 @@ import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chatList.holder.ChatItemHolder;
 import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListener;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -78,8 +78,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             onChatChanged(chat);
         } else {
             chats.add(chat);
-            notifyItemInserted(0);
-            notifyItemRangeChanged(0, chats.size());
+            notifyChatsChanged();
+            /*notifyItemInserted(0);
+            notifyItemRangeChanged(0, chats.size());*/
         }
     }
 
@@ -88,7 +89,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             int position = chats.indexOf(chat);
             chats.remove(position);
             chats.add(0, chat);
-            notifyDataSetChanged();
+            notifyChatsChanged();
         } else {
             onChatAdded(chat);
         }
@@ -107,7 +108,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (chats != null && !chats.isEmpty()) {
             this.chats.clear();
             this.chats.addAll(chats);
-            notifyDataSetChanged();
+            notifyChatsChanged();
         }
+    }
+
+    private void notifyChatsChanged(){
+        Collections.sort(chats, new Comparator<Chat>() {
+            @Override
+            public int compare(Chat o1, Chat o2) {
+                return Long.valueOf(o2.getTimestamp()).compareTo(o1.getTimestamp());
+            }
+        });
+        notifyDataSetChanged();
     }
 }

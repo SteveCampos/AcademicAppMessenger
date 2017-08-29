@@ -352,6 +352,7 @@ public class ChatRepository implements ChatDataSource {
             @Override
             public void onMessageChanged(ChatMessage message) {
                 Log.d(TAG, "chatLocalDataSource saveMessageWithStatusWrited onMessageChanged");
+                callback.onMessageChanged(message);
                 //callbackMessage(message, callback);
             }
 
@@ -805,12 +806,15 @@ public class ChatRepository implements ChatDataSource {
     }
 
     @Override
-    public void listenSingleMessage(ChatMessage message, ListenMessagesCallback callback) {
+    public void listenSingleMessage(final ChatMessage message, ListenMessagesCallback callback) {
+        Log.d(TAG, "listenSingleMessage message: "  + message);
         chatRemoteDataSource.listenSingleMessage(message, new ListenMessagesCallback() {
             @Override
-            public void onMessageChanged(ChatMessage message) {
-                Log.d(TAG, "listenSingleMessage onMessageChanged message: " + message.toString());
-                onIncomingMessageChanged(message);
+            public void onMessageChanged(ChatMessage messageChanged) {
+                Log.d(TAG, "listenSingleMessage onMessageChanged message: " + messageChanged.toString());
+                if (message.getMessageStatus() != messageChanged.getMessageStatus()){
+                    onIncomingMessageChanged(messageChanged);
+                }
             }
 
             @Override

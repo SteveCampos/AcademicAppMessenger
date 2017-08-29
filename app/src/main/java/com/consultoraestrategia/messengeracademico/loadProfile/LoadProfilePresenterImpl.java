@@ -294,7 +294,6 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 showMessage(R.string.unknown_error);
             }
-            return;
         }
 
     }

@@ -8,6 +8,8 @@ import com.consultoraestrategia.messengeracademico.entities.Contact_Table;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.raizlabs.android.dbflow.sql.language.CursorResult;
 import com.raizlabs.android.dbflow.sql.language.NameAlias;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
@@ -22,6 +24,10 @@ import java.util.List;
 public class ContactListRepositoryImpl implements ContactListRepository {
 
     private static final String TAG = ContactListRepositoryImpl.class.getSimpleName();
+    private FirebaseUser mainUser;
+    public ContactListRepositoryImpl() {
+        mainUser = FirebaseAuth.getInstance().getCurrentUser();
+    }
 
     @Override
     public void getContactsFromPhone() {
@@ -30,6 +36,7 @@ public class ContactListRepositoryImpl implements ContactListRepository {
                 .from(Contact.class)
                 .where(Contact_Table.uid.isNotNull())
                 .and(Contact_Table.type.eq(Contact.TYPE_ADDED_AND_VISIBLE))
+                .and(Contact_Table.uid.notEq(mainUser.getUid()))
                 .orderBy(Contact_Table.name, true)
                 .async()
                 .queryResultCallback(new QueryTransaction.QueryResultCallback<Contact>() {

@@ -44,7 +44,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity.EXTRA_RECEPTOR_PHONENUMBER;
 
@@ -257,8 +259,15 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void manageIntent(Intent intent) {
         String receptorPhoneNumber = intent.getStringExtra(EXTRA_RECEPTOR_PHONENUMBER);
         Log.d(TAG, "receptorPhoneNumber: " + receptorPhoneNumber);
+        dismissNotification(receptorPhoneNumber);
         getAcademicInformation(intent);
         loadReceptor(receptorPhoneNumber);
+    }
+
+    private void dismissNotification(String receptorPhoneNumber) {
+        if (view != null){
+            view.dismissNotification(receptorPhoneNumber.hashCode());
+        }
     }
 
     private void getAcademicInformation(Intent intent) {
@@ -362,7 +371,7 @@ public class ChatPresenterImpl implements ChatPresenter {
                     @Override
                     public void onSuccess(SendMessage.ResponseValue response) {
                         Log.d(TAG, "useCaseSendMessage onSuccess");
-                        onMessageChanged(response.getMessage());
+                        addMessage(response.getMessage());
                     }
 
                     @Override
@@ -541,6 +550,35 @@ public class ChatPresenterImpl implements ChatPresenter {
         message.setOfficialMessage(officialMessage);
         sendReadMessage(message);
     }
+
+
+    private Map<String, Boolean> messagesNotReadedMap = new LinkedHashMap<>();
+    @Override
+    public void onMessageNotReaded(ChatMessage message) {
+        Log.d(TAG, "onMessageNotReaded message: " + message);
+        String messageKey = message.getKeyMessage();
+        if (!messagesNotReadedMap.containsKey(messageKey)){
+            messagesNotReadedMap.put(messageKey, Boolean.TRUE);
+            useCaseHandler.execute(
+                    useCaseListenSingleMessage,
+                    new ListenSingleMessage.RequestValues(message),
+                    new UseCase.UseCaseCallback<ListenSingleMessage.ResponseValue>() {
+                        @Override
+                        public void onSuccess(ListenSingleMessage.ResponseValue response) {
+                            ChatMessage chatMessage = response.getMessage();
+                            Log.d(TAG, "useCaseListenSingleMessage onSuccess message: " + chatMessage);
+                        }
+
+                        @Override
+                        public void onError() {
+                            Log.d(TAG, "onMessageNotReaded onError");
+                        }
+                    }
+
+            );
+        }
+    }
+
 
     private void showDialogToConfirm(ChatMessage message) {
         if (view != null) {
@@ -723,8 +761,14 @@ public class ChatPresenterImpl implements ChatPresenter {
         Log.d(TAG, "onMessageChanged");
         if (view != null) {
             if (chat != null && chat.getChatKey().equals(message.getChatKey())) {
-                view.addMessage(message);
+                view.updateMessage(message);
             }
+        }
+    }
+
+    private void addMessage(ChatMessage message){
+        if (view != null){
+            view.addMessage(message);
         }
     }
 

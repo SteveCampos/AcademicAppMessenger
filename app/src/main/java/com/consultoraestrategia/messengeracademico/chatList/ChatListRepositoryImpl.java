@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.chatList.event.ChatListEvent;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
+import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
+import com.consultoraestrategia.messengeracademico.entities.Chat_Table;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
@@ -12,6 +14,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -29,44 +33,12 @@ public class ChatListRepositoryImpl implements ChatListRepository {
         this.mainUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    private int counter = 0;
-
-    /*
     @Override
-    public void getPhoneNumber(SharedPreferences preferences) {
-        Log.d(TAG, "getPhoneNumber");
-        String phoneNumber = preferences.getString(VerificationActivity.PREF_PHONENUMBER, null);
-        counter++;
-        if (phoneNumber != null) {
-            post(phoneNumber);
-        } else {
-            if (counter < 10) {
-                getPhoneNumber(preferences);
-            } else {
-                //Show error Retreiving phoneNumber!
-                Log.d(TAG, "Error getting phonenumber from preferences!");
-            }
-        }
-
-    }
-
-    @Override
-    public void getContact(String phoneNumber) {
-        Log.d(TAG, "getContact");
-        Contact mainUser = SQLite.select()
-                .from(Contact.class)
-                .where(Contact_Table.phoneNumber.eq(phoneNumber))
-                .and(Contact_Table.uid.isNotNull())
-                .querySingle();
-        this.mainUser = mainUser;
-        post(mainUser);
-    }*/
-
-    @Override
-    public void getChats(/*Contact mainUser*/) {
+    public void getChats() {
         Log.d(TAG, "getChats");
         List<Chat> chats = SQLite.select()
                 .from(Chat.class)
+                .where(Chat_Table.timestamp.isNotNull())
                 .queryList();
         post(chats);
     }
@@ -74,7 +46,6 @@ public class ChatListRepositoryImpl implements ChatListRepository {
     @Override
     public void onChatClicked(Chat chat) {
         Log.d(TAG, "onChatClicked");
-        String phoneNumber = mainUser.getPhoneNumber();
         Contact emisor = chat.getEmisor();
         Contact receptor = chat.getReceptor();
         if (mainUser == null || emisor == null || receptor == null) {

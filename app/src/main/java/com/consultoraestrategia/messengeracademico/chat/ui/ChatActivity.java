@@ -20,6 +20,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
@@ -82,6 +83,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.codetail.animation.ViewAnimationUtils;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -115,6 +117,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     TextInputLayout inputLayoutMessage;*/
     @BindView(R.id.layout_bottom)
     CardView layoutBottom;
+
     @BindView(R.id.btn_send)
     FloatingActionButton fab;
     @BindView(R.id.progressBar)
@@ -127,6 +130,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     ChatPresenter presenter;
 
     Contact contact;
+
+    @BindView(R.id.btn_scroll)
+    ImageButton btnScroll;
+    @BindView(R.id.txtCounter)
+    TextView txtCounter;
+    @BindView(R.id.layout_croll)
+    RelativeLayout layoutCroll;
 
 
     private boolean hidden = true;
@@ -161,6 +171,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     TextView txtAcademicInformation;
     @BindView(R.id.layout_academic_information)
     RelativeLayout layoutAcademicInformation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,6 +220,23 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         } else {
             showFatalError("No existe el número.");
         }
+    }
+
+    @Override
+    public void dismissNotification(int id) {
+        Log.d(TAG, "id: " + id);
+        NotificationManagerCompat.from(this).cancel(id);
+    }
+
+    @Override
+    public void showButtomToScroll(int count) {
+        Log.d(TAG, "showButtonToScroll");
+        //layoutCroll.setVisibility(View.VISIBLE);
+    }
+
+    @OnClick(R.id.btn_scroll)
+    public void buttonScrollClicked(){
+        adapter.scrollToLastItem();
     }
 
 
@@ -337,8 +365,10 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
     private void setupRecycler() {
-        recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recycler.setLayoutManager(layoutManager);
         recycler.setAdapter(adapter);
+        adapter.setmLinearLayoutManager(layoutManager);
         adapter.setRecyclerView(recycler);
     }
 
@@ -384,7 +414,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     public void addMessage(ChatMessage message) {
         Log.d(TAG, "addMessage");
         if (message != null) {
-            adapter.onMessageAdded(message);
+            //adapter.onMessageAdded(message);
         }
     }
 
@@ -407,8 +437,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
     @Override
-    public void onMessageWrited(ChatMessage message) {
+    public void onMessageNotReaded(ChatMessage message) {
+        Log.d(TAG, "message: " + message.toString());
+        presenter.onMessageNotReaded(message);
+    }
 
+    @Override
+    public void onNewMessageAddedToTheBottom() {
+        showButtomToScroll(1);
     }
 
 
@@ -458,6 +494,11 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         builder.create().show();
     }
 
+    @Override
+    public void updateMessage(ChatMessage message) {
+        adapter.onMessagedChanged(message);
+    }
+
     public void onConfirmOfficialMessage(ChatMessage message) {
         presenter.officialMessageConfirmed(message);
     }
@@ -490,7 +531,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         edtMessage.requestFocus();
         edtMessage.setText("");
         presenter.sendMessageText(text);
-
+        adapter.scrollToLastItem();
     }
 
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
@@ -622,7 +663,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     public void showFatalError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
         presenter.onBackPressed();
-
     }
 
     @Override
