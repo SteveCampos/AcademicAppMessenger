@@ -3,22 +3,14 @@ package com.consultoraestrategia.messengeracademico.chat.adapters.holder;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.FitCenter;
-import com.bumptech.glide.request.target.Target;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
@@ -28,7 +20,6 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
  * Created by @stevecampos on 16/06/2017.
@@ -70,7 +61,7 @@ public class MessageImageEmisorHolder extends RecyclerView.ViewHolder {
             progressBar.setVisibility(View.GONE);
         }
 
-        ViewCompat.setTransitionName(imageview, message.getMessageUri());
+        //ViewCompat.setTransitionName(imageview, message.getMessageUri());
 
         imageview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +71,7 @@ public class MessageImageEmisorHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
-        MessageTextEmisorHolder.fireNotReaded(message, listener);
+        MessageTextEmisorHolder.checkStatusAndFire(message, listener);
     }
 
 }

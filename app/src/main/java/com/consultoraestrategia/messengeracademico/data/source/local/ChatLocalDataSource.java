@@ -154,6 +154,11 @@ public class ChatLocalDataSource implements ChatDataSource {
         saveMessage(message, chat, callback);
     }
 
+    @Override
+    public void sendMessageNotReaded(ChatMessage message, boolean isReceptorOnline, Chat chat, ListenMessagesCallback callback) {
+
+    }
+
 
     @Override
     public void listenForAllUserMessages(String messageKey, ListenMessagesCallback callback) {

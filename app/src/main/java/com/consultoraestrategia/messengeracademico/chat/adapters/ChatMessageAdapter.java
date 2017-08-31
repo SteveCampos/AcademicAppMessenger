@@ -54,13 +54,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private FirebaseUser mainUser;
     private RecyclerView recyclerView;
     private LinearLayoutManager mLinearLayoutManager;
+    private OnBottomReachedListener onBottomReachedListener;
 
-    public ChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, Context context) {
+    public interface OnBottomReachedListener {
+        void onBottomReached();
+        void onNotBottom();
+    }
+
+    public ChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, Context context, OnBottomReachedListener bottomReachedListener) {
         Log.d(TAG, "ChatMessageAdapter new Instance: " + this.hashCode());
         this.mainUser = mainUser;
         this.messages = messages;
         this.listener = listener;
         this.context = context;
+        this.onBottomReachedListener = bottomReachedListener;
     }
 
     public void setmLinearLayoutManager(LinearLayoutManager layoutManager){
@@ -111,7 +118,23 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
         });
+        recyclerView.addOnScrollListener(mScrollListener);
     }
+
+    private RecyclerView.OnScrollListener mScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            int visibleItemCount = mLinearLayoutManager.getChildCount();
+            int totalItemCount = mLinearLayoutManager.getItemCount();
+            int pastVisibleItems = mLinearLayoutManager.findFirstVisibleItemPosition();
+            if (pastVisibleItems + visibleItemCount >= totalItemCount) {
+                //End of list
+                onBottomReachedListener.onBottomReached();
+            }else{
+                onBottomReachedListener.onNotBottom();
+            }
+        }
+    };
 
 
     @Override
@@ -228,14 +251,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void addMessage(ChatMessage message) {
-        Log.d(TAG, this.hashCode() + ", addMessage message: " + message);
+        //Log.d(TAG, this.hashCode() + ", addMessage message: " + message);
         messages.add(message);
         notifyItemInserted(getItemCount());
         //scrollToLastItem();
     }
 
     private void updateMessage(ChatMessage message) {
-        Log.d(TAG, this.hashCode() + ", updateMessage message: " + message);
+        //Log.d(TAG, this.hashCode() + ", updateMessage message: " + message);
         int position = messages.indexOf(message);
         messages.set(position, message);
         notifyItemChanged(position);
@@ -252,8 +275,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void addMessageList(List<ChatMessage> messages) {
-        Log.d(TAG, "addMessageList");
+        Log.d(TAG, "addMessagesList");
         if (messages != null && !messages.isEmpty()) {
+            Log.d(TAG, "messages count: " + messages.size());
             this.messages.clear();
             this.messages.addAll(messages);
             notifyDataSetChanged();

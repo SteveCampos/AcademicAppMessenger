@@ -579,6 +579,15 @@ public class ChatPresenterImpl implements ChatPresenter {
         }
     }
 
+    @Override
+    public void onMessageNotSended(ChatMessage message) {
+        if (message.getMessageType().equals(ChatMessage.TYPE_TEXT)){
+            message.getEmisor().load();
+            message.getReceptor().load();
+            sendMessage(message);
+        }
+    }
+
 
     private void showDialogToConfirm(ChatMessage message) {
         if (view != null) {

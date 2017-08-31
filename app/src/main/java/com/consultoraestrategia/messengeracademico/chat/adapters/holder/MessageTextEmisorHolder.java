@@ -54,13 +54,20 @@ public class MessageTextEmisorHolder extends RecyclerView.ViewHolder {
         imgStatus.setImageDrawable(drawable);
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
         setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtTimeTitle, resources);
-        fireNotReaded(message, listener);
+        checkStatusAndFire(message, listener);
     }
 
-    public static void fireNotReaded(ChatMessage message, ChatMessageListener listener){
+
+    public static void checkStatusAndFire(ChatMessage message, ChatMessageListener listener){
         if (message.getMessageStatus()!=ChatMessage.STATUS_READED){
             if (listener != null){
                 listener.onMessageNotReaded(message);
+            }
+        }
+
+        if (message.getMessageStatus() == ChatMessage.STATUS_WRITED){
+            if (listener != null){
+                listener.onMessageNotSended(message);
             }
         }
     }

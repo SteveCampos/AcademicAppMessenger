@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,6 +35,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -83,7 +84,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.codetail.animation.ViewAnimationUtils;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -94,7 +94,7 @@ import permissions.dispatcher.RuntimePermissions;
  */
 
 @RuntimePermissions
-public class ChatActivity extends AppCompatActivity implements ChatView, ChatMessageListener {
+public class ChatActivity extends AppCompatActivity implements ChatView, ChatMessageListener, ChatMessageAdapter.OnBottomReachedListener {
 
     private static final String TAG = ChatActivity.class.getSimpleName();
     public static final String EXTRA_RECEPTOR_PHONENUMBER = "EXTRA_RECEPTOR_PHONENUMBER";
@@ -173,6 +173,10 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     RelativeLayout layoutAcademicInformation;
 
 
+    // slide-up animation
+    Animation slideUp;
+    Animation slideDown;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -183,13 +187,19 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         setupInjection();
         setupRecycler();
         initPresenter();
+        setupAnimations();
+    }
+
+    private void setupAnimations() {
+        slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+        slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
     }
 
     private void setupViews() {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         edtMessage.addTextChangedListener(watcher);
-        emojiButton.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
+        //emojiButton.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
         emojiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -350,14 +360,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         if (presenter == null) {
             Log.d(TAG, "presenter != null");
             MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
-            ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this);
+            ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this, this);
             presenter = chatComponent.getPresenter();
             presenter.onCreate();
             adapter = chatComponent.getAdapter();
         }
         if (adapter == null) {
             MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
-            ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this);
+            ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this, this);
             adapter = chatComponent.getAdapter();
         }
 
@@ -443,8 +453,17 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
     @Override
+    public void onMessageNotSended(ChatMessage message) {
+        presenter.onMessageNotSended(message);
+    }
+
+    int counter;
+    @Override
     public void onNewMessageAddedToTheBottom() {
-        showButtomToScroll(1);
+        showButtonToScroll();
+
+        txtCounter.setVisibility(View.VISIBLE);
+        txtCounter.setText(""+ (++counter));
     }
 
 
@@ -840,7 +859,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
                 .setOnEmojiPopupDismissListener(new OnEmojiPopupDismissListener() {
                     @Override
                     public void onEmojiPopupDismiss() {
-                        emojiButton.setImageResource(R.drawable.emoji_one_category_people);
+                        //emojiButton.setImageResource(R.drawable.emoji_one_category_people);
+                        emojiButton.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_happy));
                     }
                 })
                 .setOnSoftKeyboardCloseListener(new OnSoftKeyboardCloseListener() {
@@ -850,5 +870,33 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
                     }
                 })
                 .build(edtMessage);
+    }
+
+    @Override
+    public void onBottomReached() {
+        Log.d(TAG, "onBottomReached");
+        counter = 0;
+        txtCounter.setVisibility(View.GONE);
+        hideButtonToScroll();
+    }
+
+    private void hideButtonToScroll(){
+        if (layoutCroll.getVisibility() == View.VISIBLE) {
+            layoutCroll.setVisibility(View.INVISIBLE);
+            layoutCroll.startAnimation(slideDown);
+        }
+    }
+
+    private void showButtonToScroll(){
+        if (layoutCroll.getVisibility() == View.INVISIBLE) {
+            layoutCroll.setVisibility(View.VISIBLE);
+            layoutCroll.startAnimation(slideUp);
+        }
+    }
+
+    @Override
+    public void onNotBottom() {
+        Log.d(TAG, "onNotBottom");
+        showButtonToScroll();
     }
 }

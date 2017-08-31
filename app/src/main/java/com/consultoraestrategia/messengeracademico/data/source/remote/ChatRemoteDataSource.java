@@ -100,6 +100,11 @@ public class ChatRemoteDataSource implements ChatDataSource {
     }
 
     @Override
+    public void sendMessageNotReaded(ChatMessage message, boolean isReceptorOnline, Chat chat, ListenMessagesCallback callback) {
+
+    }
+
+    @Override
     public void listenForAllUserMessages(String lastMessageKey, final ListenMessagesCallback callback) {
         Log.d(TAG, "listenForAllUserMessages");
         listenMessages(lastMessageKey, callback);

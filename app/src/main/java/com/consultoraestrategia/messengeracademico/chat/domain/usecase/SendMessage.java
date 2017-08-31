@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.chat.domain.usecase;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.UseCase;
@@ -29,26 +30,46 @@ public class SendMessage extends UseCase<SendMessage.RequestValues, SendMessage.
         Log.d(TAG, "executeUseCase");
         ChatMessage message = requestValues.getMessage();
 
-        String keyMessage = firebaseChat.getKeyMessage(message.getEmisor(), message.getReceptor());
-        message.setKeyMessage(keyMessage);
+        if (message.getKeyMessage() == null || TextUtils.isEmpty(message.getKeyMessage())){
+            String keyMessage = firebaseChat.getKeyMessage(message.getEmisor(), message.getReceptor());
+            message.setKeyMessage(keyMessage);
+            repository.saveMessageWithStatusWrited(
+                    message,
+                    requestValues.isReceptorOnline(),
+                    null, //Chat is cached in   ChatRepository
+                    new ChatDataSource.ListenMessagesCallback() {
+                        @Override
+                        public void onMessageChanged(ChatMessage message) {
+                            Log.d(TAG, "onMessageChanged");
+                            sendResponse(message);
+                        }
 
-        repository.saveMessageWithStatusWrited(
-                message,
-                requestValues.isReceptorOnline(),
-                null, //Chat is cached in   ChatRepository
-                new ChatDataSource.ListenMessagesCallback() {
-                    @Override
-                    public void onMessageChanged(ChatMessage message) {
-                        Log.d(TAG, "onMessageChanged");
-                        sendResponse(message);
-                    }
+                        @Override
+                        public void onError(String error) {
+                            Log.d(TAG, "error: " + error);
+                            getUseCaseCallback().onError();
+                        }
+                    });
+        }else{
+            repository.sendMessageNotReaded(
+                    message,
+                    requestValues.isReceptorOnline(),
+                    null, //Chat is cached in   ChatRepository
+                    new ChatDataSource.ListenMessagesCallback() {
+                        @Override
+                        public void onMessageChanged(ChatMessage message) {
+                            Log.d(TAG, "onMessageChanged");
+                            sendResponse(message);
+                        }
 
-                    @Override
-                    public void onError(String error) {
-                        Log.d(TAG, "error: " + error);
-                        getUseCaseCallback().onError();
-                    }
-                });
+                        @Override
+                        public void onError(String error) {
+                            Log.d(TAG, "error: " + error);
+                            getUseCaseCallback().onError();
+                        }
+                    });
+        }
+
     }
 
     private void sendResponse(ChatMessage message) {

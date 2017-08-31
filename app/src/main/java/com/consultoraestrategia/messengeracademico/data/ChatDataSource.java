@@ -63,6 +63,8 @@ public interface ChatDataSource {
 
     void saveMessageWithStatusReaded(ChatMessage message, Chat chat, ListenMessagesCallback callback);
 
+    void sendMessageNotReaded(ChatMessage message, boolean isReceptorOnline, Chat chat, ListenMessagesCallback callback);
+
 
     void listenForAllUserMessages(String lastMessageKey, ListenMessagesCallback callback);
 

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.FragmentManager;
 
+import com.consultoraestrategia.messengeracademico.chat.adapters.ChatMessageAdapter;
 import com.consultoraestrategia.messengeracademico.chat.di.ChatComponent;
 import com.consultoraestrategia.messengeracademico.chat.di.ChatModule;
 import com.consultoraestrategia.messengeracademico.chat.di.DaggerChatComponent;
@@ -57,10 +58,10 @@ public class MessengerAcademicoApp extends Application {
         FirebaseApp.initializeApp(this);
     }
 
-    public ChatComponent getChatComponent(Context context, SharedPreferences preferences, ChatMessageListener listener) {
+    public ChatComponent getChatComponent(Context context, SharedPreferences preferences, ChatMessageListener listener, ChatMessageAdapter.OnBottomReachedListener onBottomReachedListener) {
         return DaggerChatComponent
                 .builder()
-                .chatModule(new ChatModule(listener))
+                .chatModule(new ChatModule(listener, onBottomReachedListener))
                 .messengerAcademicoAppModule(new MessengerAcademicoAppModule(context, preferences))
                 .build();
     }

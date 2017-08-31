@@ -352,7 +352,7 @@ public class ChatRepository implements ChatDataSource {
             @Override
             public void onMessageChanged(ChatMessage message) {
                 Log.d(TAG, "chatLocalDataSource saveMessageWithStatusWrited onMessageChanged");
-                callback.onMessageChanged(message);
+                //callback.onMessageChanged(message);
                 //callbackMessage(message, callback);
             }
 
@@ -361,12 +361,35 @@ public class ChatRepository implements ChatDataSource {
                 callback.onError(error);
             }
         });
+        sendMessageWritedToRemote(message, receptorOnline, chat, callback);
+    }
 
+    @Override
+    public void sendMessageNotReaded(final ChatMessage message, final boolean receptorOnline, Chat chat, final ListenMessagesCallback callback){
+        Log.d(TAG, "sendMessageNotReaded");
+        getChat(message, new GetChatCallback() {
+            @Override
+            public void onChatLoaded(Chat chat) {
+                sendMessageWritedToRemote(message, receptorOnline, chat, callback);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                Log.d(TAG, "getChat FAILED!");
+            }
+        });
+    }
+
+    private void sendMessageWritedToRemote(ChatMessage message, boolean receptorOnline, Chat chat, final ListenMessagesCallback callback){
         chatRemoteDataSource.saveMessageWithStatusWrited(message, receptorOnline, chat, new ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
                 Log.d(TAG, "chatRemoteDataSource saveMessageWithStatusWrited onMessageChanged");
                 //callbackMessage(message, callback);
+                message.setMessageStatus(ChatMessage.STATUS_SEND);
+                fireMessage(message);
+                callback.onMessageChanged(message);
+                saveMessageOnLocal(message);
             }
 
             @Override
@@ -686,11 +709,11 @@ public class ChatRepository implements ChatDataSource {
 
     private void onEmisorReceiveMessageWrited(ChatMessage message) {
         Log.d(TAG, "onEmisorReceiveMessageWrited");
-        message.setMessageStatus(ChatMessage.STATUS_SEND);
+        //message.setMessageStatus(ChatMessage.STATUS_SEND);
         //fire
-        fireMessage(message);
+        //fireMessage(message);
         //save on local
-        saveMessageOnLocal(message);
+        //saveMessageOnLocal(message);
     }
 
     private void onReceptorReceiveMessageWrited(ChatMessage message) {

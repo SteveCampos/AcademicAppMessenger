@@ -109,7 +109,7 @@ public class MessageTextOfficialEmisorHolder extends RecyclerView.ViewHolder {
                 txtActionRespone,
                 null,
                 null);
-        MessageTextEmisorHolder.fireNotReaded(message, listener);
+        MessageTextEmisorHolder.checkStatusAndFire(message, listener);
     }
 
     public static void showOfficialMessage(OfficialMessage officialMessage,

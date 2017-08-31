@@ -45,15 +45,23 @@ import dagger.Provides;
 @Module
 public class ChatModule {
     ChatMessageListener messageListener;
+    ChatMessageAdapter.OnBottomReachedListener onBottomReachedListener;
 
-    public ChatModule(ChatMessageListener messageListener) {
+    public ChatModule(ChatMessageListener messageListener, ChatMessageAdapter.OnBottomReachedListener onBottomReachedListener) {
         this.messageListener = messageListener;
+        this.onBottomReachedListener = onBottomReachedListener;
     }
 
     @Provides
     @Singleton
-    ChatMessageAdapter provideChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, Context context) {
-        return new ChatMessageAdapter(mainUser, messages, listener, context);
+    ChatMessageAdapter provideChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, Context context, ChatMessageAdapter.OnBottomReachedListener onBottomReachedListener) {
+        return new ChatMessageAdapter(mainUser, messages, listener, context, onBottomReachedListener);
+    }
+
+    @Provides
+    @Singleton
+    ChatMessageAdapter.OnBottomReachedListener provideOnBottomReachedListener(){
+        return this.onBottomReachedListener;
     }
 
     @Provides
