@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.consultoraestrategia.messengeracademico.entities.Chat.STATE_ACTIVE;
+
 /**
  * Created by jairc on 24/03/2017.
  */
@@ -39,6 +41,7 @@ public class ChatListRepositoryImpl implements ChatListRepository {
         List<Chat> chats = SQLite.select()
                 .from(Chat.class)
                 .where(Chat_Table.timestamp.isNotNull())
+                .and(Chat_Table.state.eq(STATE_ACTIVE))
                 .queryList();
         post(chats);
     }
@@ -51,7 +54,6 @@ public class ChatListRepositoryImpl implements ChatListRepository {
         if (mainUser == null || emisor == null || receptor == null) {
             return;
         }
-
         if (mainUser.getUid().equals(emisor.getUid())) {
             postToMain(chat.getReceptor());
         } else if (mainUser.getUid().equals(receptor.getUid())) {

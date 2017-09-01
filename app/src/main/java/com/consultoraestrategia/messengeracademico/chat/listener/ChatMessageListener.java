@@ -19,4 +19,6 @@ public interface ChatMessageListener {
     void onMessageNotSended(ChatMessage message);
 
     void onNewMessageAddedToTheBottom();
+
+    void onLoadMore(ChatMessage olderMessage);
 }

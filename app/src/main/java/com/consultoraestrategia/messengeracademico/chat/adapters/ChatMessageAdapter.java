@@ -114,7 +114,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                 lastVisiblePosition == (positionStart - 2))) {
                     scrollToLastItem();
                 }else{
-                    listener.onNewMessageAddedToTheBottom();
+                    if (itemCount == 1){
+                        listener.onNewMessageAddedToTheBottom();
+                    }
                 }
             }
         });
@@ -201,14 +203,26 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return viewHolder;
     }
 
+    private void checkIfLoadMore(int position){
+        if (position == 10 && getItemCount() >= 100){
+            listener.onLoadMore(messages.get(0));
+        }
+    }
+
+    private ChatMessage getPreviousMessage(int position){
+        if (position >= 1) {
+            return messages.get(position - 1);
+        }
+        return null;
+    }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Log.d(TAG, "position: " + position);
         ChatMessage message = messages.get(position);
-        ChatMessage previousMessage = null;
-        if (position >= 1) {
-            previousMessage = messages.get(position - 1);
-        }
+        ChatMessage previousMessage = getPreviousMessage(position);
+        checkIfLoadMore(position);
+
         switch (holder.getItemViewType()) {
             case TYPE_EMISOR_TEXT:
                 MessageTextEmisorHolder vh1 = (MessageTextEmisorHolder) holder;
@@ -282,6 +296,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             this.messages.addAll(messages);
             notifyDataSetChanged();
             scrollToLastItem();
+        }
+    }
+
+    public void addMessages(List<ChatMessage> messages){
+        Log.d(TAG, "addMessages");
+        if (messages != null && !messages.isEmpty()){
+            Log.d(TAG, "count: " + messages.size());
+            this.messages.addAll(0, messages);
+            notifyItemRangeInserted(0, messages.size());
         }
     }
 

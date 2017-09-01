@@ -48,4 +48,6 @@ public interface ChatPresenter extends BasePresenter {
     void onMessageNotReaded(ChatMessage message);
 
     void onMessageNotSended(ChatMessage message);
+
+    void loadMoreMessages(ChatMessage olderMessage);
 }

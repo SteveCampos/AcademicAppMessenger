@@ -226,8 +226,8 @@ public class ChatRepository implements ChatDataSource {
                             return Long.valueOf(o1.getTimestamp()).compareTo(o2.getTimestamp());
                         }
                     });
+                    callback.onMessagesLoaded(messages);
                     refreshCache(messages);
-                    callback.onMessagesLoaded(new ArrayList<>(mCachedMessages.values()));
                 }
 
                 @Override
@@ -236,8 +236,62 @@ public class ChatRepository implements ChatDataSource {
                 }
             });
         }
-
     }
+
+    /**
+     * Gets more messages from local data source (SQLite) or remote data source, whichever is
+     * available first.
+     * <p>
+     * Note: {@link GetMessageCallback#onDataNotAvailable()} is fired if all data sources fail to
+     * get the data.
+     */
+    @Override
+    public void getMoreMessages(final ChatMessage message, final GetMessageCallback callback) {
+        /*
+        // Respond immediately with cache if available and not dirty
+        if (mCachedMessages != null && !mCacheIsDirty) {
+            Log.d(TAG, "getMessages from mCachedMessages");
+            callback.onMessagesLoaded(new ArrayList<>(mCachedMessages.values()));
+            return;
+        }
+
+        if (mCacheIsDirty) {
+            // If the cache is dirty we need to fetch new data from the network.
+            Log.d(TAG, "getMessages from chatRemoteDataSource");
+            chatRemoteDataSource.getMessages(chat, callback);
+        } else {
+            */
+            // Query the local storage if available. If not, query the network.
+            Log.d(TAG, "getMoreMessages from chatLocalDataSource");
+            chatLocalDataSource.getMoreMessages(message, new GetMessageCallback() {
+                @Override
+                public void onMessagesLoaded(List<ChatMessage> messages) {
+                    Log.d(TAG, "getMoreMessages onMessagesLoaded");
+
+                    if (messages == null || messages.isEmpty()){
+                        return;
+                    }
+
+                    Log.d(TAG, "getMoreMessages size: " + messages.size());
+
+                    Collections.sort(messages, new Comparator<ChatMessage>() {
+                        @Override
+                        public int compare(ChatMessage o1, ChatMessage o2) {
+                            return Long.valueOf(o1.getTimestamp()).compareTo(o2.getTimestamp());
+                        }
+                    });
+                    callback.onMessagesLoaded(messages);
+                    addMessagesToCache(messages);
+                }
+
+                @Override
+                public void onDataNotAvailable() {
+                    chatRemoteDataSource.getMessages(chat, callback);
+                }
+            });
+        //}
+    }
+
 
     @Override
     public void getMessagesNoReaded(final Chat chat, final GetMessageCallback callback) {
@@ -487,6 +541,28 @@ public class ChatRepository implements ChatDataSource {
             mCachedMessages = new LinkedHashMap<>();
         }
         mCachedMessages.clear();
+    }
+
+    private void addMessagesToCache(List<ChatMessage> messages){
+        if (mCachedMessages == null) {
+            mCachedMessages = new LinkedHashMap<>();
+        }
+        for (ChatMessage message: messages){
+            mCachedMessages.put(message.getId(), message);
+        }
+        mCacheIsDirty = false;
+        sortCache();
+    }
+
+    private void sortCache(){
+        List<ChatMessage> chatMessages = new ArrayList<>(mCachedMessages.values());
+        Collections.sort(chatMessages, new Comparator<ChatMessage>() {
+            @Override
+            public int compare(ChatMessage o1, ChatMessage o2) {
+                return Long.valueOf(o1.getTimestamp()).compareTo(o2.getTimestamp());
+            }
+        });
+        refreshCache(chatMessages);
     }
 
     private void refreshCache(List<ChatMessage> messages) {
@@ -842,7 +918,7 @@ public class ChatRepository implements ChatDataSource {
 
             @Override
             public void onError(String error) {
-                Log.d(TAG, "onError");
+                Log.d(TAG, "listenSingleMessage onError: " + error);
             }
         });
     }

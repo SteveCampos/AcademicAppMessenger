@@ -55,6 +55,8 @@ public interface ChatDataSource {
 
     void getMessages(Chat chat, GetMessageCallback callback);
 
+    void getMoreMessages(ChatMessage message, GetMessageCallback callback);
+
     void getMessagesNoReaded(Chat chat, GetMessageCallback callback);
 
     void saveMessage(ChatMessage message, Chat chat, ListenMessagesCallback callback);

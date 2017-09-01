@@ -244,6 +244,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         //layoutCroll.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void addMoreMessages(List<ChatMessage> messages) {
+        Log.d(TAG, "addMoreMessages");
+        adapter.addMessages(messages);
+    }
+
     @OnClick(R.id.btn_scroll)
     public void buttonScrollClicked(){
         adapter.scrollToLastItem();
@@ -461,9 +467,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     public void onNewMessageAddedToTheBottom() {
         showButtonToScroll();
-
         txtCounter.setVisibility(View.VISIBLE);
         txtCounter.setText(""+ (++counter));
+    }
+
+    @Override
+    public void onLoadMore(ChatMessage olderMessage) {
+        Log.d(TAG, "onLoadMore");
+        presenter.loadMoreMessages(olderMessage);
     }
 
 
@@ -530,9 +541,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     private void startFullImageActivity(ChatMessage message, View imageView) {
         Intent intent = new Intent(ChatActivity.this, FullscreenActivity.class);
         intent.setData(Uri.parse(message.getMessageUri()));
-        ActivityOptionsCompat options = ActivityOptionsCompat.
-                makeSceneTransitionAnimation(this, imageView, ViewCompat.getTransitionName(imageView));
-        startActivity(intent, options.toBundle());
+        /*ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, imageView, ViewCompat.getTransitionName(imageView));*/
+        startActivity(intent);
     }
 
 

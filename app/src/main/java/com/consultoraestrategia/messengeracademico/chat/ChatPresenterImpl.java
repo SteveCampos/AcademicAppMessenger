@@ -14,6 +14,7 @@ import com.consultoraestrategia.messengeracademico.UseCaseHandler;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.GenerateMessageKey;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ListenSingleMessage;
+import com.consultoraestrategia.messengeracademico.chat.domain.usecase.LoadMoreMessages;
 import com.consultoraestrategia.messengeracademico.chat.events.ChatEvent;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatView;
@@ -75,6 +76,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     private final ContentResolver contentResolver;
     private final Resources resources;
     private final ListenSingleMessage useCaseListenSingleMessage;
+    private final LoadMoreMessages useCaseLoadMoreMessages;
 
 
     private FirebaseUser mainUser;
@@ -82,7 +84,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     private Contact receptor;
     private Chat chat;
 
-    public ChatPresenterImpl(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources, ListenSingleMessage listenSingleMessage) {
+    public ChatPresenterImpl(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources, ListenSingleMessage listenSingleMessage, LoadMoreMessages useCaseLoadMoreMessages) {
         this.mainUser = mainUser;
         this.useCaseHandler = useCaseHandler;
         this.useCaseLoadMessages = useCaseLoadMessages;
@@ -101,6 +103,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         this.contentResolver = contentResolver;
         this.resources = resources;
         this.useCaseListenSingleMessage = listenSingleMessage;
+        this.useCaseLoadMoreMessages = useCaseLoadMoreMessages;
     }
 
     @Override
@@ -585,6 +588,41 @@ public class ChatPresenterImpl implements ChatPresenter {
             message.getEmisor().load();
             message.getReceptor().load();
             sendMessage(message);
+        }
+    }
+
+    Map<String, Boolean> mCachedOlderMessages = new LinkedHashMap<>();
+
+    @Override
+    public void loadMoreMessages(ChatMessage olderMessage) {
+        Log.d(TAG,"loadMoreMessages");
+        if (olderMessage != null){
+            if (!mCachedOlderMessages.containsKey(olderMessage.getId())){
+                mCachedOlderMessages.put(olderMessage.getId(), Boolean.TRUE);
+                useCaseHandler.execute(
+                        useCaseLoadMoreMessages,
+                        new LoadMoreMessages.RequestValues(olderMessage),
+                        new UseCase.UseCaseCallback<LoadMoreMessages.ResponseValue>() {
+                            @Override
+                            public void onSuccess(LoadMoreMessages.ResponseValue response) {
+                                Log.d(TAG, "loadMoreMessages onSucess");
+                                onMoreMessagesLoaded(response.getMessages());
+                            }
+
+                            @Override
+                            public void onError() {
+                                Log.d(TAG, "loadMoreMessages onError");
+                            }
+                        }
+                );
+            }
+
+        }
+    }
+
+    private void onMoreMessagesLoaded(List<ChatMessage> messages){
+        if (view != null){
+            view.addMoreMessages(messages);
         }
     }
 

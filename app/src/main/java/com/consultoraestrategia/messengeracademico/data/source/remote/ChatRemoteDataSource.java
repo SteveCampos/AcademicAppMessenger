@@ -51,7 +51,12 @@ public class ChatRemoteDataSource implements ChatDataSource {
 
     @Override
     public void getMessages(Chat chat, GetMessageCallback callback) {
+        Log.d(TAG, "getMessages");
+    }
 
+    @Override
+    public void getMoreMessages(ChatMessage message, GetMessageCallback callback) {
+        Log.d(TAG, "getMoreMessages");
     }
 
     @Override

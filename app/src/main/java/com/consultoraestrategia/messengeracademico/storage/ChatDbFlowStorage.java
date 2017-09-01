@@ -14,6 +14,8 @@ import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
 
 import dagger.BindsOptionalOf;
 
+import static com.consultoraestrategia.messengeracademico.entities.Chat.STATE_ACTIVE;
+
 /**
  * Created by @stevecampos on 24/04/2017.
  */
@@ -53,6 +55,7 @@ public class ChatDbFlowStorage implements ChatStorage {
                 long timestamp = message.getTimestamp();
 
                 chat.setTimestamp(timestamp);
+                chat.setState(STATE_ACTIVE);
                 chat.save();
 
 

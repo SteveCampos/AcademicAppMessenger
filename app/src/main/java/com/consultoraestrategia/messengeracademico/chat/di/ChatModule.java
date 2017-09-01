@@ -10,6 +10,7 @@ import com.consultoraestrategia.messengeracademico.chat.ChatPresenterImpl;
 import com.consultoraestrategia.messengeracademico.chat.adapters.ChatMessageAdapter;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.GenerateMessageKey;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ListenSingleMessage;
+import com.consultoraestrategia.messengeracademico.chat.domain.usecase.LoadMoreMessages;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.data.ChatRepository;
 import com.consultoraestrategia.messengeracademico.data.ContactRepository;
@@ -78,8 +79,14 @@ public class ChatModule {
 
     @Provides
     @Singleton
-    ChatPresenter providePresenter(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources, ListenSingleMessage listenSingleMessage) {
-        return new ChatPresenterImpl(mainUser, useCaseHandler, useCaseLoadMessages, useCaseGetContact, useCaseGetChat, useCaseSendMessage, useCaseReadMessage, useCaseChangeStateWriting, useCaseListenReceptorConnection, useCaseListenReceptorAction, eventBus, connectionInteractor, generateMessageKey, cacheDir, uploadImage, contentResolver, resources, listenSingleMessage);
+    ChatPresenter providePresenter(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources, ListenSingleMessage listenSingleMessage, LoadMoreMessages loadMoreMessages){
+        return new ChatPresenterImpl(mainUser, useCaseHandler, useCaseLoadMessages, useCaseGetContact, useCaseGetChat, useCaseSendMessage, useCaseReadMessage, useCaseChangeStateWriting, useCaseListenReceptorConnection, useCaseListenReceptorAction, eventBus, connectionInteractor, generateMessageKey, cacheDir, uploadImage, contentResolver, resources, listenSingleMessage, loadMoreMessages);
+    }
+
+    @Provides
+    @Singleton
+    LoadMoreMessages provideLoadMoreMessages(ChatRepository repository){
+        return new LoadMoreMessages(repository);
     }
 
     @Provides

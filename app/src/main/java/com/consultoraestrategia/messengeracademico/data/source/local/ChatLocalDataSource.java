@@ -62,6 +62,7 @@ public class ChatLocalDataSource implements ChatDataSource {
 
         Chat chat = new Chat();
         chat.setChatKey(keyChat);
+
         chat.load();
 
         Contact emisor = chat.getEmisor();
@@ -102,6 +103,26 @@ public class ChatLocalDataSource implements ChatDataSource {
                     .from(ChatMessage.class)
                     .where(ChatMessage_Table.chatKey.eq(chat.getChatKey()))
                     //.and(ChatMessage_Table.timestamp.greaterThanOrEq(chat.getTimestamp()))
+                    .orderBy(ChatMessage_Table.timestamp, false)
+                    .limit(100)
+                    .async()
+                    .queryResultCallback(new QueryTransaction.QueryResultCallback<ChatMessage>() {
+                        @Override
+                        public void onQueryResult(QueryTransaction<ChatMessage> transaction, @NonNull CursorResult<ChatMessage> tResult) {
+                            callback.onMessagesLoaded(tResult.toList());
+                        }
+                    }).execute();
+        }
+    }
+
+    @Override
+    public void getMoreMessages(ChatMessage message, final GetMessageCallback callback) {
+        Log.d(TAG, "getMoreMessages");
+        if (message != null){
+            SQLite.select()
+                    .from(ChatMessage.class)
+                    .where(ChatMessage_Table.chatKey.eq(message.getChatKey()))
+                    .and(ChatMessage_Table.timestamp.lessThan(message.getTimestamp()))
                     .orderBy(ChatMessage_Table.timestamp, false)
                     .limit(100)
                     .async()

@@ -60,4 +60,6 @@ public interface ChatView extends BaseView<ChatPresenter> {
     void dismissNotification(int id);
 
     void showButtomToScroll(int count);
+
+    void addMoreMessages(List<ChatMessage> messages);
 }
