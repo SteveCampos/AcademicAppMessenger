@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.domain;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.data.ContactDataSource;
@@ -113,6 +114,7 @@ public class FirebaseChat extends FirebaseHelper {
 
 
     public String getKeyMessage(Contact from, Contact to) {
+        if (from == null || to == null) return null;
         String emisorUid = from.getUid();
         String receptorUid = to.getUid();
         String[] sortUids = StringUtils.sortAlphabetical(emisorUid, receptorUid);
@@ -160,16 +162,16 @@ public class FirebaseChat extends FirebaseHelper {
             map = buildTimestampMap(message);
         }
         /*
-        map.put("/chats-messages/" + uidChat + "/" + keyMessage, message.toMap());
-        map.put("/users-messages/" + from.getUid() + "/" + keyMessage, message.toMap());
-        map.put("/users-messages/" + to.getUid() + "/" + keyMessage, message.toMap());
+        map.put("/chats-messages/" + uidChat + "/" + keyMessage, message.memberToMap());
+        map.put("/users-messages/" + from.getUid() + "/" + keyMessage, message.memberToMap());
+        map.put("/users-messages/" + to.getUid() + "/" + keyMessage, message.memberToMap());
         if (!online) {
-            map.put("/notifications/" + keyMessage, message.toMap());
+            map.put("/notifications/" + keyMessage, message.memberToMap());
         }
 
 
         if (message.getMessageType().equals(ChatMessage.TYPE_TEXT_OFFICIAL)) {
-            map.put("/official-messages/" + message.getKeyMessage(), message.toMap());
+            map.put("/official-messages/" + message.getKeyMessage(), message.memberToMap());
         }*/
 
         getDatabase().getReference().updateChildren(map, listener);
@@ -196,10 +198,15 @@ public class FirebaseChat extends FirebaseHelper {
     private Map<String, Object> buildTimestampMap(ChatMessage message) {
         Map<String, Object> map = new HashMap<>();
         String uidChat = message.getChatKey();
+
         String keyMessage = message.getKeyMessage();
+
         long timestamp = message.getTimestamp();
+
         String statusName = "readTimestamp";
+
         int messageStatus = message.getMessageStatus();
+
         if (messageStatus == ChatMessage.STATUS_DELIVERED) {
             statusName = "deliverTimestamp";
             timestamp = message.getDeliverTimestamp() == 0 ? new Date().getTime() : message.getDeliverTimestamp();
@@ -242,7 +249,7 @@ public class FirebaseChat extends FirebaseHelper {
         return map;
     }
 
-    private void sendMessageWithPhoneNumbers(String phoneNumberFrom, final String phoneNumberTo, final String messageText) {
+    /*private void sendMessageWithPhoneNumbers(String phoneNumberFrom, final String phoneNumberTo, final String messageText) {
         getContactFromPhoneNumber(phoneNumberFrom, new ContactDataSource.GetContactCallback() {
             @Override
             public void onContactLoaded(final Contact from) {
@@ -265,7 +272,7 @@ public class FirebaseChat extends FirebaseHelper {
 
             }
         });
-        /*
+        --
         getContactFromPhoneNumber(phoneNumberTo, new ContactDataSource.GetContactCallback() {
             @Override
             public void onContactLoaded(Contact contact) {
@@ -276,7 +283,7 @@ public class FirebaseChat extends FirebaseHelper {
             public void onDataNotAvailable() {
 
             }
-        });*/
+        });--
     }
 
     private void sendMessage(Contact from, Contact to, String messageText) {
@@ -341,6 +348,7 @@ public class FirebaseChat extends FirebaseHelper {
             }
         });
     }
+    */
 
     private void onContactNotAvaliable(ContactDataSource.GetContactCallback callback) {
         if (callback != null) {

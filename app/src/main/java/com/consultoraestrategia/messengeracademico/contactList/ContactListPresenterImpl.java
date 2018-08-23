@@ -53,7 +53,7 @@ public class ContactListPresenterImpl implements ContactListPresenter {
     @Override
     public void onError(String error) {
         if (view != null){
-            Log.d(TAG, "showError");
+            Log.d(TAG, "showMessage");
         }
     }
 

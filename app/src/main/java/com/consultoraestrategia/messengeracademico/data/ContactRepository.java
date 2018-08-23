@@ -20,7 +20,7 @@ public class ContactRepository implements ContactDataSource {
     private FirebaseContactsHelper firebaseContactsHelper;
 
     public ContactRepository() {
-        firebaseContactsHelper = new FirebaseContactsHelper();
+        firebaseContactsHelper = FirebaseContactsHelper.getInstance();
     }
 
     @Override

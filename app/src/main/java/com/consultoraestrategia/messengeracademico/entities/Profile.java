@@ -68,7 +68,7 @@ public class Profile {
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("photoUrl", photo.getUrl());//Entidad ToMap
+        result.put("photoUrl", photo.getUrl());//Entidad toMap
         result.put("status", mStatus);
         result.put("phoneNumber", mPhoneNumber);
         result.put("name", mName);

@@ -88,7 +88,7 @@ public class ImageUploadPresenterImpl implements ImageUploadPresenter {
 
                         @Override
                         public void onError() {
-                            showError(new Exception("UseCaseHandler error!"));
+                            showMessage(new Exception("UseCaseHandler error!"));
                         }
                     }
             );

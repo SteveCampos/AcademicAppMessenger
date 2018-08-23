@@ -7,6 +7,7 @@ import com.google.firebase.database.Exclude;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.parceler.Parcel;
@@ -44,6 +45,9 @@ public class Contact extends BaseModel {
 
     @Column
     public String email;
+
+    @Column
+    public String infoVerified;
 
     @Column
     public int type;
@@ -151,6 +155,14 @@ public class Contact extends BaseModel {
         this.lastConnection = lastConnection;
     }
 
+    public String getInfoVerified() {
+        return infoVerified;
+    }
+
+    public void setInfoVerified(String infoVerified) {
+        this.infoVerified = infoVerified;
+    }
+
     @Override
     public boolean equals(Object obj) {
         boolean equal = false;
@@ -171,6 +183,15 @@ public class Contact extends BaseModel {
         return result;
     }
 
+    public Map<String, Object> toUserContactMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", uid);
+        result.put("phoneNumber", phoneNumber);
+        result.put("name", name);
+        return result;
+    }
+
+
     @Override
     public String toString() {
         return "uid: " + uid +
@@ -179,5 +200,19 @@ public class Contact extends BaseModel {
                 ", displayName: " + displayName +
                 ", photoUrl: " + photoUrl +
                 ", email: " + email;
+    }
+
+    public static Contact getContact(String uid) {
+        return SQLite.select()
+                .from(Contact.class)
+                .where(Contact_Table.uid.eq(uid))
+                .querySingle();
+    }
+
+    public static Contact getCurrentUser() {
+        return SQLite.select()
+                .from(Contact.class)
+                .where(Contact_Table.type.eq(TYPE_MAIN_CONTACT))
+                .querySingle();
     }
 }

@@ -43,7 +43,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_arrow_24dp"/>
+                        android:src="@drawable/ic_arrow_24dp" />
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/img_profile"
@@ -51,8 +51,7 @@
                         android:layout_height="40dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
-                        android:contentDescription="Profile"
-                        />
+                        android:contentDescription="Profile" />
 
                 </LinearLayout>
 
@@ -70,11 +69,12 @@
                         style="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:drawablePadding="4dp"
                         android:maxLines="1" />
 
                     <TextView
                         android:id="@+id/txt_connection"
-                        style="@style/TextAppearance.AppCompat.Notification.Info"
+                        style="@style/TextAppearance.Compat.Notification.Info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
@@ -115,41 +115,40 @@
 
         <RelativeLayout
             android:id="@+id/layout_croll"
-            android:visibility="invisible"
             android:layout_width="wrap_content"
-            android:layout_alignEnd="@+id/recycler"
-            android:layout_alignBottom="@+id/recycler"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/recycler"
+            android:layout_alignEnd="@+id/recycler"
             android:layout_alignRight="@+id/recycler"
             android:layout_marginBottom="12dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp">
+            android:layout_marginRight="8dp"
+            android:visibility="invisible">
 
             <ImageButton
                 android:id="@+id/btn_scroll"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
-                android:textSize="24sp"
-                android:textColor="@color/white"
-                android:src="@drawable/ic_expand_more"
                 android:background="@drawable/circled_rounded"
-                />
+                android:src="@drawable/ic_expand_more"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/txtCounter"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@id/btn_scroll"
                 android:layout_alignLeft="@id/btn_scroll"
                 android:layout_alignStart="@id/btn_scroll"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:paddingLeft="8dp"
+                android:layout_alignTop="@id/btn_scroll"
+                android:background="@drawable/badge_circle"
                 android:gravity="center"
+                android:paddingEnd="8dp"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
                 android:textColor="#FFF"
                 android:textSize="12sp"
-                android:background="@drawable/badge_circle"/>
+                android:visibility="gone" />
         </RelativeLayout>
 
         <android.support.v7.widget.CardView
@@ -178,8 +177,8 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_happy"
-                    android:contentDescription="Emoji" />
+                    android:contentDescription="Emoji"
+                    android:src="@drawable/ic_happy" />
 
                 <com.vanniktech.emoji.EmojiEditText
                     android:id="@+id/edt_message"
@@ -200,7 +199,7 @@
                     android:scrollbars="vertical"
                     android:textColorHint="@color/md_grey_500"
                     android:textSize="18sp"
-                    app:emojiSize="@dimen/image_emoji_size"/>
+                    app:emojiSize="@dimen/image_emoji_size" />
                 <!--
                                 </android.support.design.widget.TextInputLayout>-->
 

@@ -2,12 +2,16 @@
 
 buildscript {
     repositories {
+        maven { url "https://maven.google.com" }
+        maven { url 'https://maven.fabric.io/public' }
+        google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.google.gms:google-services:4.0.1'
+        classpath 'io.fabric.tools:gradle:1.25.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -15,11 +19,11 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
         maven { url "https://maven.google.com" }
-        maven { url "https://jitpack.io" }
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-
     }
 }
 
@@ -30,29 +34,48 @@ task clean(type: Delete) {
 // Define versions in a single place
 ext {
     // Sdk and tools
-    compileSdkVersion = 26
-    buildToolsVersion = '26.0.1'
-    minSdkVersion = 16
-    targetSdkVersion = 26
+
+    compileSdkVersion = 'android-P'
+    buildToolsVersion = '27.0.3'
+    minSdkVersion = 19
+    targetSdkVersion = 27
     // App dependencies
-    supportLibraryVersion = '26.0.1'
+    supportLibraryVersion = '27.1.1'
     junitVersion = '4.12'
     phonefileLibraryVersion = '0.1.3@aar'
-    firebaseVersion = '11.0.4'
-    firebaseUiVersion = '2.2.0'
-    butterKnifeVersion = '8.3.0'
+    jobDispatcherVersion = '0.8.5'
+
+    crashlyticsVersion = '2.9.4'
+    firebaseCoreVersion = '16.0.1'
+    firebaseAuthVersion = '16.0.2'
+    firebaseMessagingVersion = '17.1.0'
+    firebaseStorageVersion = '16.0.1'
+    firebaseDbVersion = '16.0.1'
+
+    /*
+    firebaseCoreVersion = '15.0.0'
+    firebaseAuthVersion = '15.0.0'
+    firebaseMessagingVersion = '15.0.0'
+    firebaseStorageVersion = '15.0.0'
+    firebaseDbVersion = '15.0.0'*/
+
+    firebaseUiAuthVersion = '4.0.0'
+
+    gsonVersion = '2.8.5'
+    retrofitVersion = '2.4.0'
+    butterKnifeVersion = '8.8.1'
     jacksonVersion = '2.7.3'
     eventBusVersion = '3.0.0'
     materialDialogVersion = '0.9.1.0'
     glideVersion = '3.7.0'
-    circleImageViewVersion = '2.1.0'
-    dbflow_version = '4.0.0-beta5'
-    debugDbVersion = '1.0.0'
-    permissionsdispatcher = '2.3.2'
+    circleImageViewVersion = '2.2.0'
+    dbflow_version = '4.0.3'
+    debugDbVersion = '1.0.1'
+    permissionsdispatcher = '3.2.0'
     androidannotations = '4.0.0'
     AndroidAnnotationsPermissionsDispatcherPlugin = '0.1.0'
     multidexVersion = '1.0.1'
-    espressoVersion = '2.2.2'
+    espressoVersion = '3.0.2'
     runnerVersion = '0.5'
     rulesVersion = '0.5'
     daggerVersion = '2.9'

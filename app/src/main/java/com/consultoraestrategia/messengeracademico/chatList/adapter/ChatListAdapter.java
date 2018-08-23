@@ -1,6 +1,6 @@
 package com.consultoraestrategia.messengeracademico.chatList.adapter;
 
-import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chatList.holder.ChatItemHolder;
-import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListener;
+import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListListener;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,18 +23,16 @@ import java.util.List;
 
 public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public static final int VIEW_TYPE_GROUP_CHAT = 110;
-    public static final int VIEW_TYPE_CHAT = 111;
+    //private static final int VIEW_TYPE_GROUP_CHAT = 110;
+    private static final int VIEW_TYPE_CHAT = 111;
 
-    private Context context;
     private List<Chat> chats;
-    private ChatListener listener;
+    private ChatListListener listener;
     private FirebaseUser mainUser;
     //private Contact me;
 
-    public ChatListAdapter(Context context, List<Chat> chats, ChatListener listener) {
+    public ChatListAdapter(List<Chat> chats, ChatListListener listener) {
         this.mainUser = FirebaseAuth.getInstance().getCurrentUser();
-        this.context = context;
         this.chats = chats;
         this.listener = listener;
     }
@@ -45,11 +43,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public @NonNull
+    RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        RecyclerView.ViewHolder viewHolder = null;
+        RecyclerView.ViewHolder viewHolder;
         switch (viewType) {
-            case VIEW_TYPE_CHAT:
+            default:
                 View v1 = inflater.inflate(R.layout.item_chat, parent, false);
                 viewHolder = new ChatItemHolder(v1);
                 break;
@@ -58,12 +57,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Chat chat = chats.get(position);
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_CHAT:
                 ChatItemHolder chatItemHolder = (ChatItemHolder) holder;
-                chatItemHolder.bind(mainUser, chat, context, listener);
+                chatItemHolder.bind(mainUser, chat, listener);
                 break;
         }
     }
@@ -73,9 +72,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return chats.size();
     }
 
-    public void onChatAdded(Chat chat) {
+    public void addChat(Chat chat) {
         if (chats.contains(chat)) {
-            onChatChanged(chat);
+            updateChat(chat);
         } else {
             chats.add(chat);
             notifyChatsChanged();
@@ -84,24 +83,32 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public void onChatChanged(Chat chat) {
+    public void removeChat(Chat chat) {
+        int position = chats.indexOf(chat);
+        if (position == -1) return;
+        chats.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void updateChat(Chat chat) {
         if (chats.contains(chat)) {
             int position = chats.indexOf(chat);
-            chats.remove(position);
-            chats.add(0, chat);
-            notifyChatsChanged();
+            chats.set(position, chat);
+            notifyItemChanged(position);
         } else {
-            onChatAdded(chat);
+            addChat(chat);
         }
     }
 
-    public void onChatDeleted(Chat chat) {
-        if (chats.contains(chat)) {
-            int position = chats.indexOf(chat);
-            if (chats.remove(chat)) {
-                notifyItemRemoved(position);
-            }
+    public void updateAndUp(Chat chat) {
+        int position = chats.indexOf(chat);
+        if (position == -1) {
+            addChat(chat);
+            return;
         }
+        chats.remove(position);
+        chats.add(0, chat);
+        notifyDataSetChanged();
     }
 
     public void setChats(List<Chat> chats) {
@@ -112,11 +119,11 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private void notifyChatsChanged(){
+    private void notifyChatsChanged() {
         Collections.sort(chats, new Comparator<Chat>() {
             @Override
             public int compare(Chat o1, Chat o2) {
-                return Long.valueOf(o2.getTimestamp()).compareTo(o1.getTimestamp());
+                return Long.compare(o2.getTimestamp(), o1.getTimestamp());
             }
         });
         notifyDataSetChanged();

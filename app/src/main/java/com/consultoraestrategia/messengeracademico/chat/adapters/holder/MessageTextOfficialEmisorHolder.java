@@ -21,6 +21,7 @@ import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.OfficialMessage;
+import com.consultoraestrategia.messengeracademico.utils.MessageUtils;
 import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
 import com.vanniktech.emoji.EmojiTextView;
 
@@ -92,14 +93,15 @@ public class MessageTextOfficialEmisorHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, view);
     }
 
-    public void bind(ChatMessage message, ChatMessage previousMessage, Drawable drawable, Resources resources, ChatMessageListener listener) {
+    public void bind(ChatMessage message, ChatMessage previousMessage, ChatMessageListener listener) {
+        Drawable statusDrawable = MessageUtils.getDrawableFromMessageStatus(message.getMessageStatus(), itemView.getContext());
         messageText.setText(message.getMessageText());
-        imgStatus.setImageDrawable(drawable);
+        imgStatus.setImageDrawable(statusDrawable);
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
-        setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtDayGroup, resources);
+        setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtDayGroup, itemView.getResources());
         showOfficialMessage(
                 message.getOfficialMessage(),
-                resources,
+                itemView.getResources(),
                 txtSubject,
                 txtTitle,
                 txtAdditional1,
@@ -164,7 +166,7 @@ public class MessageTextOfficialEmisorHolder extends RecyclerView.ViewHolder {
     public static void setActionResponse(int stateAction, TextView txtActionRespone, Resources res) {
 
         String textState;
-        @ColorRes int color;
+        int color;
         switch (stateAction) {
             default:
                 textState = res.getString(R.string.officialmessage_state_waiting);

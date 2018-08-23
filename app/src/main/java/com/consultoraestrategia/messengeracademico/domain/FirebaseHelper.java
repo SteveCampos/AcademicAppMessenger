@@ -18,5 +18,14 @@ public class FirebaseHelper {
         return database;
     }
 
+    public interface Listener {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public interface CompletionListener<T>{
+        void onSuccess(T data);
+        void onFailure(Exception ex);
+    }
 
 }

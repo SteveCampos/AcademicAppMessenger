@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginEnd="16dp"
@@ -8,124 +9,124 @@
     android:layout_marginTop="8dp"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:orientation="vertical"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="16dp">
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/img_profile"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
-        android:layout_margin="8dp"
-        android:contentDescription="@string/global.img.description" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/global.img.description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/txt_name"
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/img_profile"
-        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
-        android:layout_toEndOf="@+id/img_profile"
-        android:layout_toStartOf="@+id/txt_time"
+        android:drawablePadding="4dp"
         android:maxLines="1"
-        android:text="Default name"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginLeft="4dp"
-        android:layout_toRightOf="@+id/img_profile"
-        android:layout_toLeftOf="@+id/txt_time" />
+        app:layout_constraintEnd_toStartOf="@+id/txt_time"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/img_profile"
+        app:layout_constraintTop_toTopOf="@+id/img_profile"
+        tools:text="Default name" />
+
+
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/txt_time"
         style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/txt_name"
-        android:text="00:00 PM"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
         android:textAllCaps="true"
         android:textColor="@color/colorPrimary"
-        android:layout_alignParentRight="true" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/img_profile"
+        tools:text="00:00 PM" />
 
-    <View
-        android:id="@+id/view_pivot"
-        android:layout_width="1dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/txt_message"
-        android:layout_alignStart="@+id/txt_name"
-        android:layout_below="@+id/txt_name"
-        android:layout_alignLeft="@+id/txt_name" />
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/img_status_message"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_alignBottom="@+id/txt_message"
-        android:layout_marginBottom="0dp"
-        android:layout_toEndOf="@+id/view_pivot"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:contentDescription="@string/global.img.description"
-        android:src="@drawable/ic_double_check_colored"
+        tools:src="@drawable/ic_double_check_colored"
         android:visibility="visible"
-        android:layout_toRightOf="@+id/view_pivot" />
+        app:layout_constraintBottom_toBottomOf="@+id/txt_message"
+        app:layout_constraintStart_toStartOf="@+id/txt_name"
+        app:layout_constraintTop_toTopOf="@+id/txt_message" />
 
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/txt_rol_verificado"
+        style="@style/TextAppearance.Compat.Notification.Info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintEnd_toStartOf="@+id/txt_counter"
+        app:layout_constraintStart_toStartOf="@+id/txt_name"
+        app:layout_constraintTop_toBottomOf="@+id/txt_name"
+        tools:text="(Web developer en System Strategy)" />
 
     <com.vanniktech.emoji.EmojiTextView
         android:id="@+id/txt_message"
         style="@style/TextAppearance.AppCompat.Small"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txt_name"
-        android:layout_marginTop="2dp"
-        android:layout_toEndOf="@+id/img_status_message"
-        android:layout_toStartOf="@+id/img_notification_state"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
         android:maxLines="1"
-        android:text="@string/contactlist.message.status.default"
-        android:layout_toRightOf="@+id/img_status_message"
-        android:layout_toLeftOf="@+id/img_notification_state" />
-
-
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/img_notification_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/txt_message"
-        android:layout_toStartOf="@+id/txt_counter"
-        android:contentDescription="@string/global.img.description"
-        android:src="@drawable/ic_notifications_off"
-        android:visibility="gone"
-        android:layout_toLeftOf="@+id/txt_counter" />
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/txt_counter"
+        app:layout_constraintStart_toEndOf="@+id/img_status_message"
+        app:layout_constraintTop_toBottomOf="@+id/txt_rol_verificado"
+        tools:text="@string/contactlist.message.status.default" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/txt_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/txt_message"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/badge_circle"
-        android:gravity="center"
-        android:paddingLeft="9dp"
-        android:paddingRight="9dp"
-        android:text="7"
         android:textColor="@color/white"
         android:textSize="12sp"
         android:textStyle="bold"
         android:visibility="visible"
-        android:layout_alignParentRight="true" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_time"
+        tools:text="7" />
+
 
     <View
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_alignEnd="@+id/txt_time"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/txt_name"
         android:background="@color/md_grey_200"
-        android:layout_alignRight="@+id/txt_time"
-        android:layout_alignLeft="@+id/txt_name" />
-</RelativeLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/txt_time"
+        app:layout_constraintStart_toStartOf="@+id/txt_name" />
+
+</android.support.constraint.ConstraintLayout>

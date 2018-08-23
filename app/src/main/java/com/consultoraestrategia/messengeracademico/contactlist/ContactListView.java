@@ -11,4 +11,6 @@ import java.util.List;
 public interface ContactListView {
     void showContacts(List<Contact> contacts);
     void onContactSelected(Contact contact);
+
+    void reloadContacts();
 }

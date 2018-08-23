@@ -14,10 +14,10 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.CardView
-
             android:id="@+id/inf.telf"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <RelativeLayout
                 android:id="@+id/relative.one"
@@ -30,30 +30,31 @@
                     android:layout_height="@dimen/relative_view_size"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
-                    android:foreground="?android:attr/selectableItemBackground">
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:focusable="true">
                     <!--android:textSize="15sp"-->
                     <TextView
                         android:id="@+id/silenciar"
                         style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/md_keylines"
                         android:layout_marginStart="@dimen/md_keylines"
                         android:text="Silenciar"
                         android:textColor="@color/md_grey_900"
-                        android:textSize="15sp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_marginLeft="@dimen/md_keylines" />
+                        android:textSize="15sp" />
 
                     <android.support.v7.widget.SwitchCompat
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignBaseline="@+id/silenciar"
                         android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="@dimen/scrool_view_margin_top"
-                        android:layout_alignParentRight="true"
                         android:layout_marginRight="@dimen/scrool_view_margin_top" />
 
 
@@ -63,10 +64,10 @@
                     android:id="@+id/view.profile"
                     android:layout_width="wrap_content"
                     android:layout_height="1dp"
+                    android:layout_marginLeft="@dimen/md_keylines"
                     android:layout_marginStart="@dimen/md_keylines"
                     android:layout_marginTop="@dimen/relative_view_size"
-                    android:background="@color/md_grey_200"
-                    android:layout_marginLeft="@dimen/md_keylines" />
+                    android:background="@color/md_grey_200" />
 
 
                 <RelativeLayout
@@ -84,11 +85,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/md_keylines"
                         android:layout_marginStart="@dimen/md_keylines"
                         android:text="Notificaciones personalizadas"
                         android:textColor="@color/md_grey_900"
-                        android:textSize="15sp"
-                        android:layout_marginLeft="@dimen/md_keylines" />
+                        android:textSize="15sp" />
 
                 </RelativeLayout>
 
@@ -125,12 +126,12 @@
                         android:id="@+id/txt.inf.telf"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/md_keylines"
                         android:layout_marginStart="@dimen/md_keylines"
                         android:layout_marginTop="@dimen/view_margin_top_5dp"
                         android:text="Info y número de teléfono"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="15sp"
-                        android:layout_marginLeft="@dimen/md_keylines" />
+                        android:textSize="15sp" />
 
 
                     <TextView
@@ -138,23 +139,24 @@
                         style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/txt.inf.telf"
                         android:layout_alignStart="@+id/txt.inf.telf"
                         android:layout_below="@+id/txt.inf.telf"
                         android:layout_marginTop="@dimen/view_margin_top_5dp"
+                        android:drawablePadding="4dp"
                         android:text="This is awesome!"
                         android:textColor="@color/md_grey_900"
-                        android:textSize="15sp"
-                        android:layout_alignLeft="@+id/txt.inf.telf" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/txt.date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/txt.status2"
                         android:layout_alignStart="@+id/txt.status2"
                         android:layout_below="@+id/txt.status2"
                         android:text="5 de Abril"
-                        android:textSize="@dimen/fab_margin"
-                        android:layout_alignLeft="@+id/txt.status2" />
+                        android:textSize="@dimen/fab_margin" />
 
 
                 </RelativeLayout>
@@ -166,21 +168,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="1dp"
                     android:layout_below="@+id/rl.child.one"
+                    android:layout_marginLeft="@dimen/md_keylines"
                     android:layout_marginStart="@dimen/md_keylines"
-                    android:background="@color/md_grey_200"
-                    android:layout_marginLeft="@dimen/md_keylines" />
+                    android:background="@color/md_grey_200" />
 
 
                 <RelativeLayout
-                    android:id="@+id/rl.child.second"
+                    android:id="@+id/rll_phonenumber"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/relative_view_size"
                     android:layout_below="@+id/rl.child.one"
+                    android:layout_toLeftOf="@+id/rl.child.call"
                     android:layout_toStartOf="@+id/rl.child.call"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:layout_toLeftOf="@+id/rl.child.call">
+                    android:foreground="?android:attr/selectableItemBackground">
 
 
                     <TextView
@@ -188,21 +190,21 @@
                         style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="@dimen/scrool_view_margin_top"
-                        android:text="+51 963 108 545"
+                        tools:text="+51 963 108 545"
                         android:textColor="@color/md_grey_900"
-                        android:textSize="15sp"
-                        android:layout_marginLeft="16dp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignLeft="@id/txt.phoneNumber"
                         android:layout_alignStart="@id/txt.phoneNumber"
                         android:layout_below="@id/txt.phoneNumber"
                         android:layout_centerVertical="true"
-                        android:text="Móvil"
-                        android:layout_alignLeft="@id/txt.phoneNumber" />
+                        android:text="Móvil" />
 
 
                     <ImageView
@@ -212,9 +214,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="@dimen/scrool_view_margin_top"
                         android:background="@drawable/ic_chat_black_24dp"
-                        android:contentDescription="@string/action_change_background"
-                        android:layout_marginRight="@dimen/scrool_view_margin_top"
-                        android:layout_alignParentRight="true" />
+                        android:contentDescription="@string/action_change_background" />
 
 
                 </RelativeLayout>
@@ -225,11 +225,12 @@
                     android:layout_width="30dp"
                     android:layout_height="@dimen/relative_view_size"
                     android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
                     android:layout_below="@+id/view"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:layout_alignParentRight="true">
+                    android:focusable="true">
 
                     <ImageView
                         android:layout_width="wrap_content"

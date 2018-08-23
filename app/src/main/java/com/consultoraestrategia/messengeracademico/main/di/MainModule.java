@@ -10,6 +10,7 @@ import com.consultoraestrategia.messengeracademico.UseCaseHandler;
 import com.consultoraestrategia.messengeracademico.chatList.ui.ChatListFragment;
 import com.consultoraestrategia.messengeracademico.contactList.ui.ContactListFragment;
 import com.consultoraestrategia.messengeracademico.data.ChatRepository;
+import com.consultoraestrategia.messengeracademico.groupList.GroupListFragment;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.main.ChatsFragment;
 import com.consultoraestrategia.messengeracademico.main.ConnectionInteractor;
@@ -33,7 +34,7 @@ import dagger.Provides;
 @Module
 public class MainModule {
 
-    private static String  TAG = MainModule.class.getSimpleName();
+    private static String TAG = MainModule.class.getSimpleName();
 
     FragmentManager fragmentManager;
 
@@ -44,7 +45,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    MyFragmentAdapter provideMyFragmentAdapter(Resources resources, FragmentManager supportFragmentManager, ChatsFragment chatsFragment, ChatListFragment chatListFragment, ContactListFragment contactListFragment) {
+    MyFragmentAdapter provideMyFragmentAdapter(Resources resources, FragmentManager supportFragmentManager, ChatsFragment chatsFragment, ChatListFragment chatListFragment, ContactListFragment contactListFragment, GroupListFragment groupListFragment) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content_principal, chatsFragment);
         fragmentTransaction.commit();
@@ -54,6 +55,8 @@ public class MainModule {
         // adapter.addFragment(chatsFragment, "CALL");
         adapter.addFragment(chatListFragment, resources.getString(R.string.fragment_chatlist_title));
         adapter.addFragment(contactListFragment, resources.getString(R.string.fragment_contacts_title));
+        adapter.addFragment(groupListFragment, resources.getString(R.string.fragment_grouplist_title));
+
         return adapter;
     }
 
@@ -61,6 +64,12 @@ public class MainModule {
     @Provides
     FragmentManager provideSupportFragmentManager() {
         return this.fragmentManager;
+    }
+
+    @Provides
+    @Singleton
+    GroupListFragment provideGroupListFragment() {
+        return GroupListFragment.newInstance();
     }
 
     @Provides
@@ -84,8 +93,8 @@ public class MainModule {
 
     @Provides
     @Singleton
-    MainPresenter provideMainPresenter(UseCaseHandler useCaseHandler, ListenForUserMessages listenForMessages, EventBus eventBus, ConnectionInteractor connectionInteractor, Long timestamp, com.google.firebase.auth.FirebaseUser mainUser) {
-        return new MainPresenterImpl(useCaseHandler, listenForMessages, eventBus, connectionInteractor, timestamp, mainUser);
+    MainPresenter provideMainPresenter(UseCaseHandler useCaseHandler, ListenForUserMessages listenForMessages, EventBus eventBus, ConnectionInteractor connectionInteractor, Long timestamp, com.google.firebase.auth.FirebaseUser mainUser, Resources res) {
+        return new MainPresenterImpl(useCaseHandler, listenForMessages, eventBus, connectionInteractor, timestamp, mainUser, res);
     }
 
     @Provides

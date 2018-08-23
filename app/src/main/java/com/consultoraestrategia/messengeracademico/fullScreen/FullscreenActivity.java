@@ -101,7 +101,7 @@ public class FullscreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_fullscreen);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -178,9 +178,7 @@ public class FullscreenActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button.
-            //supportFinishAfterTransition();
-            //NavUtils.navigateUpFromSameTask(this);
+            super.onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);

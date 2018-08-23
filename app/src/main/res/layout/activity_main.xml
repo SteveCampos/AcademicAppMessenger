@@ -18,13 +18,24 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimaryDark"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <ProgressBar
+                android:theme="@style/StyleWhite"
+                android:id="@+id/toolbar_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone" />
+        </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
-            android:background="?attr/colorPrimaryDark"
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorPrimaryDark"
             app:tabIndicatorColor="@android:color/white"
             app:tabIndicatorHeight="3dp"
             app:tabMode="fixed" />
@@ -42,7 +53,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
 
 
 </android.support.design.widget.CoordinatorLayout>

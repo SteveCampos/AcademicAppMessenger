@@ -55,8 +55,8 @@ public class ChatModule {
 
     @Provides
     @Singleton
-    ChatMessageAdapter provideChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, Context context, ChatMessageAdapter.OnBottomReachedListener onBottomReachedListener) {
-        return new ChatMessageAdapter(mainUser, messages, listener, context, onBottomReachedListener);
+    ChatMessageAdapter provideChatMessageAdapter(FirebaseUser mainUser, List<ChatMessage> messages, ChatMessageListener listener, ChatMessageAdapter.OnBottomReachedListener onBottomReachedListener) {
+        return new ChatMessageAdapter(mainUser, messages, listener, onBottomReachedListener);
     }
 
     @Provides

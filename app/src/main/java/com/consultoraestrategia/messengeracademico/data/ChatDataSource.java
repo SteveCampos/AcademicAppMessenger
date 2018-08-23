@@ -13,6 +13,15 @@ import java.util.List;
  */
 
 public interface ChatDataSource {
+
+    void deleteChat(Chat chat, SuccessCallback<Chat> successCallback);
+
+    interface SuccessCallback<T> {
+        void onSucess(T data, boolean success);
+
+        void onFailure(Exception e);
+    }
+
     interface LoadChatsCallback {
         void onChatsLoaded(List<Chat> chats);
 
@@ -27,6 +36,7 @@ public interface ChatDataSource {
 
     interface ListenMessagesCallback {
         void onMessageChanged(ChatMessage message);
+
         void onError(String error);
     }
 
@@ -86,5 +96,7 @@ public interface ChatDataSource {
 
 
     void listenSingleMessage(ChatMessage message, ListenMessagesCallback callback);
+
+    void deleteMessage(ChatMessage message, SuccessCallback<ChatMessage> listener);
 
 }

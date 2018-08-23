@@ -1,9 +1,8 @@
 package com.consultoraestrategia.messengeracademico.loadProfile;
 
 import android.content.Intent;
-import android.net.Uri;
 
-import com.consultoraestrategia.messengeracademico.BasePresenter;
+import com.consultoraestrategia.messengeracademico.base.BasePresenter;
 import com.consultoraestrategia.messengeracademico.loadProfile.event.LoadProfileEvent;
 
 

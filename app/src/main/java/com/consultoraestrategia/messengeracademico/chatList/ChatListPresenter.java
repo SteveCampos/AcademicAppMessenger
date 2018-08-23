@@ -24,25 +24,8 @@ public interface ChatListPresenter {
 
     void onResume();
 
-    //void getPhoneNumber(SharedPreferences preferences);
 
-    //void getContact(String phoneNumber);
-
-    void getChats(/*Contact contact*/);
+    void getChats();
 
     void onEventMainThread(ChatListEvent event);
-
-    //void onPhoneNumberRetreived(String phoneNumber);
-
-    //void onContactRetreived(Contact contact);
-
-    void onChatsRetreived(List<Chat> chats);
-
-    void onChatAdded(Chat chat);
-
-    void onChatChanged(Chat chat);
-
-    void onChatDeleted(Chat chat);
-
-    void onChatClicked(Chat chat);
 }

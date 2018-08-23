@@ -30,8 +30,14 @@ public class SendMessage extends UseCase<SendMessage.RequestValues, SendMessage.
         Log.d(TAG, "executeUseCase");
         ChatMessage message = requestValues.getMessage();
 
-        if (message.getKeyMessage() == null || TextUtils.isEmpty(message.getKeyMessage())){
+        if (TextUtils.isEmpty(message.getKeyMessage())) {
             String keyMessage = firebaseChat.getKeyMessage(message.getEmisor(), message.getReceptor());
+
+            if (TextUtils.isEmpty(keyMessage)) {
+                getUseCaseCallback().onError();
+                return;
+            }
+
             message.setKeyMessage(keyMessage);
             repository.saveMessageWithStatusWrited(
                     message,
@@ -50,7 +56,7 @@ public class SendMessage extends UseCase<SendMessage.RequestValues, SendMessage.
                             getUseCaseCallback().onError();
                         }
                     });
-        }else{
+        } else {
             repository.sendMessageNotReaded(
                     message,
                     requestValues.isReceptorOnline(),

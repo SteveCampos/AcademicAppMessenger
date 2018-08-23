@@ -5,10 +5,14 @@ import android.content.Context;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
+import com.consultoraestrategia.messengeracademico.domain.FirebaseContactsHelper;
+import com.consultoraestrategia.messengeracademico.domain.FirebaseHelper;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.importData.events.ImportDataEvent;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.raizlabs.android.dbflow.config.DatabaseDefinition;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
@@ -88,13 +92,42 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
 
 
     @Override
-    public void onContactsAdded(List<Contact> contacts) {
+    public void onContactsAdded(final List<Contact> contacts) {
         Log.d(TAG, "onContactsAdded");
         if (contacts != null && !contacts.isEmpty()) {
-            new ExistsPhonenumbersAsyncTask(context, this).execute(contacts);
+            FirebaseContactsHelper fireContacts = FirebaseContactsHelper.getInstance();
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                post(ImportDataEvent.OnContactFailedToImport);
+                return;
+            }
+            fireContacts.saveContacsFromUser(
+                    firebaseUser.getUid()
+                    ,
+                    contacts,
+                    new FirebaseHelper.Listener() {
+                        @Override
+                        public void onSuccess() {
+                            addContactsIfExists(contacts);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.d(TAG, "saveContactsFromUser onFailure: " + e);
+                            post(ImportDataEvent.OnContactFailedToImport);
+                        }
+                    }
+            );
+
         } else {
-            onFinish();
+            onImportFailed();
         }
+    }
+
+    private void addContactsIfExists(List<Contact> contacts) {
+        onFinish();
+        String phoneNumber = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+        new ExistsPhonenumbersAsyncTask(phoneNumber, context, this).execute(contacts);
     }
 
     @Override
@@ -114,5 +147,9 @@ public class ImportDataRepositoryImpl implements ImportDataRepository, FetchCont
     public void onFinish() {
         Log.d(TAG, "onFinish");
         post(ImportDataEvent.OnImportFinish);
+    }
+
+    public void onImportFailed() {
+        post(ImportDataEvent.OnImportError);
     }
 }

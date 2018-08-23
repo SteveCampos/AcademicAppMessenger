@@ -1,9 +1,13 @@
 package com.consultoraestrategia.messengeracademico.domain;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -19,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 public class FirebaseImageStorage {
 
     private static final String REF_CHAT_IMAGES = "chat-images";
+    private static final String TAG = FirebaseImageStorage.class.getSimpleName();
     private FirebaseStorage storage;
     private static FirebaseImageStorage INSTANCE;
 
@@ -31,23 +36,67 @@ public class FirebaseImageStorage {
 
     private FirebaseImageStorage() {
         FirebaseApp app = FirebaseApp.getInstance();
-        if (app != null) {
-            this.storage = FirebaseStorage.getInstance(app);
-        }
+        if (app == null) return;
+        this.storage = FirebaseStorage.getInstance(app);
     }
 
-    public void uploadImage(Uri uri, OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener, OnProgressListener<UploadTask.TaskSnapshot> onProgressListener, OnFailureListener onFailureListener) {
-        if (storage != null) {
-            // Get a reference to store image at chat_images/<FILENAME>
-            StorageReference pictureRef = storage.getReference().child(REF_CHAT_IMAGES).child(uri.getLastPathSegment());
-            // Upload file to Firebase Storage
-            pictureRef.putFile(uri)
-                    .addOnSuccessListener(onSuccessListener)
-                    .addOnProgressListener(onProgressListener)
-                    .addOnFailureListener(onFailureListener);
-        } else {
-            onFailureListener.onFailure(new Exception("storage reference is null!!!"));
-        }
+    public interface FileListener {
+        void onSuccess(String url);
+
+        void onFailure(Exception exception);
+
+        void onProgress(double progress);
     }
+
+    public void uploadImage(Uri uri, final FileListener listener) {
+        Log.d(TAG, "uploadImage: " + uri);
+        if (storage == null || listener == null) return;
+        // Get a reference to store image at chat_images/<FILENAME>
+        final StorageReference pictureRef = storage.getReference().child(REF_CHAT_IMAGES).child(uri.getLastPathSegment());
+        // Upload file to Firebase Storage
+        pictureRef.putFile(uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.d(TAG, "onSuccess: ");
+                        getDownloadUrl(pictureRef, listener);
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.d(TAG, "onProgress: ");
+                        double percent = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        Log.d(TAG, "percent: " + percent);
+                        listener.onProgress(percent);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: " + e);
+                        listener.onFailure(e);
+                    }
+                });
+    }
+
+    private void getDownloadUrl(StorageReference pictureRef, final FileListener listener) {
+        Log.d(TAG, "getDownloadUrl: ");
+        if (pictureRef == null || listener == null) return;
+        pictureRef.getDownloadUrl()
+                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        listener.onSuccess(uri.toString());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailure(e);
+                    }
+                });
+    }
+
 
 }

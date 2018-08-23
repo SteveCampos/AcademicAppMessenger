@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.chatList.ui;
 
+import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListListener;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 
 import java.util.List;
@@ -8,20 +9,15 @@ import java.util.List;
  * Created by jairc on 22/03/2017.
  */
 
-public interface ChatListView {
+public interface ChatListView extends ChatListListener {
 
-    void onChatAdded(Chat chat);
+    void addChat(Chat chat);
 
-    void onChatChanged(Chat chat);
+    void updateChat(Chat chat);
 
-    void onChatRemoved(Chat chat);
+    void removeChat(Chat chat);
 
-    void onChatsChanged(List<Chat> chats);
+    void updateChatList(List<Chat> chats);
 
-    /*
-    void setContact(Contact contact);
-
-    void setPhoneNumber(String phoneNumber);*/
-
-
+    void updateChatAndUp(Chat chat);
 }

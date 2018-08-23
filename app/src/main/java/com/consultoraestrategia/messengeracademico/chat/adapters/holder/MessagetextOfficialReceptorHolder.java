@@ -14,6 +14,7 @@ import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.OfficialMessage;
+import com.consultoraestrategia.messengeracademico.utils.MessageUtils;
 import com.vanniktech.emoji.EmojiTextView;
 
 import java.text.SimpleDateFormat;
@@ -68,14 +69,14 @@ public class MessagetextOfficialReceptorHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(final ChatMessage message, ChatMessage previousMessage, final ChatMessageListener listener, Resources resources) {
+    public void bind(final ChatMessage message, ChatMessage previousMessage, final ChatMessageListener listener) {
         Log.d(TAG, "MessageTextReceptorHolder bind");
         messageText.setText(message.getMessageText());
         txtTime.setText(SIMPLE_DATE_FORMAT.format(message.getTimestamp()));
 
         showOfficialMessage(
                 message.getOfficialMessage(),
-                resources,
+                itemView.getResources(),
                 txtSubject,
                 txtTitle,
                 txtAdditional1,
@@ -86,8 +87,8 @@ public class MessagetextOfficialReceptorHolder extends RecyclerView.ViewHolder {
                 btnAccept,
                 btnDeny);
 
-        MessageTextEmisorHolder.
-                setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtDayGroup, resources);
+        MessageUtils.
+                setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtDayGroup, itemView.getResources());
 
 
         if (listener != null && message.getMessageStatus() != ChatMessage.STATUS_READED) {

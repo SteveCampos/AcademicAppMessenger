@@ -21,26 +21,25 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            android:background="@color/md_cyan_200"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
 
+            <!--<include layout="@layout/content_profile_collapsing_toolbar" />-->
             <ImageView
                 android:id="@+id/imageProfile"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/load.profile.user" />
+                android:contentDescription="@string/load.profile.user"
+                android:visibility="gone" />
 
             <ImageView
-                android:visibility="gone"
-                android:src="@drawable/ic_users"
-                android:layout_gravity="center"
                 android:id="@+id/imageProfileNull"
                 android:layout_width="160dp"
                 android:layout_height="160dp"
-                android:contentDescription="@string/load.profile.user" />
-
+                android:layout_gravity="center"
+                android:contentDescription="@string/load.profile.user"
+                android:src="@drawable/ic_users"
+                android:visibility="gone" />
 
 
             <android.support.v7.widget.Toolbar

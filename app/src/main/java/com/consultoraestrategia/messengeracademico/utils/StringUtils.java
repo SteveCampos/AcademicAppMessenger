@@ -66,4 +66,8 @@ public class StringUtils {
         }
         return s;
     }
+
+    public static String removeInvalidCharacterFirebase(String x) {
+        return x.replaceAll("[/#$.’\\[\\]]", "");
+    }
 }

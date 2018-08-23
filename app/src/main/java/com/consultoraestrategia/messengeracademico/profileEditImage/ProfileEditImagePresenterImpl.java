@@ -6,31 +6,31 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 
-import com.consultoraestrategia.messengeracademico.BaseView;
+import com.consultoraestrategia.messengeracademico.UseCaseHandler;
+import com.consultoraestrategia.messengeracademico.base.BasePresenter;
+import com.consultoraestrategia.messengeracademico.base.BasePresenterImpl;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
+import com.consultoraestrategia.messengeracademico.domain.FirebaseImageStorage;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseLoadProfile;
+import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.MediaFile;
 import com.consultoraestrategia.messengeracademico.entities.User;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
-import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 
 import com.consultoraestrategia.messengeracademico.profileEditName.event.ProfileEditEvent;
 import com.consultoraestrategia.messengeracademico.profileEditImage.ui.ProfileEditImageView;
-import com.firebase.ui.auth.ResultCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -41,72 +41,36 @@ import java.io.File;
  * Created by kike on 19/07/2017.
  */
 
-public class ProfileEditImagePresenterImpl implements ProfileEditImagePresenter {
+public class ProfileEditImagePresenterImpl extends BasePresenterImpl<ProfileEditImageView> implements ProfileEditImagePresenter {
 
     private static final String TAG = ProfileEditImagePresenterImpl.class.getSimpleName();
-    private ProfileEditImageView view;
-    private EventBus eventBus;
     private FirebaseUser currentUser;
     private File cacheDir;
     private ContentResolver contentResolver;
-    private Resources resources;
 
-
-    public ProfileEditImagePresenterImpl(Resources resources, File cacheDir, ContentResolver contentResolver) {
-        this.eventBus = GreenRobotEventBus.getInstance();
-        this.resources = resources;
-        this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    public ProfileEditImagePresenterImpl(UseCaseHandler handler, Resources res, EventBus eventBus, FirebaseUser currentUser, File cacheDir, ContentResolver contentResolver) {
+        super(handler, res, eventBus);
+        this.currentUser = currentUser;
         this.cacheDir = cacheDir;
         this.contentResolver = contentResolver;
     }
 
 
     @Override
-    public void onBackPressed() {
-        Log.d(TAG, "onBackPressed");
-        if (view != null) {
-            view.startMainActivity();
-        }
-    }
-
-    @Override
-    public void attachView(BaseView view) {
+    public void attachView(ProfileEditImageView view) {
         Log.d(TAG, "attachView");
-        this.view = (ProfileEditImageView) view;
+        super.attachView(view);
         checkCurrentUser();
     }
 
     @Override
-    public void onCreate() {
-        Log.d(TAG, "onCreate");
-        eventBus.register(this);
+    protected String getTag() {
+        return TAG;
     }
 
     @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        eventBus.unregister(this);
-        view = null;
-    }
-
-    @Override
-    public void onStart() {
-        Log.d(TAG, "onStart");
-    }
-
-    @Override
-    public void onResume() {
-        Log.d(TAG, "onResume");
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(TAG, "onPause");
-    }
-
-    @Override
-    public void onStop() {
-        Log.d(TAG, "onStop");
+    protected BasePresenter<ProfileEditImageView> getPresenterImpl() {
+        return this;
     }
 
     @Override
@@ -115,15 +79,10 @@ public class ProfileEditImagePresenterImpl implements ProfileEditImagePresenter 
         if (currentUser != null) {
             showUser();
         } else {
-            startMainActivity();
+            showFinalMessage("No se encontró al usuario");
         }
     }
 
-    private void startMainActivity() {
-        if (view != null) {
-            view.startMainActivity();
-        }
-    }
 
     private void showUser() {
         if (view != null) {
@@ -136,12 +95,25 @@ public class ProfileEditImagePresenterImpl implements ProfileEditImagePresenter 
             showUserName(displayName);
             showUserPhoto(photoUri);
             showUserPhonenumber(phoneNumber);
+            Contact contact = Contact.getContact(currentUser.getUid());
+            if (contact != null) {
+                String infoVerified = contact.getInfoVerified();
+                if (TextUtils.isEmpty(infoVerified)) {
+                    infoVerified = res.getString(R.string.global_user_not_verificated);
+                }
+                showInfoVerified(infoVerified);
+            }
         }
     }
 
+    private void showInfoVerified(String infoVerified) {
+        if (view != null) view.showInfoVerified(infoVerified);
+    }
+
+
     private void showUserName(String displayName) {
         if (view != null) {
-            view.showUserDisplayName(displayName);
+            view.showDisplayName(displayName);
         }
     }
 
@@ -164,22 +136,22 @@ public class ProfileEditImagePresenterImpl implements ProfileEditImagePresenter 
     }
 
     private void uploadPhoto(Uri photoUri) {
-        FirebaseLoadProfile.uploadUserPhoto(
-                new User(currentUser.getUid(), null, null, null, photoUri, null),
-                new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Uri photoUri = taskSnapshot.getDownloadUrl();
-                        updateUser(new User(currentUser.getUid(), null, currentUser.getPhoneNumber(), currentUser.getEmail(), photoUri, null));
-                    }
-                },
-                new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        showMessage(R.string.load_profile_error);
-                    }
-                }
-        );
+        FirebaseLoadProfile.uploadUserPhoto(photoUri, new FirebaseImageStorage.FileListener() {
+            @Override
+            public void onSuccess(String url) {
+                updateUser(new User(currentUser.getUid(), null, currentUser.getPhoneNumber(), currentUser.getEmail(), Uri.parse(url), null));
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                showMessage(R.string.load_profile_error);
+            }
+
+            @Override
+            public void onProgress(double progress) {
+
+            }
+        });
     }
 
     //Actualizo los nodos del usuario
@@ -224,30 +196,13 @@ public class ProfileEditImagePresenterImpl implements ProfileEditImagePresenter 
         Log.d(TAG, "onEventMainThread");
     }
 
-    private void showMessage(@StringRes int message) {
-        if (view != null) {
-            view.showMessage(message);
-        }
-    }
-
-    private void showProgress() {
-        if (view != null) {
-            view.showProgressBar();
-        }
-    }
-
-    private void hideProgress() {
-        if (view != null) {
-            view.hideProgressBar();
-        }
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult: " + requestCode + ", resultCode: " + resultCode + ", data: " + data);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == ResultCodes.OK) {
+            if (resultCode == AppCompatActivity.RESULT_OK) {
                 Log.d(TAG, "uri: " + result.getUri());
                 showUserPhoto(result.getUri());
                 showProgress();
@@ -261,8 +216,22 @@ public class ProfileEditImagePresenterImpl implements ProfileEditImagePresenter 
         //showMessage(R.string.unknown_response);
     }
 
+    public static final int REQUEST_CODE_EDIT_NAME = 9000;
 
-    Uri selectedCompressedImageUri;
+    @Override
+    public void onBtnEditNameClicked() {
+        Log.d(TAG, "onBtnEditNameClicked: ");
+        showEdittextDialog(
+                currentUser.getDisplayName(),
+                InputType.TYPE_TEXT_VARIATION_PERSON_NAME,
+                res.getString(R.string.global_edit_name),
+                currentUser.getDisplayName(),
+                REQUEST_CODE_EDIT_NAME
+        );
+    }
+
+
+    private Uri selectedCompressedImageUri;
 
     private void compressImage(Uri imageUri) {
         ImageCompression imageCompression = new ImageCompression(cacheDir, contentResolver) {
@@ -278,4 +247,31 @@ public class ProfileEditImagePresenterImpl implements ProfileEditImagePresenter 
     }
 
 
+    @Override
+    public void onTextSubmit(final String nameSubmit, int requestCode) {
+        Log.d(TAG, "onTextSubmit: " + nameSubmit);
+        if (requestCode == REQUEST_CODE_EDIT_NAME) {
+            User user = new User();
+            user.setUid(currentUser.getUid());
+            user.setDisplayName(nameSubmit);
+            com.consultoraestrategia.messengeracademico.domain.FirebaseUser firebaseUser = new com.consultoraestrategia.messengeracademico.domain.FirebaseUser();
+            firebaseUser.updateUser(
+                    user,
+                    new com.consultoraestrategia.messengeracademico.domain.FirebaseUser.UpdateListener() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "onSuccess: ");
+                            showUserName(nameSubmit);
+                            showMessage(R.string.global_message_success);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.d(TAG, "onFailure: " + e);
+                            showMessage(R.string.global_message_error);
+                        }
+                    }
+            );
+        }
+    }
 }

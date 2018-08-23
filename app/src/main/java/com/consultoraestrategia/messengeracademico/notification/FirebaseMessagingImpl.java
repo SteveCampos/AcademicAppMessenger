@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -66,7 +67,12 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
     public void onMessageReceived(final RemoteMessage remoteMessage) {
         Log.d(TAG, "onMessageReceived : " + remoteMessage.toString());
         String keyMessage = remoteMessage.getData().get("keyMessage");
-        if (keyMessage != null && !TextUtils.isEmpty(keyMessage)) {
+        onMessageReceived(keyMessage);
+    }
+
+    @Override
+    public void onMessageReceived(String keyMessage) {
+        if (!TextUtils.isEmpty(keyMessage)) {
             FirebaseDatabase.getInstance().getReference("notifications").child(keyMessage).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -78,13 +84,11 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onCancelled(@NonNull DatabaseError databaseError) {
                     Log.d(TAG, "onCancelled");
                 }
             });
         }
-        //MapperHelper mapperHelper = new MapperHelper();
-        //message = mapperHelper.mapToObject(remoteMessage.getData(), ChatMessage.class);
     }
 
     @Override
@@ -216,7 +220,7 @@ public class FirebaseMessagingImpl implements FirebaseMessagingPresenter {
 
 
         notificationInbox.setLargeIcon(bitmap);
-        notificationInbox.setLargeIconUri(emisor.getPhotoUrl() != null ? emisor.getPhotoUrl() : null);
+        notificationInbox.setLargeIconUri(emisor.getPhotoUrl());
         notificationInbox.setSmallIcon(R.drawable.ic_twitter_white);
         notificationInbox.setContentText(messageText);
         notificationInbox.setContentTitle(emisorName);

@@ -4,24 +4,25 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
+import com.consultoraestrategia.messengeracademico.UseCaseHandler;
+import com.consultoraestrategia.messengeracademico.UseCaseThreadPoolScheduler;
+import com.consultoraestrategia.messengeracademico.base.BaseActivity;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
-import com.consultoraestrategia.messengeracademico.customNotification.CustomNotificationActivity;
-import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
+import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.profile.ProfilePresenter;
 import com.consultoraestrategia.messengeracademico.profile.ProfilePresenterImpl;
 
@@ -33,7 +34,7 @@ import butterknife.OnClick;
  * Created by kike on 3/06/2017.
  */
 
-public class ProfileActivity extends AppCompatActivity implements ProfileView {
+public class ProfileActivity extends BaseActivity<ProfileView, ProfilePresenter> implements ProfileView {
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
 
@@ -42,70 +43,98 @@ public class ProfileActivity extends AppCompatActivity implements ProfileView {
     @BindView(R.id.imageProfileNull)
     ImageView imageCollapsingNull;
     @BindView(R.id.txt_phoneNumber)
-    TextView phoneNumber;
+    TextView txtPhoneNumber;
     @BindView(R.id.toolbar_layout)
     CollapsingToolbarLayout collapsingToolbarLayout;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-    private String celpho;
-    private ProfilePresenter presenter;
+    @BindView(R.id.txt_status2)
+    TextView txtStatus;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected String getTag() {
+        return TAG;
+    }
+
+    @Override
+    protected AppCompatActivity getActivity() {
+        return this;
+    }
+
+    @Override
+    protected ProfilePresenter getPresenter() {
+        return new ProfilePresenterImpl(
+                new UseCaseHandler(new UseCaseThreadPoolScheduler()),
+                getResources(),
+                GreenRobotEventBus.getInstance()
+        );
+    }
+
+    @Override
+    protected ProfileView getBaseView() {
+        return this;
+    }
+
+    @Override
+    protected Bundle getExtrasInf() {
+        return getIntent().getExtras();
+    }
+
+    @Override
+    protected void setContentView() {
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
-        manageIntent(getIntent());
-        presenter = new ProfilePresenterImpl(this, getContentResolver());
-        presenter.onCreate();
-
-    }
-
-
-    private void manageIntent(Intent intent) {
-        if (intent.hasExtra(ImportDataActivity.EXTRA_PHOTO_URI) && intent.hasExtra(ImportDataActivity.EXTRA_NAME) && intent.hasExtra(ImportDataActivity.EXTRA_PHONENUMBER)) {
-            String imageUrl = intent.getStringExtra(ImportDataActivity.EXTRA_PHOTO_URI);
-            String nameUser = intent.getStringExtra(ImportDataActivity.EXTRA_NAME);
-            celpho = intent.getStringExtra(ImportDataActivity.EXTRA_PHONENUMBER);
-
-            loadContact(imageUrl, nameUser, celpho);
-        } else {
-            onProfileError("manageIntent null");
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-    }
-
-    private void loadContact(String imageUrl, String nameUser, String celpho) {
-        validateImage(imageUrl);
-        phoneNumber.setText(celpho);
-        collapsingToolbarLayout.setTitle(nameUser);
-    }
-
-    private void validateImage(String imageUrl) {
-        if (imageUrl != null) {
-            imageCollapsing.setVisibility(View.VISIBLE);
-            Glide.with(this)
-                    .load(imageUrl)
-                    .centerCrop()
-                    .fitCenter()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(imageCollapsing);
-        }else {
-            imageCollapsingNull.setVisibility(View.VISIBLE);
-        }
-
     }
 
     @Override
-    public void onBackPressed() {
-        Log.d(TAG, "onBackPressed");
-        Intent i = new Intent(this, ChatActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        // startActivity(i);
-        finish();
+    protected ViewGroup getRootLayout() {
+        return toolbar;
+    }
 
+    @Override
+    protected ProgressBar getProgressBar() {
+        return null;
+    }
 
+    @Override
+    public void showName(String name) {
+        collapsingToolbarLayout.setTitle(name);
+    }
+
+    @Override
+    public void showPhonenumber(String phonenumber) {
+        txtPhoneNumber.setText(phonenumber);
+    }
+
+    @Override
+    public void showTextVerified(String textVerified) {
+        txtStatus.setText(textVerified);
+        txtStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_verify, 0, 0, 0);
+    }
+
+    @Override
+    public void showRegularUserWithoutVerification() {
+        txtStatus.setText(R.string.global_user_not_verificated);
+    }
+
+    @Override
+    public void showPhoto(String url) {
+        imageCollapsing.setVisibility(View.VISIBLE);
+        Glide.with(this)
+                .load(url)
+                .centerCrop()
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imageCollapsing);
+    }
+
+    @Override
+    public void showEmptyPhoto() {
+        imageCollapsingNull.setVisibility(View.VISIBLE);
     }
 
 
@@ -116,62 +145,43 @@ public class ProfileActivity extends AppCompatActivity implements ProfileView {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
-            case R.id.menu_editar:
-                presenter.verificatedProfileEdit(celpho);
-                return true;
-            case R.id.menu_contactos:
-                presenter.verificatedProfileInformation(celpho);
-                return true;
-            default:
-                onBackPressed();
-                return super.onOptionsItemSelected(item);
+            case R.id.action_editar:
+                presenter.actionEditClicked();
+                break;
+            case R.id.action_view_contact:
+                presenter.actionViewContactClicked();
+                break;
+            case android.R.id.home:
+                finish();
         }
+        return true;
     }
 
-
     @Override
-    public void forwardToEditData(long idphone) {
+    public void editContactInPhone(String phonenumber) {
         Intent intentActionEdit = new Intent(Intent.ACTION_EDIT);
-        intentActionEdit.setData(ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, idphone));
+        intentActionEdit.setData(ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(phonenumber)));
         startActivity(intentActionEdit);
     }
 
     @Override
-    public void forwardToShowData(long idphone) {
+    public void showContactInPhone(String phonenumber) {
         Intent intentActionInfo = new Intent(Intent.ACTION_VIEW);
-        intentActionInfo.setData(ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, idphone));
+        intentActionInfo.setData(ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(phonenumber)));
         startActivity(intentActionInfo);
     }
 
     @Override
-    public void setToolbar() {
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        } else {
-            onProfileError("setToolbar null");
-        }
+    public void launchChatActivity(String phonenumberTo) {
+        ChatActivity.startChatActivity(this, phonenumberTo);
     }
 
-    @Override
-    public void onProfileError(String error) {
-        showSnackbar(error);
-    }
-
-    private void showSnackbar(CharSequence message) {
-        Snackbar.make(toolbar, message, Snackbar.LENGTH_LONG).show();
-    }
-
-
-    @OnClick(R.id.rel_child_second)
-    public void relativeNotifications() {
-        Intent intent = new Intent(this, CustomNotificationActivity.class);
-        startActivity(intent);
+    @OnClick(R.id.rll_phonenumber)
+    public void onViewClicked() {
+        presenter.onPhoneNumberMenuClicked();
     }
 
 }

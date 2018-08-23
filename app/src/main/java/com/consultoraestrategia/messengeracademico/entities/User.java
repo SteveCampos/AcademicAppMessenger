@@ -96,4 +96,16 @@ public class User {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "uid='" + uid + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", photoUri=" + photoUri +
+                ", idToken='" + idToken + '\'' +
+                '}';
+    }
 }

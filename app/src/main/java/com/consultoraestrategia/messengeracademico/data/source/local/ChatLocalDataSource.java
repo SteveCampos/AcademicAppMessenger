@@ -34,6 +34,19 @@ public class ChatLocalDataSource implements ChatDataSource {
     }
 
     @Override
+    public void deleteChat(Chat chat, SuccessCallback<Chat> successCallback) {
+        Log.d(TAG, "deleteChat: ");
+        chat.setState(Chat.STATE_DELETED);
+        SQLite.delete(ChatMessage.class)
+                .where(ChatMessage_Table.chatKey.eq(chat.getChatKey()))
+                .async()
+                .execute();
+
+        boolean success = chat.save();
+        successCallback.onSucess(chat, success);
+    }
+
+    @Override
     public void getChat(final Contact from, final Contact to, final GetChatCallback callback) {
         String[] sort = StringUtils.sortAlphabetical(from.getUid(), to.getUid());
         final String chatKey = sort[0] + "_" + sort[1];
@@ -118,7 +131,7 @@ public class ChatLocalDataSource implements ChatDataSource {
     @Override
     public void getMoreMessages(ChatMessage message, final GetMessageCallback callback) {
         Log.d(TAG, "getMoreMessages");
-        if (message != null){
+        if (message != null) {
             SQLite.select()
                     .from(ChatMessage.class)
                     .where(ChatMessage_Table.chatKey.eq(message.getChatKey()))
@@ -229,5 +242,11 @@ public class ChatLocalDataSource implements ChatDataSource {
     @Override
     public void listenSingleMessage(ChatMessage message, ListenMessagesCallback callback) {
 
+    }
+
+    @Override
+    public void deleteMessage(ChatMessage message, SuccessCallback<ChatMessage> listener) {
+        boolean success = message.delete();
+        if (listener != null) listener.onSucess(message, success);
     }
 }

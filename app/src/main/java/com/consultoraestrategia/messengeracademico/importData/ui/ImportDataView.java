@@ -1,7 +1,7 @@
 package com.consultoraestrategia.messengeracademico.importData.ui;
 
-import com.consultoraestrategia.messengeracademico.BaseView;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.base.BaseView;
+import com.consultoraestrategia.messengeracademico.importData.ImportDataPresenter;
 import com.consultoraestrategia.messengeracademico.importData.ImportDataPresenterImpl;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseUser;
  * Created by @stevecampos on 24/02/2017.
  */
 
-public interface ImportDataView extends BaseView<ImportDataPresenterImpl> {
+public interface ImportDataView extends BaseView<ImportDataPresenter> {
 
     void setMainUser(FirebaseUser mainUser);//
 

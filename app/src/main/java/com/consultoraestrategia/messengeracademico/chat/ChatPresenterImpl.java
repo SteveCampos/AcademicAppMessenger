@@ -4,13 +4,19 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.MenuRes;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import com.consultoraestrategia.messengeracademico.BaseView;
+import com.consultoraestrategia.messengeracademico.InjectorUtils;
+import com.consultoraestrategia.messengeracademico.base.BasePresenter;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.UseCase;
 import com.consultoraestrategia.messengeracademico.UseCaseHandler;
+import com.consultoraestrategia.messengeracademico.base.actionMode.BasePresenterActionModeImpl;
+import com.consultoraestrategia.messengeracademico.chat.domain.usecase.DeleteMessage;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.GenerateMessageKey;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ListenSingleMessage;
@@ -36,7 +42,6 @@ import com.consultoraestrategia.messengeracademico.chat.domain.usecase.LoadMessa
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ReadMessage;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.SendMessage;
 import com.consultoraestrategia.messengeracademico.prueba.domain.usecase.UploadImage;
-import com.consultoraestrategia.messengeracademico.storage.DefaultSharedPreferencesHelper;
 import com.google.firebase.auth.FirebaseUser;
 import com.zhihu.matisse.Matisse;
 
@@ -54,11 +59,8 @@ import static com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity.E
 /**
  * Created by @stevecampos on 10/03/2017.
  */
-public class ChatPresenterImpl implements ChatPresenter {
+public class ChatPresenterImpl extends BasePresenterActionModeImpl<ChatView, ChatMessage> implements ChatPresenter {
     private static final String TAG = ChatPresenterImpl.class.getSimpleName();
-    private ChatView view;
-
-    private final UseCaseHandler useCaseHandler;
 
     private final LoadMessages useCaseLoadMessages;
     private final GetContact useCaseGetContact;
@@ -68,13 +70,12 @@ public class ChatPresenterImpl implements ChatPresenter {
     private final ChangeStateWriting useCaseChangeStateWriting;
     private final ListenReceptorConnection useCaseListenReceptorConnection;
     private final ListenReceptorAction useCaseListenReceptorAction;
-    private final EventBus eventBus;
+    //private final EventBus eventBus;
     private final ConnectionInteractor connectionInteractor;
     private final GenerateMessageKey generateMessageKey;
     private final File cacheDir;
     private final UploadImage uploadImage;
     private final ContentResolver contentResolver;
-    private final Resources resources;
     private final ListenSingleMessage useCaseListenSingleMessage;
     private final LoadMoreMessages useCaseLoadMoreMessages;
 
@@ -85,8 +86,8 @@ public class ChatPresenterImpl implements ChatPresenter {
     private Chat chat;
 
     public ChatPresenterImpl(FirebaseUser mainUser, UseCaseHandler useCaseHandler, LoadMessages useCaseLoadMessages, GetContact useCaseGetContact, GetChat useCaseGetChat, SendMessage useCaseSendMessage, ReadMessage useCaseReadMessage, ChangeStateWriting useCaseChangeStateWriting, ListenReceptorConnection useCaseListenReceptorConnection, ListenReceptorAction useCaseListenReceptorAction, EventBus eventBus, ConnectionInteractor connectionInteractor, GenerateMessageKey generateMessageKey, File cacheDir, UploadImage uploadImage, ContentResolver contentResolver, Resources resources, ListenSingleMessage listenSingleMessage, LoadMoreMessages useCaseLoadMoreMessages) {
+        super(useCaseHandler, resources, eventBus);
         this.mainUser = mainUser;
-        this.useCaseHandler = useCaseHandler;
         this.useCaseLoadMessages = useCaseLoadMessages;
         this.useCaseGetContact = useCaseGetContact;
         this.useCaseGetChat = useCaseGetChat;
@@ -95,33 +96,38 @@ public class ChatPresenterImpl implements ChatPresenter {
         this.useCaseChangeStateWriting = useCaseChangeStateWriting;
         this.useCaseListenReceptorConnection = useCaseListenReceptorConnection;
         this.useCaseListenReceptorAction = useCaseListenReceptorAction;
-        this.eventBus = eventBus;
+        //this.eventBus = eventBus;
         this.connectionInteractor = connectionInteractor;
         this.generateMessageKey = generateMessageKey;
         this.cacheDir = cacheDir;
         this.uploadImage = uploadImage;
         this.contentResolver = contentResolver;
-        this.resources = resources;
         this.useCaseListenSingleMessage = listenSingleMessage;
         this.useCaseLoadMoreMessages = useCaseLoadMoreMessages;
     }
 
     @Override
-    public void attachView(BaseView view) {
-        this.view = (ChatView) view;
+    protected String getTag() {
+        return TAG;
+    }
 
+    @Override
+    protected BasePresenter<ChatView> getPresenterImpl() {
+        return this;
     }
 
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
-        eventBus.register(this);
+        super.onCreate();
         loadEmisor();
     }
 
     @Override
-    public void onStart() {
-        Log.d(TAG, "onStart");
+    public void setExtras(Bundle extras) {
+        Log.d(TAG, "setExtras: ");
+        super.setExtras(extras);
+        manageExtraReceptor();
     }
 
     private boolean forwardToAnotherActivity;
@@ -130,6 +136,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void onResume() {
         Log.d(TAG, "onResume");
+        super.onResume();
         forwardToAnotherActivity = false;
         connectionInteractor.setOnline();
     }
@@ -137,27 +144,22 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void onPause() {
         Log.d(TAG, "onPause");
+        super.onPause();
         if (!forwardToAnotherActivity || isLaunchedFromAnotherApp) {
             connectionInteractor.setOffline();
         }
     }
 
     @Override
-    public void onStop() {
-        Log.d(TAG, "onStop");
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        this.view = null;
-    }
-
-    @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed");
-        eventBus.unregister(this);
+        super.onBackPressed();
         forwardToAnotherActivity = true;
+
+        if (isInSelectedMode()) {
+            clearItems();
+        }
+
         if (view != null) {
             view.finishActivity();
         }
@@ -167,7 +169,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void loadMessages(Chat chat) {
         Log.d(TAG, "loadMessages");
         final LoadMessages.RequestValues requestValue = new LoadMessages.RequestValues(chat);
-        useCaseHandler.execute(
+        handler.execute(
                 useCaseLoadMessages,
                 requestValue,
                 new UseCase.UseCaseCallback<LoadMessages.ResponseValue>() {
@@ -194,15 +196,14 @@ public class ChatPresenterImpl implements ChatPresenter {
         this.emisor.setPhotoUrl(mainUser.getPhotoUrl() != null ? mainUser.getPhotoUrl().toString() : "");
         this.emisor.setEmail(mainUser.getEmail());
         this.emisor.setDisplayName(mainUser.getDisplayName());
-
     }
 
     private boolean contactsAreLoaded = false;
 
-    private void hideProgress() {
+    public void hideProgress() {
         if (view != null) {
             if (contactsAreLoaded) {
-                view.hideProgress();
+                super.hideProgress();
             }
         }
     }
@@ -213,7 +214,7 @@ public class ChatPresenterImpl implements ChatPresenter {
             hideProgress();
 
             GetChat.RequestValues requestValues = new GetChat.RequestValues(emisor, receptor);
-            useCaseHandler.execute(
+            handler.execute(
                     useCaseGetChat,
                     requestValues,
                     new UseCase.UseCaseCallback<GetChat.ResponseValue>() {
@@ -241,7 +242,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     public void loadReceptor(String phoneNumber) {
         Log.d(TAG, "loadReceptor");
         final GetContact.RequestValues requestValue = new GetContact.RequestValues(phoneNumber);
-        useCaseHandler.execute(
+        handler.execute(
                 useCaseGetContact,
                 requestValue,
                 new UseCase.UseCaseCallback<GetContact.ResponseValue>() {
@@ -263,17 +264,26 @@ public class ChatPresenterImpl implements ChatPresenter {
         String receptorPhoneNumber = intent.getStringExtra(EXTRA_RECEPTOR_PHONENUMBER);
         Log.d(TAG, "receptorPhoneNumber: " + receptorPhoneNumber);
         dismissNotification(receptorPhoneNumber);
-        getAcademicInformation(intent);
+        getAcademicInformation(extras);
+        loadReceptor(receptorPhoneNumber);
+    }
+
+    private void manageExtraReceptor() {
+        Log.d(TAG, "manageExtraReceptor: ");
+        String receptorPhoneNumber = extras.getString(EXTRA_RECEPTOR_PHONENUMBER);
+        Log.d(TAG, "receptorPhoneNumber: " + receptorPhoneNumber);
+        dismissNotification(receptorPhoneNumber);
+        getAcademicInformation(extras);
         loadReceptor(receptorPhoneNumber);
     }
 
     private void dismissNotification(String receptorPhoneNumber) {
-        if (view != null){
+        if (view != null) {
             view.dismissNotification(receptorPhoneNumber.hashCode());
         }
     }
 
-    private void getAcademicInformation(Intent intent) {
+    private void getAcademicInformation(Bundle extras) {
         String phoneNumber = "-";
         String nombre = "-";
         String padre = "-";
@@ -284,47 +294,33 @@ public class ChatPresenterImpl implements ChatPresenter {
         String seccion = "-";
         String rol = "-";
 
-        if (intent.hasExtra(EXTRA_RECEPTOR_PHONENUMBER)) {
-            phoneNumber = intent.getStringExtra(EXTRA_RECEPTOR_PHONENUMBER);
-        }
-        if (intent.hasExtra("NOMBRE")) {
-            nombre = intent.getStringExtra("NOMBRE");
-        }
-        if (intent.hasExtra("PADRE")) {
-            padre = intent.getStringExtra("PADRE");
-        }
-        if (intent.hasExtra("MADRE")) {
-            madre = intent.getStringExtra("MADRE");
-        }
-        if (intent.hasExtra("NIVEL")) {
-            nivel = intent.getStringExtra("NIVEL");
-        }
-        if (intent.hasExtra("AÑO")) {
-            anoAcademico = intent.getStringExtra("AÑO");
-        }
-        if (intent.hasExtra("CURSO")) {
-            curso = intent.getStringExtra("CURSO");
-        }
-        if (intent.hasExtra("SECCION")) {
-            seccion = intent.getStringExtra("SECCION");
-        }
-        if (intent.hasExtra("ROL")) {
-            rol = intent.getStringExtra("ROL");
+        phoneNumber = extras.getString(EXTRA_RECEPTOR_PHONENUMBER);
+        nombre = extras.getString("NOMBRE");
+        padre = extras.getString("PADRE");
+        madre = extras.getString("MADRE");
+        nivel = extras.getString("NIVEL");
+        anoAcademico = extras.getString("AÑO");
+        curso = extras.getString("CURSO");
+        seccion = extras.getString("SECCION");
+        rol = extras.getString("ROL");
+        if (!TextUtils.isEmpty(rol)) {
             isLaunchedFromAnotherApp = true;
+        } else {
+            return;
         }
 
         String textFormatted = null;
 
         switch (rol) {
             case "ALUMNO":
-                textFormatted = String.format(resources.getString(R.string.chat_message_academic_information), rol, nivel, anoAcademico, curso, seccion);
+                textFormatted = String.format(res.getString(R.string.chat_message_academic_information), rol, nivel, anoAcademico, curso, seccion);
                 break;
             case "PADRE":
-                textFormatted = String.format(resources.getString(R.string.chat_message_rol_information), rol);
+                textFormatted = String.format(res.getString(R.string.chat_message_rol_information), rol);
                 nombre = padre;
                 break;
             case "MADRE":
-                textFormatted = String.format(resources.getString(R.string.chat_message_rol_information), rol);
+                textFormatted = String.format(res.getString(R.string.chat_message_rol_information), rol);
                 nombre = madre;
                 break;
         }
@@ -367,7 +363,7 @@ public class ChatPresenterImpl implements ChatPresenter {
             online = lastConnection.isOnline();
         }
 
-        useCaseHandler.execute(
+        handler.execute(
                 useCaseSendMessage,
                 new SendMessage.RequestValues(message, online),
                 new UseCase.UseCaseCallback<SendMessage.ResponseValue>() {
@@ -380,13 +376,14 @@ public class ChatPresenterImpl implements ChatPresenter {
                     @Override
                     public void onError() {
                         Log.d(TAG, "useCaseSendMessage onError");
+                        showError(new Exception(res.getString(R.string.error_sending_message)));
                     }
                 }
         );
     }
 
     private void sendReadMessage(ChatMessage message) {
-        useCaseHandler.execute(
+        handler.execute(
                 useCaseReadMessage,
                 new ReadMessage.RequestValues(message),
                 new UseCase.UseCaseCallback<ReadMessage.ResponseValue>() {
@@ -439,7 +436,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void listenReceptorConnection() {
         if (chat != null) {
-            useCaseHandler.execute(
+            handler.execute(
                     useCaseListenReceptorConnection,
                     new ListenReceptorConnection.RequestValues(receptor),
                     new UseCase.UseCaseCallback<ListenReceptorConnection.ResponseValue>() {
@@ -469,7 +466,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     @Override
     public void listenReceptorAction() {
         if (chat != null) {
-            useCaseHandler.execute(
+            handler.execute(
                     useCaseListenReceptorAction,
                     new ListenReceptorAction.RequestValues(chat),
                     new UseCase.UseCaseCallback<ListenReceptorAction.ResponseValue>() {
@@ -495,7 +492,7 @@ public class ChatPresenterImpl implements ChatPresenter {
         Log.d(TAG, "onEventMainThread");
         switch (event.getType()) {
             case ChatEvent.TYPE_MESSAGE:
-                onMessageChanged(event.getMessage());
+                updateMessage(event.getMessage());
                 break;
         }
     }
@@ -515,7 +512,7 @@ public class ChatPresenterImpl implements ChatPresenter {
             //Log.d(TAG, "uri's size: " + uris.size());
             for (Uri uri : uris) {
                 Log.d(TAG, "uri: " + uri);
-                if (!uri.equals(Uri.EMPTY)) {
+                if (uri != null && !uri.equals(Uri.EMPTY)) {
                     beginToUploadMessageImage(uri);
                     break;
                 }
@@ -556,13 +553,14 @@ public class ChatPresenterImpl implements ChatPresenter {
 
 
     private Map<String, Boolean> messagesNotReadedMap = new LinkedHashMap<>();
+
     @Override
     public void onMessageNotReaded(ChatMessage message) {
         Log.d(TAG, "onMessageNotReaded message: " + message);
         String messageKey = message.getKeyMessage();
-        if (!messagesNotReadedMap.containsKey(messageKey)){
+        if (!messagesNotReadedMap.containsKey(messageKey)) {
             messagesNotReadedMap.put(messageKey, Boolean.TRUE);
-            useCaseHandler.execute(
+            handler.execute(
                     useCaseListenSingleMessage,
                     new ListenSingleMessage.RequestValues(message),
                     new UseCase.UseCaseCallback<ListenSingleMessage.ResponseValue>() {
@@ -584,7 +582,7 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     @Override
     public void onMessageNotSended(ChatMessage message) {
-        if (message.getMessageType().equals(ChatMessage.TYPE_TEXT)){
+        if (message.getMessageType().equals(ChatMessage.TYPE_TEXT)) {
             message.getEmisor().load();
             message.getReceptor().load();
             sendMessage(message);
@@ -595,11 +593,11 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     @Override
     public void loadMoreMessages(ChatMessage olderMessage) {
-        Log.d(TAG,"loadMoreMessages");
-        if (olderMessage != null){
-            if (!mCachedOlderMessages.containsKey(olderMessage.getId())){
+        Log.d(TAG, "loadMoreMessages");
+        if (olderMessage != null) {
+            if (!mCachedOlderMessages.containsKey(olderMessage.getId())) {
                 mCachedOlderMessages.put(olderMessage.getId(), Boolean.TRUE);
-                useCaseHandler.execute(
+                handler.execute(
                         useCaseLoadMoreMessages,
                         new LoadMoreMessages.RequestValues(olderMessage),
                         new UseCase.UseCaseCallback<LoadMoreMessages.ResponseValue>() {
@@ -620,8 +618,110 @@ public class ChatPresenterImpl implements ChatPresenter {
         }
     }
 
-    private void onMoreMessagesLoaded(List<ChatMessage> messages){
-        if (view != null){
+    @Override
+    public void onActionViewContactSelected() {
+        if (view != null && receptor != null) {
+            view.showContactInPhone(receptor.getPhoneNumber());
+        }
+    }
+
+    @Override
+    public void actionDelete() {
+        Log.d(TAG, "actionDelete: ");
+        deleteMessages(getItemsSelected());
+    }
+
+    private void deleteMessages(List<ChatMessage> itemsSelected) {
+        for (ChatMessage messageSelected :
+                itemsSelected) {
+
+            handler.execute(
+                    new DeleteMessage(InjectorUtils.getChatRepository()),
+                    new DeleteMessage.RequestValues(messageSelected),
+                    new UseCase.UseCaseCallback<DeleteMessage.ResponseValue>() {
+                        @Override
+                        public void onSuccess(DeleteMessage.ResponseValue response) {
+                            Log.d(TAG, "onSuccess: ");
+                            ChatMessage message = response.getMessage();
+                            removeMessage(message);
+                            removeItemFromSelectedMode(message);
+                        }
+
+                        @Override
+                        public void onError() {
+                            Log.d(TAG, "onError: ");
+                            showMessage(R.string.error_removing_message);
+                        }
+                    }
+            );
+        }
+
+
+    }
+
+    private void removeMessage(ChatMessage message) {
+        Log.d(TAG, "removeMessage: ");
+        if (view != null) view.removeMessage(message);
+    }
+
+    @Override
+    public void actionCopy() {
+        Log.d(TAG, "actionCopy: ");
+        copyMessages();
+    }
+
+    @Override
+    public void onImageClick(ChatMessage message) {
+        if (view != null) view.showFullScreenImg(message.getMessageUri());
+    }
+
+    @Override
+    public void attachVideoClicked() {
+        showMessage(R.string.global_error_not_implemented);
+    }
+
+    @Override
+    public void attachAudioClicked() {
+        showMessage(R.string.global_error_not_implemented);
+    }
+
+    @Override
+    public void attachLocationClicked() {
+        showMessage(R.string.global_error_not_implemented);
+    }
+
+    @Override
+    public void attachContactClicked() {
+        showMessage(R.string.global_error_not_implemented);
+    }
+
+    private String getTextCopied(List<ChatMessage> messages) {
+        StringBuilder textCopied = new StringBuilder();
+        for (int i = 0; i < messages.size(); i++) {
+            int position = i + 1;
+            textCopied.append("(").append(position).append(") ").append(messages.get(i).getMessageText());
+        }
+        return textCopied.toString();
+    }
+
+    private void copyMessages() {
+
+        List<ChatMessage> messagesCopied = getItemsSelected();
+
+        String message = String.format(res.getString(R.string.activity_chat_messages_copied), messagesCopied.size());
+        showMessage(message);
+
+        copyText(getTextCopied(messagesCopied));
+        clearItems();
+    }
+
+    private void copyText(String textToCopy) {
+        if (view != null) view.copyText(textToCopy);
+    }
+
+
+    private void onMoreMessagesLoaded(List<ChatMessage> messages) {
+        if (view != null) {
             view.addMoreMessages(messages);
         }
     }
@@ -648,7 +748,7 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     private void beginToUploadMessageImage(final Uri imageUri) {
         Log.d(TAG, "beginToUploadMessageImage");
-        useCaseHandler.execute(
+        handler.execute(
                 generateMessageKey,
                 new GenerateMessageKey.RequestValues(emisor, receptor),
                 new UseCase.UseCaseCallback<GenerateMessageKey.ResponseValue>() {
@@ -663,7 +763,7 @@ public class ChatPresenterImpl implements ChatPresenter {
                                 Log.d(TAG, "imageCompression path: " + compressedFile.getLocalUri().getPath());
                                 // image here is compressed & ready to be sent to the server
                                 ChatMessage message = composeMessageImage(keyMessage, compressedFile);
-                                onMessageChanged(message);
+                                updateMessage(message);
                                 uploadImage(message);
                             }
                         };
@@ -673,14 +773,15 @@ public class ChatPresenterImpl implements ChatPresenter {
 
                     @Override
                     public void onError() {
-
+                        Log.d(TAG, "GenerateMessageKey onError: ");
+                        showError(new Exception(res.getString(R.string.error_uploading_image)));
                     }
                 });
     }
 
     private void uploadImage(ChatMessage message) {
         if (view != null) {
-            useCaseHandler.execute(
+            handler.execute(
                     uploadImage,
                     new UploadImage.RequestValues(message),
                     new UseCase.UseCaseCallback<UploadImage.ResponseValue>() {
@@ -705,7 +806,8 @@ public class ChatPresenterImpl implements ChatPresenter {
 
                         @Override
                         public void onError() {
-                            showError(new Exception("UseCaseHandler error!"));
+                            Log.d(TAG, "uploadImage onError: ");
+                            showError(new Exception(res.getString(R.string.error_uploading_image)));
                         }
                     }
             );
@@ -778,7 +880,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     }
 
     private void changeWritingState(boolean writing) {
-        useCaseHandler.execute(
+        handler.execute(
                 useCaseChangeStateWriting,
                 new ChangeStateWriting.RequestValues(chat, writing),
                 new UseCase.UseCaseCallback<ChangeStateWriting.ResponseValue>() {
@@ -804,8 +906,8 @@ public class ChatPresenterImpl implements ChatPresenter {
         }
     }
 
-    private void onMessageChanged(ChatMessage message) {
-        Log.d(TAG, "onMessageChanged");
+    private void updateMessage(ChatMessage message) {
+        Log.d(TAG, "updateItem");
         if (view != null) {
             if (chat != null && chat.getChatKey().equals(message.getChatKey())) {
                 view.updateMessage(message);
@@ -813,8 +915,8 @@ public class ChatPresenterImpl implements ChatPresenter {
         }
     }
 
-    private void addMessage(ChatMessage message){
-        if (view != null){
+    private void addMessage(ChatMessage message) {
+        if (view != null) {
             view.addMessage(message);
         }
     }
@@ -829,7 +931,7 @@ public class ChatPresenterImpl implements ChatPresenter {
     private void onLoadingFailed() {
         Log.d(TAG, "onError");
         if (view != null) {
-            //view.showError("Error loading Messages!");
+            //view.showMessage("Error loading Messages!");
         }
     }
 
@@ -840,4 +942,18 @@ public class ChatPresenterImpl implements ChatPresenter {
             view.showReceptor(receptor);
         }
     }
+
+
+    @Override
+    protected void updateItem(ChatMessage item) {
+        updateMessage(item);
+    }
+
+    @Override
+    protected @MenuRes
+    int getMenuActionMode() {
+        return R.menu.menu_chat_action_mode;
+    }
+
+
 }

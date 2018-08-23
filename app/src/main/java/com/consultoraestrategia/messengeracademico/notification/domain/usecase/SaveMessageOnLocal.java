@@ -2,7 +2,6 @@ package com.consultoraestrategia.messengeracademico.notification.domain.usecase;
 
 import android.util.Log;
 
-import com.amitshekhar.model.Response;
 import com.consultoraestrategia.messengeracademico.UseCase;
 import com.consultoraestrategia.messengeracademico.data.ChatDataSource;
 import com.consultoraestrategia.messengeracademico.data.ChatRepository;

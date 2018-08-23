@@ -3,6 +3,7 @@ package com.consultoraestrategia.messengeracademico.entities;
 
 import android.util.Log;
 
+import com.consultoraestrategia.messengeracademico.base.actionMode.Selectable;
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
@@ -19,7 +20,7 @@ import java.util.List;
  * Created by @stevecampos on 14/03/2017.
  */
 @Table(database = MessengerAcademicoDatabase.class)
-public class Chat extends BaseModel {
+public class Chat extends BaseModel implements Selectable {
 
     public static final int TYPE_ONE_TO_ONE = 1000;
 
@@ -202,5 +203,20 @@ public class Chat extends BaseModel {
         return timestamp;
     }
 
+    private boolean selected;
 
+    @Override
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected;
+    }
+
+    @Override
+    public String getKey() {
+        return getChatKey();
+    }
 }

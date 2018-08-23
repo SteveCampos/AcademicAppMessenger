@@ -101,6 +101,13 @@ public class ChatRepository implements ChatDataSource {
 
 
     @Override
+    public void deleteChat(Chat chat, SuccessCallback<Chat> successCallback) {
+        Log.d(TAG, "deleteChat: ");
+        chatLocalDataSource.deleteChat(chat, successCallback);
+        chatRemoteDataSource.deleteChat(chat, successCallback);
+    }
+
+    @Override
     public void getChat(final Contact emisor, final Contact receptor, final GetChatCallback callback) {
         Log.d(TAG, "getChat");
         if (this.receptor == null || this.mainUser == null || !this.receptor.equals(receptor)) {
@@ -109,7 +116,20 @@ public class ChatRepository implements ChatDataSource {
         //this.mainUser = emisor;
         this.receptor = receptor;
         String orderedKeys[] = StringUtils.sortAlphabetical(mainUser.getUid(), receptor.getUid());
-        getChat(orderedKeys[0] + "_" + orderedKeys[1], new GetChatCallback() {
+        chatLocalDataSource.getChat(emisor, receptor, new GetChatCallback() {
+            @Override
+            public void onChatLoaded(Chat chatLoaded) {
+                chat = chatLoaded;
+                addChatToCache(chatLoaded);
+                callback.onChatLoaded(chatLoaded);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                Log.d(TAG, "Fatal error! chatLocalDataSource.getChat failed!");
+            }
+        });
+        /*getChat(orderedKeys[0] + "_" + orderedKeys[1], new GetChatCallback() {
             @Override
             public void onChatLoaded(Chat chatLoaded) {
                 chat = chatLoaded;
@@ -133,7 +153,7 @@ public class ChatRepository implements ChatDataSource {
                     }
                 });
             }
-        });
+        });*/
     }
 
     @Override
@@ -158,11 +178,29 @@ public class ChatRepository implements ChatDataSource {
                 public void onDataNotAvailable() {
                     Log.d(TAG, "chatLocalDataSource.getChat onDataNotAvailable");
                     //getChat from remote source!
-                    callback.onDataNotAvailable();
+                    //callback.onDataNotAvailable();
+                    getChatFromRemote(keyChat, new GetChatCallback() {
+                        @Override
+                        public void onChatLoaded(Chat chat) {
+                            chat.save();
+                            addChatToCache(chat);
+                            fireChat(chat);
+                        }
+
+                        @Override
+                        public void onDataNotAvailable() {
+                            Log.d(TAG, "getChatFromRemote onDataNotAvailable: ");
+                        }
+                    });
                 }
             });
         }
 
+    }
+
+    public void getChatFromRemote(String keyChat, GetChatCallback callback) {
+        Log.d(TAG, "getChatFromRemote: " + keyChat);
+        chatRemoteDataSource.getChat(keyChat, callback);
     }
 
     @Override
@@ -261,35 +299,34 @@ public class ChatRepository implements ChatDataSource {
             chatRemoteDataSource.getMessages(chat, callback);
         } else {
             */
-            // Query the local storage if available. If not, query the network.
-            Log.d(TAG, "getMoreMessages from chatLocalDataSource");
-            chatLocalDataSource.getMoreMessages(message, new GetMessageCallback() {
-                @Override
-                public void onMessagesLoaded(List<ChatMessage> messages) {
-                    Log.d(TAG, "getMoreMessages onMessagesLoaded");
+        // Query the local storage if available. If not, query the network.
+        Log.d(TAG, "getMoreMessages from chatLocalDataSource");
+        chatLocalDataSource.getMoreMessages(message, new GetMessageCallback() {
+            @Override
+            public void onMessagesLoaded(List<ChatMessage> messages) {
+                Log.d(TAG, "getMoreMessages onMessagesLoaded");
 
-                    if (messages == null || messages.isEmpty()){
-                        return;
+                if (messages == null || messages.isEmpty()) {
+                    return;
+                }
+
+                Log.d(TAG, "getMoreMessages size: " + messages.size());
+
+                Collections.sort(messages, new Comparator<ChatMessage>() {
+                    @Override
+                    public int compare(ChatMessage o1, ChatMessage o2) {
+                        return Long.valueOf(o1.getTimestamp()).compareTo(o2.getTimestamp());
                     }
+                });
+                callback.onMessagesLoaded(messages);
+                addMessagesToCache(messages);
+            }
 
-                    Log.d(TAG, "getMoreMessages size: " + messages.size());
-
-                    Collections.sort(messages, new Comparator<ChatMessage>() {
-                        @Override
-                        public int compare(ChatMessage o1, ChatMessage o2) {
-                            return Long.valueOf(o1.getTimestamp()).compareTo(o2.getTimestamp());
-                        }
-                    });
-                    callback.onMessagesLoaded(messages);
-                    addMessagesToCache(messages);
-                }
-
-                @Override
-                public void onDataNotAvailable() {
-                    chatRemoteDataSource.getMessages(chat, callback);
-                }
-            });
-        //}
+            @Override
+            public void onDataNotAvailable() {
+                chatRemoteDataSource.getMoreMessages(message, callback);
+            }
+        });
     }
 
 
@@ -326,7 +363,7 @@ public class ChatRepository implements ChatDataSource {
      * Note: {@link ListenMessagesCallback#onError(String)} is fired when message is saved to remote source.
      */
 
-    /*Considerando cambiar el nombre, a sendMessafe*/
+    /*Considerando cambiar el nombre, a sendMessage*/
     @Override
     public void saveMessage(final ChatMessage message, final Chat chat, final ListenMessagesCallback callback) {
         Log.d(TAG, "saveMessage");
@@ -419,7 +456,7 @@ public class ChatRepository implements ChatDataSource {
     }
 
     @Override
-    public void sendMessageNotReaded(final ChatMessage message, final boolean receptorOnline, Chat chat, final ListenMessagesCallback callback){
+    public void sendMessageNotReaded(final ChatMessage message, final boolean receptorOnline, Chat chat, final ListenMessagesCallback callback) {
         Log.d(TAG, "sendMessageNotReaded");
         getChat(message, new GetChatCallback() {
             @Override
@@ -434,7 +471,7 @@ public class ChatRepository implements ChatDataSource {
         });
     }
 
-    private void sendMessageWritedToRemote(ChatMessage message, boolean receptorOnline, Chat chat, final ListenMessagesCallback callback){
+    private void sendMessageWritedToRemote(ChatMessage message, boolean receptorOnline, Chat chat, final ListenMessagesCallback callback) {
         chatRemoteDataSource.saveMessageWithStatusWrited(message, receptorOnline, chat, new ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
@@ -506,27 +543,32 @@ public class ChatRepository implements ChatDataSource {
 
     }
 
-    private void fireMessage(ChatMessage message) {
-        Log.d(TAG, "fireMessage");
-        post(message);
+    private void fireChat(final ChatMessage message) {
+        Log.d(TAG, "fireChat: ");
         getChat(message, new GetChatCallback() {
             @Override
             public void onChatLoaded(Chat chat) {
                 Log.d(TAG, "getChat onChatLoaded: " + chat);
                 if (chat != null) {
-                    post(chat);
+                    fireChat(chat);
                 }
             }
 
             @Override
             public void onDataNotAvailable() {
-                Log.e(TAG, "fireMessage getChat onDataNotAvailable!!! ");
+                Log.e(TAG, "fireChat getChat onDataNotAvailable!!! ");
             }
         });
     }
 
-    private void post(Chat chat) {
+    private void fireChat(Chat chat) {
         chatListPostEvent.post(chat);
+    }
+
+    private void fireMessage(ChatMessage message) {
+        Log.d(TAG, "fireMessage");
+        post(message);
+        fireChat(message);
     }
 
     private void post(ChatMessage message) {
@@ -543,18 +585,28 @@ public class ChatRepository implements ChatDataSource {
         mCachedMessages.clear();
     }
 
-    private void addMessagesToCache(List<ChatMessage> messages){
+    private void addMessagesToCache(List<ChatMessage> messages) {
         if (mCachedMessages == null) {
             mCachedMessages = new LinkedHashMap<>();
         }
-        for (ChatMessage message: messages){
+        for (ChatMessage message : messages) {
             mCachedMessages.put(message.getId(), message);
         }
         mCacheIsDirty = false;
         sortCache();
     }
 
-    private void sortCache(){
+    private void removeMessageFromCache(ChatMessage message) {
+        Log.d(TAG, "removeMessageFromCache: ");
+        if (mCachedMessages == null) return;
+        boolean isInCache = isMessageInCache(message);
+        Log.d(TAG, "isInCache: " + isInCache);
+        if (isInCache) {
+            mCachedMessages.remove(message.getId());
+        }
+    }
+
+    private void sortCache() {
         List<ChatMessage> chatMessages = new ArrayList<>(mCachedMessages.values());
         Collections.sort(chatMessages, new Comparator<ChatMessage>() {
             @Override
@@ -690,7 +742,7 @@ public class ChatRepository implements ChatDataSource {
         }
     }
 
-    private void listenMessages(String lastKey){
+    private void listenMessages(String lastKey) {
         chatRemoteDataSource.listenForAllUserMessages(lastKey, new ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage message) {
@@ -906,12 +958,12 @@ public class ChatRepository implements ChatDataSource {
 
     @Override
     public void listenSingleMessage(final ChatMessage message, ListenMessagesCallback callback) {
-        Log.d(TAG, "listenSingleMessage message: "  + message);
+        Log.d(TAG, "listenSingleMessage message: " + message);
         chatRemoteDataSource.listenSingleMessage(message, new ListenMessagesCallback() {
             @Override
             public void onMessageChanged(ChatMessage messageChanged) {
                 Log.d(TAG, "listenSingleMessage onMessageChanged message: " + messageChanged.toString());
-                if (message.getMessageStatus() != messageChanged.getMessageStatus()){
+                if (message.getMessageStatus() != messageChanged.getMessageStatus()) {
                     onIncomingMessageChanged(messageChanged);
                 }
             }
@@ -921,6 +973,27 @@ public class ChatRepository implements ChatDataSource {
                 Log.d(TAG, "listenSingleMessage onError: " + error);
             }
         });
+    }
+
+    @Override
+    public void deleteMessage(final ChatMessage message, final SuccessCallback<ChatMessage> listener) {
+        Log.d(TAG, "removeMessage: ");
+        chatLocalDataSource.deleteMessage(message, new SuccessCallback<ChatMessage>() {
+            @Override
+            public void onSucess(ChatMessage data, boolean success) {
+                if (success) {
+                    removeMessageFromCache(data);
+                    fireChat(message);
+                }
+                listener.onSucess(data, success);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                listener.onFailure(e);
+            }
+        });
+        chatRemoteDataSource.deleteMessage(message, listener);
     }
 
     private void getLastMessageRemote(ListenMessagesCallback callback) {
@@ -933,4 +1006,3 @@ public class ChatRepository implements ChatDataSource {
     }
 
 }
-

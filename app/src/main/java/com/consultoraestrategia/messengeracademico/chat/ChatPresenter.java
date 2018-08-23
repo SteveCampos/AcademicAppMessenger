@@ -3,8 +3,11 @@ package com.consultoraestrategia.messengeracademico.chat;
 import android.content.Intent;
 import android.view.View;
 
-import com.consultoraestrategia.messengeracademico.BasePresenter;
+import com.consultoraestrategia.messengeracademico.base.BasePresenter;
+import com.consultoraestrategia.messengeracademico.base.actionMode.BasePresenterActionMode;
+import com.consultoraestrategia.messengeracademico.base.actionMode.SelectListener;
 import com.consultoraestrategia.messengeracademico.chat.events.ChatEvent;
+import com.consultoraestrategia.messengeracademico.chat.ui.ChatView;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 
@@ -12,7 +15,7 @@ import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
  * Created by @stevecampos on 9/03/2017.
  */
 
-public interface ChatPresenter extends BasePresenter {
+public interface ChatPresenter extends BasePresenterActionMode<ChatView, ChatMessage>{
 
     void loadMessages(Chat chat);
 
@@ -50,4 +53,21 @@ public interface ChatPresenter extends BasePresenter {
     void onMessageNotSended(ChatMessage message);
 
     void loadMoreMessages(ChatMessage olderMessage);
+
+    void onActionViewContactSelected();
+
+    void actionDelete();
+
+    void actionCopy();
+
+    void onImageClick(ChatMessage message);
+
+    void attachVideoClicked();
+
+    void attachAudioClicked();
+
+    void attachLocationClicked();
+
+    void attachContactClicked();
+
 }

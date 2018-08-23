@@ -1,12 +1,11 @@
 package com.consultoraestrategia.messengeracademico.contactList.adapter.holder;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -27,13 +26,13 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.img_profile)
     CircleImageView imgProfile;
     @BindView(R.id.txt_name)
-    TextView txtName;
-    @BindView(R.id.txt_status)
-    TextView txtStatus;
+    AppCompatTextView txtName;
     @BindView(R.id.txt_time)
-    AppCompatTextView txtFrom;
-    @BindView(R.id.layout)
-    RelativeLayout layout;
+    AppCompatTextView txtTime;
+    @BindView(R.id.img_status_message)
+    AppCompatImageView imgStatusMessage;
+    @BindView(R.id.txt_status)
+    AppCompatTextView txtStatus;
 
     public PhoneContactHolder(View view) {
         super(view);
@@ -45,6 +44,7 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
         String phoneNumber = null;
         String title = null;
         String uri = null;
+        String verified = null;
         if (contact != null) {
             String name = contact.getName();
             phoneNumber = contact.getPhoneNumber();
@@ -52,12 +52,23 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
 
             title = !TextUtils.isEmpty(name) ? name : phoneNumber;
             uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "";
+            verified = contact.getInfoVerified();
         }
 
 
         txtStatus.setText(phoneNumber);
         txtName.setText(title);
-        layout.setOnClickListener(new View.OnClickListener() {
+        if (!TextUtils.isEmpty(verified)) {
+            txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.ic_verify,
+                    0
+            );
+            String rolVerificado = String.format(itemView.getResources().getString(R.string.global_rol_verified), verified);
+            txtStatus.setText(rolVerificado);
+        }
+        itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.onContactSelected(contact);

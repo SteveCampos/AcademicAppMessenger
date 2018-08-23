@@ -5,13 +5,18 @@ import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.consultoraestrategia.messengeracademico.crme_educativo.RestApi;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseContactsHelper;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -25,10 +30,12 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
     private FirebaseContactsHelper firebaseContactsHelper;
     private Context context;
     private ContactListener listener;
+    private String userPhonenumber;
 
-    public ExistsPhonenumbersAsyncTask(Context context, ContactListener listener) {
+    public ExistsPhonenumbersAsyncTask(String userPhonenumber, Context context, ContactListener listener) {
+        this.userPhonenumber = userPhonenumber;
         this.context = context;
-        this.firebaseContactsHelper = new FirebaseContactsHelper();
+        this.firebaseContactsHelper = FirebaseContactsHelper.getInstance();
         this.listener = listener;
     }
 
@@ -44,7 +51,7 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
 
     @Override
     protected Void doInBackground(List<Contact>... params) {
-        Log.d(TAG, "ExistsPhonenumbersAsyncTask doInBackground");
+        //Log.d(TAG, "ExistsPhonenumbersAsyncTask doInBackground");
         List<Contact> contacts = params[0];
         for (Contact contact : contacts) {
             final String phoneNumber = formatPhoneNumber(context, contact.getPhoneNumber());
@@ -86,7 +93,7 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
         String formatNumber = null;
         TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String usersCountryISOCode = manager.getNetworkCountryIso().toUpperCase();
-        Log.d(TAG, "usersCountryISOCode: " + usersCountryISOCode);
+        //Log.d(TAG, "usersCountryISOCode: " + usersCountryISOCode);
 
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
         try {
@@ -94,12 +101,12 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
                     usersCountryISOCode);
             if (phoneUtil.isValidNumber(numberProto)) {
                 formatNumber = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.E164);
-                Log.d(TAG, "formatPhoneNumber: " + phoneNumber + " -> " + formatNumber);
+                //Log.d(TAG, "formatPhoneNumber: " + phoneNumber + " -> " + formatNumber);
             } else {
-                Log.d(TAG, "phoneNumber not valid number: " + phoneNumber);
+                //Log.d(TAG, "phoneNumber not valid number: " + phoneNumber);
             }
         } catch (Exception e) {
-            Log.d(TAG, "phoneNumber: " + phoneNumber + " Exception: " + e.getMessage());
+            //Log.d(TAG, "phoneNumber: " + phoneNumber + " Exception: " + e.getMessage());
             return null;
         }
         return formatNumber;
@@ -122,7 +129,7 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
         @Override
         protected Contact doInBackground(DataSnapshot... params) {
             DataSnapshot dataSnapshot = params[0];
-            Log.d(TAG, "dataSnapshot: " + dataSnapshot);
+            //Log.d(TAG, "dataSnapshot: " + dataSnapshot);
             String uid = null;
 
 
@@ -177,7 +184,7 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
         protected Contact doInBackground(DataSnapshot... params) {
             counterParseDataSnapshotInstance++;
             DataSnapshot dataSnapshot = params[0];
-            Log.d(TAG, "dataSnapshot: " + dataSnapshot);
+            //Log.d(TAG, "dataSnapshot: " + dataSnapshot);
 
             Contact contact = new Contact();
             contact.setPhoneNumber(phoneNumber);
@@ -191,6 +198,8 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
                     contact.setDisplayName(contactParsed.getDisplayName());
                     contact.setPhotoUrl(contactParsed.getPhotoUrl());
                     contact.setEmail(contactParsed.getEmail());
+                    //contact.setInfoVerified(contactParsed.getInfoVerified());
+                    new GetInfoVerified(contact).execute(contact);
                 }
             }
             return contact;
@@ -198,12 +207,51 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
 
         @Override
         protected void onPostExecute(Contact contact) {
-            if (listener != null) {
+            /*if (listener != null) {
                 listener.onContactInstalled(contact);
-                /*
-                if (counterParseProfileInstance == counterParseProfileAsyncTaskExecuted) {
-                    listener.onFinish();
-                }*/
+            }*/
+        }
+    }
+
+
+    private class GetInfoVerified extends AsyncTask<Contact, Void, Contact> {
+
+        private Contact contact;
+
+        public GetInfoVerified(Contact contact) {
+            this.contact = contact;
+        }
+
+        @Override
+        protected Contact doInBackground(Contact... params) {
+            //Log.d(TAG, "GetInfoVerified: ");
+            String observador = userPhonenumber;
+            String observado = contact.getPhoneNumber();
+            Log.d(TAG, "observador: " + observador);
+            Log.d(TAG, "observado: " + observado);
+
+            RestApi api = RestApi.getInstance("");
+            try {
+                JSONObject jsonObject = api.fins_Listar(observador, observado);
+                String infoVerified = jsonObject.getString("Value");
+                Log.d(TAG, "infoVerified: " + infoVerified);
+                contact.setInfoVerified(infoVerified);
+
+                onPostExecute(contact);
+
+            } catch (Exception e) {
+                Log.d(TAG, "GetInfoVerified: " + e);
+                //e.printStackTrace();
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Contact contact) {
+            if (listener != null && contact != null) {
+                listener.onContactInstalled(contact);
             }
         }
     }

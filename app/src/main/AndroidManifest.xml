@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.consultoraestrategia.messengeracademico">
 
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -20,23 +21,32 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:supportsRtl="true"
+        android:testOnly="false"
         android:theme="@style/AppTheme.NoActionBar"
         tools:replace="android:allowBackup">
+        <service
+            android:name=".notification.jobService.NewMessageJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".importData.jobDispatcher.ImportDataJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".main.ui.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".prueba.TestActivity"
-            android:label="@string/app_name">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
         </activity>
         <activity
             android:name=".verification.ui.VerificationActivity"
@@ -57,15 +67,10 @@
         <activity android:name=".importData.ui.ImportDataActivity" />
         <activity
             android:name=".chat.ui.ChatActivity"
-            android:parentActivityName=".main.ui.MainActivity"
-            >
+            android:parentActivityName=".main.ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity" />
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
 
         <service
@@ -117,6 +122,32 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths_public" />
         </provider>
+
+        <activity
+            android:name=".test.TestActivity"
+            android:label="@string/title_activity_test"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".group.GroupActivity"
+            android:label="@string/title_activity_group"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".importGroups.ImportGroupActivity"
+            android:label="@string/title_activity_import_group"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.consultoraestrategia.messengeracademico.main.ui.MainActivity" />
+
+        </activity>
     </application>
 
 </manifest>

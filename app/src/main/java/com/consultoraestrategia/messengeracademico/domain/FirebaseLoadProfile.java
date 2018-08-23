@@ -50,89 +50,12 @@ public class FirebaseLoadProfile extends FirebaseHelper {
     public FirebaseLoadProfile() {
         super();
         this.reference = getDatabase().getReference().child(CHILD_PROFILE);
-        helper = new FirebaseContactsHelper();
+        helper = FirebaseContactsHelper.getInstance();
     }
 
-
-    /*
-    public void uploadProfile(final Profile profile, final UploadProfileListener listener) {
-        helper.getUserKey(profile.getmPhoneNumber(), new ValueEventListener() {
-            @Override
-            public void onDataChange(final DataSnapshot dataSnapshot) {
-                Log.d(TAG, "dataSnapshot : " + dataSnapshot);
-                if (dataSnapshot != null) {
-                    String key = dataSnapshot.getValue(String.class);
-                    if (key != null) {
-                        Log.d(TAG, "key" + key);
-                        profile.setUserKey(key);
-                        validateUri(profile, listener);
-                    } else {
-                        helper.postPhoneNumber(profile.getmPhoneNumber(), new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                if (databaseError == null) {
-                                    uploadProfile(profile, listener);
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                listener.onError(databaseError.getMessage());
-            }
-        });
-
-    }
-
-
-    private void validateUri(final Profile profile, final UploadProfileListener listener) {
-        if (profile.getPhoto().getUrl() == null) {
-            // uploadImage(profile, listener);
-            Photo photo = new Photo();
-            profile.setPhoto(photo);
-            Contact contact = new Contact();
-            contact.setUid(profile.getUserKey());
-            contact.setName(profile.getmName());
-            contact.setPhoneNumber(profile.getmPhoneNumber());
-            contact.setType(Contact.TYPE_MAIN_CONTACT);
-            contact.save();
-
-
-            postProfile(profile, listener);
-            Log.d(TAG, "CUANDO EL URI ES NULL");
-        } else {
-            uploadImage(profile, listener);
-            Log.d(TAG, "CUANDO EL URI NO ES NULL");
-        }
-    }*/
-
-
-    /*
-    private void saveContact(Profile profile, Uri uriPhoto, UploadProfileListener listener) {
-
-        Contact contact = new Contact();
-        contact.setUid(profile.getUserKey());
-        contact.setName(profile.getmName());
-        contact.setPhoneNumber(profile.getmPhoneNumber());
-        contact.setPhotoUrl(uriPhoto.toString());
-        contact.setType(Contact.TYPE_MAIN_CONTACT);
-        contact.save();
-        postProfile(profile, listener);
-    }*/
-
-    public static void uploadUserPhoto(User user, OnSuccessListener<UploadTask.TaskSnapshot> listener, OnFailureListener failureListener) {
-        Uri photoUri = user.getPhotoUri();
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        // Create a storage reference from our app
-        StorageReference storageRef = storage.getReferenceFromUrl(STORAGE_DATABASE);
-        storageRef = storageRef.child("users").child(user.getUid()).child(photoUri.getLastPathSegment());
-        storageRef
-                .putFile(photoUri)
-                .addOnSuccessListener(listener)
-                .addOnFailureListener(failureListener);
+    public static void uploadUserPhoto(Uri photoUri, FirebaseImageStorage.FileListener listener) {
+        FirebaseImageStorage storage = FirebaseImageStorage.getInstance();
+        storage.uploadImage(photoUri, listener);
     }
 
     public void updateUser(User user, DatabaseReference.CompletionListener listener) {
@@ -162,64 +85,6 @@ public class FirebaseLoadProfile extends FirebaseHelper {
 
         getDatabase().getReference().updateChildren(map, listener);
     }
-
-
-    /*private void uploadImage(final Profile profile, final UploadProfileListener listener) {
-
-        //upload imagen to firebase
-        //pot profile nodes
-        final Uri uri = Uri.parse(profile.getPhoto().getUrl());
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        // Create a storage reference from our app
-        StorageReference storageRef = storage.getReferenceFromUrl(STORAGE_DATABASE);
-        storageRef = storageRef.child("profile").child(profile.getUserKey()).child(uri.getLastPathSegment());
-
-        storageRef.putFile(uri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        @SuppressWarnings("VisibleForTests") Uri uriPhoto = taskSnapshot.getDownloadUrl();
-                        Log.d(TAG, "uriPhoto : " + uriPhoto);
-                        if (uriPhoto != null) {
-                            Photo photo = new Photo();
-                            photo.setUrl(uriPhoto.toString());
-                            profile.setPhoto(photo);
-                            saveContact(profile, uriPhoto, listener);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        listener.onError(e.getMessage());
-                    }
-                });
-
-    }.
-
-    private void postProfile(final Profile profile, final UploadProfileListener listener) {
-        Map<String, Object> map = new HashMap<>();
-        map.put(CHILD_USERS + "/" + profile.getUserKey() + "/" + CHILD_PROFILE, profile.toMap());
-        getDatabase().getReference().updateChildren(map, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    listener.onError(databaseError.getMessage());
-                } else {
-                    //SUCESS!
-                    listener.onSucess(profile);
-                }
-            }
-        });
-    }
-
-
-
-    public void verificatedProfile(final String phoneNumber, ValueEventListener listener) {
-        reference.child(phoneNumber).addListenerForSingleValueEvent(listener);
-    }*/
-
 
     public void editProfileName(final Profile profile, final ProfileEditListener listener) {
 
@@ -301,7 +166,7 @@ public class FirebaseLoadProfile extends FirebaseHelper {
                                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                            @SuppressWarnings("VisibleForTests") Uri uriPhoto = taskSnapshot.getDownloadUrl();
+                                            @SuppressWarnings("VisibleForTests") Uri uriPhoto = Uri.EMPTY;
                                             Log.d(TAG, "uriPhoto : " + uriPhoto);
                                             if (uriPhoto != null) {
                                                 Photo photo = new Photo();

@@ -5,15 +5,18 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.consultoraestrategia.messengeracademico.BaseView;
+import com.consultoraestrategia.messengeracademico.base.BaseView;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.domain.usecase.ImageCompression;
+import com.consultoraestrategia.messengeracademico.domain.FirebaseImageStorage;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseLoadProfile;
 import com.consultoraestrategia.messengeracademico.entities.MediaFile;
 import com.consultoraestrategia.messengeracademico.entities.User;
@@ -23,17 +26,13 @@ import com.consultoraestrategia.messengeracademico.loadProfile.event.LoadProfile
 import com.consultoraestrategia.messengeracademico.loadProfile.ui.LoadProfileView;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ResultCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -68,6 +67,11 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
     @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed");
+    }
+
+    @Override
+    public void setExtras(Bundle extras) {
+
     }
 
     @Override
@@ -163,22 +167,22 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
             //Seleccionó alguna imagen
             //Primero subo la imagen, y luego actualizao al usuario
             updatedUser.setPhotoUri(selectedCompressedImageUri);
-            FirebaseLoadProfile.uploadUserPhoto(
-                    updatedUser,
-                    new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Uri photoUri = taskSnapshot.getDownloadUrl();
-                            updateUser(new User(currentUser.getUid(), name, currentUser.getPhoneNumber(), currentUser.getEmail(), photoUri, null));
-                        }
-                    },
-                    new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            showError(R.string.load_profile_error);
-                        }
-                    }
-            );
+            FirebaseLoadProfile.uploadUserPhoto(selectedCompressedImageUri, new FirebaseImageStorage.FileListener() {
+                @Override
+                public void onSuccess(String url) {
+                    updateUser(new User(currentUser.getUid(), name, currentUser.getPhoneNumber(), currentUser.getEmail(), Uri.parse(url), null));
+                }
+
+                @Override
+                public void onFailure(Exception exception) {
+                    showMessage(R.string.load_profile_error);
+                }
+
+                @Override
+                public void onProgress(double progress) {
+
+                }
+            });
         } else {
             //No seleccionó ninguna imagen
             //Actualizo al usuario sin subir la imagen
@@ -287,7 +291,7 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == ResultCodes.OK) {
+            if (resultCode == AppCompatActivity.RESULT_OK) {
                 Log.d(TAG, "uri: " + result.getUri());
                 showUserPhoto(result.getUri());
                 compressImage(result.getUri());
@@ -317,7 +321,7 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
         // Successfully signed in
-        if (resultCode == ResultCodes.OK) {
+        if (resultCode == AppCompatActivity.RESULT_OK) {
             currentUser = FirebaseAuth.getInstance().getCurrentUser();
             Log.d(TAG, "phoneNumber: " + response.getPhoneNumber());
             checkCurrentUser();
@@ -330,12 +334,14 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
                 return;
             }
 
-            if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+            if (response.getError() == null) return;
+
+            if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
                 showErrorSignin(R.string.no_internet_connection);
                 return;
             }
 
-            if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+            if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                 showErrorSignin(R.string.unknown_error);
                 return;
             }
@@ -350,8 +356,8 @@ public class LoadProfilePresenterImpl implements LoadProfilePresenter {
         }
     }
 
-    private void showErrorSignin(@StringRes int error){
-        if (view != null){
+    private void showErrorSignin(@StringRes int error) {
+        if (view != null) {
             view.showErrorSingin(error);
         }
     }

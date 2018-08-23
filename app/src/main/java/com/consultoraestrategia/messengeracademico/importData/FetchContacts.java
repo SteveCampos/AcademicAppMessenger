@@ -76,11 +76,9 @@ public class FetchContacts extends AsyncTask<ContentResolver, Void, ArrayList<Co
             }
 
             //Clear Duplicated
-            Set<Contact> hs = new HashSet<>();
-            hs.addAll(contacts);
+            Set<Contact> hs = new HashSet<>(contacts);
             contacts.clear();
             contacts.addAll(hs);
-
 
             return contacts;
         } catch (Exception ex) {

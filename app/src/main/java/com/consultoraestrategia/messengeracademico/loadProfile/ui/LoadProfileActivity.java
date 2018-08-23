@@ -10,6 +10,7 @@ import android.support.annotation.MainThread;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
@@ -32,6 +33,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import butterknife.BindView;
@@ -70,6 +72,15 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
         return presenter;
+    }
+
+    public static void launchLoadProfileActivity(Context context) {
+        Intent intent = new Intent(context, LoadProfileActivity.class);
+        intent
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
     }
 
     @Override
@@ -189,6 +200,27 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
         progressBar.setVisibility(View.GONE);
     }
 
+    @Override
+    public void showMessage(CharSequence message) {
+
+    }
+
+    @Override
+    public void showImportantMessage(CharSequence message) {
+
+    }
+
+    @Override
+    public void showFinalMessage(CharSequence message) {
+
+    }
+
+    @Override
+    public void showEdittextDialog(String text, int inputType, String title, String hint, int requestCode) {
+
+    }
+
+
     @OnClick(R.id.imgProfile)
     @Override
     public void startSelectImageActivity() {
@@ -214,7 +246,8 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(
-                                Collections.singletonList(new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+                                Collections.singletonList(
+                                        new AuthUI.IdpConfig.PhoneBuilder().build()))
                         .build(),
                 RC_SIGN_IN);
     }
@@ -271,6 +304,11 @@ public class LoadProfileActivity extends AppCompatActivity implements LoadProfil
 
     @Override
     public void setPresenter(LoadProfilePresenterImpl presenter) {
+
+    }
+
+    @Override
+    public void onTextSubmit(String text, int requestCode) {
 
     }
 }

@@ -1,20 +1,17 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
+import com.consultoraestrategia.messengeracademico.base.actionMode.Selectable;
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.firebase.database.Exclude;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
-import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.parceler.Parcel;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,7 +20,7 @@ import java.util.Map;
 
 @Table(database = MessengerAcademicoDatabase.class)
 @Parcel(analyze = {ChatMessage.class})
-public class ChatMessage extends BaseModel {
+public class ChatMessage extends BaseModel implements Selectable {
 
     public static final int STATUS_WRITED = 2000;
     public static final int STATUS_SEND = 2002;
@@ -314,5 +311,22 @@ public class ChatMessage extends BaseModel {
 
     public String getId() {
         return getKeyMessage();
+    }
+
+    private boolean selected;
+
+    @Override
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected;
+    }
+
+    @Override
+    public String getKey() {
+        return keyMessage;
     }
 }

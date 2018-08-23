@@ -3,6 +3,8 @@ package com.consultoraestrategia.messengeracademico.chat.ui;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,23 +19,24 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.NavUtils;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -48,6 +51,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.consultoraestrategia.messengeracademico.MessengerAcademicoApp;
 import com.consultoraestrategia.messengeracademico.R;
+import com.consultoraestrategia.messengeracademico.base.actionMode.BaseActivityActionMode;
 import com.consultoraestrategia.messengeracademico.chat.ChatPresenter;
 import com.consultoraestrategia.messengeracademico.chat.adapters.ChatMessageAdapter;
 import com.consultoraestrategia.messengeracademico.chat.di.ChatComponent;
@@ -74,16 +78,15 @@ import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTouch;
 import io.codetail.animation.ViewAnimationUtils;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -94,7 +97,7 @@ import permissions.dispatcher.RuntimePermissions;
  */
 
 @RuntimePermissions
-public class ChatActivity extends AppCompatActivity implements ChatView, ChatMessageListener, ChatMessageAdapter.OnBottomReachedListener {
+public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, ChatPresenter> implements ChatView, ChatMessageListener, ChatMessageAdapter.OnBottomReachedListener {
 
     private static final String TAG = ChatActivity.class.getSimpleName();
     public static final String EXTRA_RECEPTOR_PHONENUMBER = "EXTRA_RECEPTOR_PHONENUMBER";
@@ -112,9 +115,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     AppBarLayout appbar;
     @BindView(R.id.recycler)
     RecyclerView recycler;
-    /*
-    @BindView(R.id.input_layout_message)
-    TextInputLayout inputLayoutMessage;*/
     @BindView(R.id.layout_bottom)
     CardView layoutBottom;
 
@@ -126,8 +126,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
 
     @Inject
     ChatMessageAdapter adapter;
-    @Inject
-    ChatPresenter presenter;
+    /*@Inject
+    ChatPresenter presenter;*/
 
     Contact contact;
 
@@ -177,16 +177,67 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     Animation slideUp;
     Animation slideDown;
 
+    public static void startChatActivity(Context context, String phonenumberReceptor) {
+        Intent intent = new Intent(context, ChatActivity.class);
+        intent.putExtra(ChatActivity.EXTRA_RECEPTOR_PHONENUMBER, phonenumberReceptor);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected String getTag() {
+        return ChatActivity.class.getSimpleName();
+    }
+
+    @Override
+    public AppCompatActivity getActivity() {
+        return this;
+    }
+
+    @Override
+    protected ChatPresenter getPresenter() {
+        Log.d(TAG, "presenter != null");
+        MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
+        ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this, this);
+        if (adapter == null) {
+            adapter = chatComponent.getAdapter();
+        }
+        return chatComponent.getPresenter();
+    }
+
+    @Override
+    protected ChatView getBaseView() {
+        return this;
+    }
+
+    @Override
+    protected Bundle getExtrasInf() {
+        return getIntent().getExtras();
+    }
+
+    @Override
+    protected void setContentView() {
+        setContentView(R.layout.activity_chat);
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+    }
+
+    @Override
+    protected ViewGroup getRootLayout() {
+        return toolbar;
+    }
+
+    @Override
+    protected ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-        ButterKnife.bind(this);
         setupViews();
-        setupInjection();
         setupRecycler();
-        initPresenter();
         setupAnimations();
     }
 
@@ -196,10 +247,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
     private void setupViews() {
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
         edtMessage.addTextChangedListener(watcher);
-        //emojiButton.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
         emojiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -218,18 +266,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         });
     }
 
-    @OnClick(R.id.recycler)
-    public void onRecyclerClick() {
-        hideRevealView();
-    }
 
-    private void initPresenter() {
-        Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_RECEPTOR_PHONENUMBER)) {
-            presenter.manageIntent(intent);
-        } else {
-            showFatalError("No existe el número.");
-        }
+    @OnTouch(R.id.recycler)
+    public boolean onRecyclerClick(View view, MotionEvent event) {
+        Log.d(TAG, "onRecyclerClick: ");
+        hideRevealView();
+        return false;
     }
 
     @Override
@@ -247,11 +289,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     public void addMoreMessages(List<ChatMessage> messages) {
         Log.d(TAG, "addMoreMessages");
+        if (adapter == null) adapter = getAdapter();
         adapter.addMessages(messages);
     }
 
     @OnClick(R.id.btn_scroll)
-    public void buttonScrollClicked(){
+    public void buttonScrollClicked() {
+        if (adapter == null) adapter = getAdapter();
         adapter.scrollToLastItem();
     }
 
@@ -262,23 +306,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         if (emojiPopup != null && emojiPopup.isShowing()) {
             emojiPopup.dismiss();
         } else {
-            presenter.onBackPressed();
+            super.onBackPressed();
         }
-        //super.onBackPressed();
     }
 
     @OnClick(R.id.layout_profile)
     public void onClickBackPressed() {
-        presenter.onBackPressed();
         super.onBackPressed();
-    }
-
-
-    @Override
-    protected void onStart() {
-        Log.d(TAG, "onStart");
-        presenter.onStart();
-        super.onStart();
     }
 
     @Override
@@ -296,60 +330,58 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-
-        /*
-        if (id == R.id.action_send_image) {
-            presenter.pickImage();
-            return true;
-        }*/
-        if (id == R.id.action_atttach_file) {
-            toggleMenuWithEffect();
-            return true;
-        }
-
-        if (id == android.R.id.home) {
-            presenter.onBackPressed();
-            return true;
+        switch (id) {
+            case R.id.action_view_contact:
+                presenter.onActionViewContactSelected();
+                break;
+            case R.id.action_atttach_file:
+                toggleMenuWithEffect();
+                break;
+            case android.R.id.home:
+                super.onBackPressed();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onResume() {
-        Log.d(TAG, "onResume");
-        presenter.onResume();
-        super.onResume();
+    public void showContactInPhone(String phoneNumber) {
+        if (phoneNumber == null) return;
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+        if (callIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(callIntent);
+        }
     }
 
     @Override
-    protected void onPause() {
-        Log.d(TAG, "onPause");
-        presenter.onPause();
-        super.onPause();
+    public void copyText(String textToCopy) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            ClipData clip = ClipData.newPlainText("label", textToCopy);
+            clipboard.setPrimaryClip(clip);
+        }
+    }
+
+    @Override
+    public void removeMessage(ChatMessage message) {
+        if (adapter == null) adapter = getAdapter();
+        adapter.removeMessage(message);
+    }
+
+    @Override
+    public void showFullScreenImg(String uri) {
+        startFullImageActivity(uri);
     }
 
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
-        presenter.onStop();
         if (emojiPopup != null) {
             emojiPopup.dismiss();
         }
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        presenter.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        return presenter;
     }
 
     @Override
@@ -359,28 +391,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         ChatActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    private void setupInjection() {
-        Log.d(TAG, "setupInjection");
-        presenter = (ChatPresenter) getLastCustomNonConfigurationInstance();
-
-        if (presenter == null) {
-            Log.d(TAG, "presenter != null");
-            MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
-            ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this, this);
-            presenter = chatComponent.getPresenter();
-            presenter.onCreate();
-            adapter = chatComponent.getAdapter();
-        }
-        if (adapter == null) {
-            MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
-            ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this, this);
-            adapter = chatComponent.getAdapter();
-        }
-
-        presenter.attachView(this);
+    private ChatMessageAdapter getAdapter() {
+        MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
+        ChatComponent chatComponent = app.getChatComponent(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()), this, this);
+        return chatComponent.getAdapter();
     }
 
     private void setupRecycler() {
+        if (adapter == null) adapter = getAdapter();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recycler.setLayoutManager(layoutManager);
         recycler.setAdapter(adapter);
@@ -388,28 +406,16 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         adapter.setRecyclerView(recycler);
     }
 
-    private AppCompatActivity getActivity() {
-        return this;
-    }
-
-    @Override
-    public void setPresenter(ChatPresenter presenter) {
-        this.presenter = presenter;
-    }
-
-    @Override
-    public void showProgress() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideProgress() {
-        progressBar.setVisibility(View.GONE);
-    }
-
     @Override
     public void showReceptor(Contact receptor) {
+        String verified = receptor.getInfoVerified();
+        if (!TextUtils.isEmpty(verified)) {
+            txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_verify_white, 0, 0, 0
+            );
+        }
         txtName.setText(receptor.getName());
+
         Glide
                 .with(this)
                 .load(receptor.getPhotoUrl())
@@ -422,6 +428,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     public void addMessages(List<ChatMessage> messages) {
         Log.d(TAG, "addMessages");
         if (messages != null) {
+            if (adapter == null) adapter = getAdapter();
             adapter.addMessageList(messages);
         }
     }
@@ -443,7 +450,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     public void onImageClick(ChatMessage message, View view) {
         Log.d(TAG, "onImageClick uiri: " + message.getMessageUri());
-        startFullImageActivity(message, view);
+        presenter.onImageClick(message);
+        //startFullImageActivity(message, view);
     }
 
     @Override
@@ -464,11 +472,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
     int counter;
+
     @Override
     public void onNewMessageAddedToTheBottom() {
         showButtonToScroll();
         txtCounter.setVisibility(View.VISIBLE);
-        txtCounter.setText(""+ (++counter));
+        txtCounter.setText("" + (++counter));
     }
 
     @Override
@@ -526,6 +535,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
 
     @Override
     public void updateMessage(ChatMessage message) {
+        if (adapter == null) adapter = getAdapter();
         adapter.onMessagedChanged(message);
     }
 
@@ -538,11 +548,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
 
-    private void startFullImageActivity(ChatMessage message, View imageView) {
+    private void startFullImageActivity(String uri) {
         Intent intent = new Intent(ChatActivity.this, FullscreenActivity.class);
-        intent.setData(Uri.parse(message.getMessageUri()));
-        /*ActivityOptionsCompat options = ActivityOptionsCompat.
-                makeSceneTransitionAnimation(this, imageView, ViewCompat.getTransitionName(imageView));*/
+        intent.setData(Uri.parse(uri));
         startActivity(intent);
     }
 
@@ -563,8 +571,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         presenter.sendMessageText(text);
         adapter.scrollToLastItem();
     }
-
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
     @Override
     public void showConnection(Connection connection) {
@@ -615,7 +621,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     }
 
     private void checkPickImagePermissions() {
-        ChatActivityPermissionsDispatcher.pickImageWithCheck(this);
+        ChatActivityPermissionsDispatcher.pickImageWithPermissionCheck(this);
     }
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
@@ -647,6 +653,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
 
     @Override
     public void showError(String error) {
+        if (TextUtils.isEmpty(error)) return;
         Snackbar.make(appbar, error, Snackbar.LENGTH_LONG).show();
     }
 
@@ -677,6 +684,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
 
     @Override
     public void toggleMenuWithEffect() {
+        Log.d(TAG, "toggleMenuWithEffect: ");
         int cx = mRevealView.getRight();
         int cy = mRevealView.getTop();
         hideKeboard();
@@ -686,13 +694,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
     @Override
     public void finishActivity() {
         Log.d(TAG, "finishActivity");
-        navigateToParent();
+        finish();
     }
 
     @Override
     public void showFatalError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
-        presenter.onBackPressed();
+        super.onBackPressed();
     }
 
     @Override
@@ -701,32 +709,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         txtAcademicInformation.setText(data);
     }
 
-    private void navigateToParent() {
-        NavUtils.navigateUpFromSameTask(this);
-        /*
-        Intent upIntent = NavUtils.getParentActivityIntent(this);
-        if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
-            // This activity is NOT part of this app's task, so create a new task
-            // when navigating up, with a synthesized back stack.
-            TaskStackBuilder.create(this)
-                    // Add all of this activity's parents to the back stack
-                    .addNextIntentWithParentStack(upIntent)
-                    // Navigate up to the closest parent
-                    .startActivities();
-        } else {
-            // This activity is part of this app's task, so simply
-            // navigate up to the logical parent activity.
-            NavUtils.navigateUpTo(this, upIntent);
-        }*/
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
         presenter.onActivityResult(requestCode, resultCode, data);
     }
 
-    /*Editado OnbackPressed y entrar Profile*/
     @OnClick(R.id.linear_StartProfile)
     public void onContactReceptorSelected() {
         Intent intent = new Intent(this, ProfileActivity.class);
@@ -748,32 +736,22 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
                 checkPickImagePermissions();
                 break;
             case R.id.video_img_btn:
-                showNotImplementedView();
+                presenter.attachVideoClicked();
                 break;
             case R.id.audio_img_btn:
-                showNotImplementedView();
+                presenter.attachAudioClicked();
                 break;
             case R.id.location_img_btn:
-                showNotImplementedView();
+                presenter.attachLocationClicked();
                 break;
             case R.id.contact_img_btn:
-                showNotImplementedView();
+                presenter.attachContactClicked();
                 break;
             case R.id.img_camera:
                 checkPickImagePermissions();
                 break;
         }
     }
-
-
-    private void showNotImplementedView() {
-        //showSnackbar("No implementado aún");
-    }
-
-    private void showSnackbar(String message) {
-        Snackbar.make(toolbar, message, Snackbar.LENGTH_LONG).show();
-    }
-
 
     private void hideRevealView() {
         if (mRevealView.getVisibility() == View.VISIBLE) {
@@ -891,14 +869,14 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         hideButtonToScroll();
     }
 
-    private void hideButtonToScroll(){
+    private void hideButtonToScroll() {
         if (layoutCroll.getVisibility() == View.VISIBLE) {
             layoutCroll.setVisibility(View.INVISIBLE);
             layoutCroll.startAnimation(slideDown);
         }
     }
 
-    private void showButtonToScroll(){
+    private void showButtonToScroll() {
         if (layoutCroll.getVisibility() == View.INVISIBLE) {
             layoutCroll.setVisibility(View.VISIBLE);
             layoutCroll.startAnimation(slideUp);
@@ -910,4 +888,18 @@ public class ChatActivity extends AppCompatActivity implements ChatView, ChatMes
         Log.d(TAG, "onNotBottom");
         showButtonToScroll();
     }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                presenter.actionDelete();
+                break;
+            default:
+                presenter.actionCopy();
+                break;
+        }
+        return true;
+    }
+
 }

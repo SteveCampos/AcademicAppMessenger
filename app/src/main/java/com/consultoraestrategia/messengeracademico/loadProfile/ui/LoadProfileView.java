@@ -3,10 +3,8 @@ package com.consultoraestrategia.messengeracademico.loadProfile.ui;
 import android.net.Uri;
 import android.support.annotation.StringRes;
 
-import com.consultoraestrategia.messengeracademico.BaseView;
-import com.consultoraestrategia.messengeracademico.entities.Profile;
+import com.consultoraestrategia.messengeracademico.base.BaseView;
 import com.consultoraestrategia.messengeracademico.loadProfile.LoadProfilePresenterImpl;
-import com.google.firebase.auth.FirebaseUser;
 
 /**
  * Created by kike on 24/02/2017.

@@ -1,5 +1,7 @@
 package com.consultoraestrategia.messengeracademico.main.di;
 
+import android.support.annotation.Nullable;
+
 import com.consultoraestrategia.messengeracademico.MessengerAcademicoAppModule;
 import com.consultoraestrategia.messengeracademico.main.MainPresenter;
 import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapter;

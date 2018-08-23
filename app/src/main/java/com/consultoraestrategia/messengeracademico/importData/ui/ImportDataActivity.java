@@ -11,14 +11,19 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.consultoraestrategia.messengeracademico.UseCaseHandler;
+import com.consultoraestrategia.messengeracademico.UseCaseThreadPoolScheduler;
+import com.consultoraestrategia.messengeracademico.base.BaseActivity;
 import com.consultoraestrategia.messengeracademico.importData.DatosGeneralesAsyntask;
 import com.consultoraestrategia.messengeracademico.importData.ImportDataPresenter;
+import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.main.ui.MainActivity;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.importData.ImportDataPresenterImpl;
@@ -33,7 +38,8 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class ImportDataActivity extends AppCompatActivity implements ImportDataView {
+public class ImportDataActivity extends BaseActivity<ImportDataView, ImportDataPresenter> implements ImportDataView {
+
 
 
     public static final String PREF_STEP_IMPORT_DATA = "PREF_STEP_IMPORT_DATA";
@@ -61,7 +67,7 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    private ImportDataPresenter presenter;
+    //private ImportDataPresenter presenter;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -70,6 +76,7 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
         ImportDataActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
+    /*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -91,8 +98,9 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
             presenter.onCreate();
         }
         presenter.attachView(this);
-    }
+    }*/
 
+    /*
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume");
@@ -136,28 +144,65 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
         if (presenter != null) {
             presenter.onDestroy();
         }
-    }
+    }*/
 
 
     @OnClick(R.id.btnGo)
     public void onClick() {
-        ImportDataActivityPermissionsDispatcher.importDataWithCheck(this);
+        ImportDataActivityPermissionsDispatcher.importDataWithPermissionCheck(this);
     }
 
 
     @NeedsPermission({Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS})
     public void importData() {
         presenter.handleClick();
-        //new DatosGeneralesAsyntask().execute(getPhoneNumberFromPreferences());
     }
 
-    private String getPhoneNumberFromPreferences() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return preferences.getString(VerificationActivity.PREF_PHONENUMBER, null);
+
+    @Override
+    protected String getTag() {
+        return TAG;
     }
 
-    private AppCompatActivity getActivity() {
+    @Override
+    public AppCompatActivity getActivity() {
         return this;
+    }
+
+    @Override
+    protected ImportDataPresenter getPresenter() {
+        return new ImportDataPresenterImpl(
+                new UseCaseHandler(new UseCaseThreadPoolScheduler()),
+                getResources(),
+                GreenRobotEventBus.getInstance(),
+                getActivity()
+        );
+    }
+
+    @Override
+    protected ImportDataView getBaseView() {
+        return this;
+    }
+
+    @Override
+    protected Bundle getExtrasInf() {
+        return getIntent().getExtras();
+    }
+
+    @Override
+    protected void setContentView() {
+        setContentView(R.layout.activity_import_data);
+        ButterKnife.bind(this);
+    }
+
+    @Override
+    protected ViewGroup getRootLayout() {
+        return activityImportContacts;
+    }
+
+    @Override
+    protected ProgressBar getProgressBar() {
+        return progressBar;
     }
 
     @Override
@@ -218,7 +263,7 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
 
     @Override
     public void onContactsImported(final int count) {
-        final String message = String.format(getString(R.string.importdata_message_contacts_imported));
+        final String message = String.format(getString(R.string.importdata_message_contacts_imported), count);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -276,8 +321,4 @@ public class ImportDataActivity extends AppCompatActivity implements ImportDataV
         startActivity(intent);
     }
 
-    @Override
-    public void setPresenter(ImportDataPresenterImpl presenter) {
-
-    }
 }

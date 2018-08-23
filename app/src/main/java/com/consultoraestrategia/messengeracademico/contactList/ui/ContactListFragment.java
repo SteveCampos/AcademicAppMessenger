@@ -157,11 +157,19 @@ public class ContactListFragment extends Fragment implements ContactListView, Co
     }
 
     @Override
+    public void reloadContacts() {
+        Log.d(TAG, "reloadContacts: ");
+        if (presenter != null) {
+            presenter.getContacts();
+        }
+    }
+
+    @Override
     public void onImageClickdListener(Contact contact) {
         Bundle args = new Bundle();
         args.putString("imageUri", contact.getPhotoUrl());
         args.putString("nameContact", contact.getName());
-        args.putString("phoneNumber",contact.getPhoneNumber());
+        args.putString("phoneNumber", contact.getPhoneNumber());
         DialogProfile newFragment = new DialogProfile();
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "TAG");

@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.data.ChatRepository;

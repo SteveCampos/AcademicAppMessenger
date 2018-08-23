@@ -1,12 +1,24 @@
 package com.consultoraestrategia.messengeracademico.domain;
 
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
+import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.entities.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -41,6 +53,29 @@ public class FirebaseUser extends FirebaseHelper {
             INSTANCE = new FirebaseUser();
         }
         return INSTANCE;
+    }
+
+    public void getUser(String uid, final CompletionListener<Contact> listener) {
+        Log.d(TAG, "getUser: " + uid);
+        getDatabase().getReference()
+                .child(CHILD_USERS)
+                .child(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onDataChange: ");
+                        if (dataSnapshot.exists()) {
+                            Contact contact = dataSnapshot.getValue(Contact.class);
+                            listener.onSuccess(contact);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.d(TAG, "getUser onCancelled: ");
+                        listener.onFailure(new Exception(databaseError.getMessage()));
+                    }
+                });
     }
 
 
@@ -107,12 +142,60 @@ public class FirebaseUser extends FirebaseHelper {
                 .addListenerForSingleValueEvent(listener);
     }
 
-    public void removeListenerSingleMessage(ChatMessage message, ValueEventListener listener){
+    public void removeListenerSingleMessage(ChatMessage message, ValueEventListener listener) {
         Log.d(TAG, "listenLastMessage");
         getDatabase().getReference()
                 .child(CHILD_USERS_MESSAGES)
                 .child(mainUser.getUid())
                 .child(message.getKeyMessage())
                 .removeEventListener(listener);
+    }
+
+    public interface UpdateListener {
+        void onSuccess();
+
+        void onFailure(Exception e);
+    }
+
+    public void updateUser(User user, final UpdateListener listener) {
+        if (user == null || TextUtils.isEmpty(user.getUid())) {
+            listener.onFailure(new Exception("user null or uid empty!!!"));
+            return;
+        }
+        Map<String, Object> map = new HashMap<>();
+        String uid = user.getUid();
+        String displayName = user.getDisplayName();
+        String email = user.getEmail();
+        String phoneNumber = user.getPhoneNumber();
+        Uri photoUri = user.getPhotoUri();
+
+        map.put("/users/" + uid + "/uid", uid);
+
+        if (!TextUtils.isEmpty(displayName)) {
+            map.put("/users/" + uid + "/displayName", displayName);
+        }
+        if (!TextUtils.isEmpty(email)) {
+            map.put("/users/" + uid + "/email", email);
+        }
+        if (photoUri != null && !Uri.EMPTY.equals(photoUri)) {
+            map.put("/users/" + uid + "/photoUrl", photoUri.toString());
+        }
+
+        if (!TextUtils.isEmpty(phoneNumber)) {
+            map.put("/users/" + uid + "/phoneNumber", phoneNumber);
+            map.put("/phoneNumbers/" + phoneNumber, uid);
+        }
+
+        getDatabase().getReference().updateChildren(map, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                Log.d(TAG, "onComplete: ");
+                if (databaseError != null) {
+                    listener.onFailure(new Exception(databaseError.getMessage()));
+                    return;
+                }
+                listener.onSuccess();
+            }
+        });
     }
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Messenger Académico</string>
-    <string name="action_settings">Settings</string>
-    <string name="action_import">Importar Contactos</string>
+    <string name="action_settings">Mi Perfil</string>
+    <string name="action_refresh_contacts">Actualizar Contactos</string>
     <string name="chat_send_image">Enviar Imagen</string>
 
     <string name="verification.button.next">Sig.</string>
@@ -23,7 +23,7 @@
 
 
     <string name="loadprofile.title">Info. de perfil</string>
-    <string name="loadprofile.subtitle">Por favor, introduce tu nombre y una foto (opcional)</string>
+    <string name="loadprofile.subtitle">Por favor, introduce tu name y una foto (opcional)</string>
     <string name="importdata.title">¡Bienvenido %s!</string>
     <string name="importdata.subtitle">Institución: %s</string>
     <string name="importdata.message.main">Messenger Académico permite a alumnos, profesores y padres comunicarse.</string>
@@ -46,8 +46,6 @@
     <string name="fragment_chatlist_title">Chats</string>
     <string name="fragment_contacts_title">Contactos</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="contactlist.message.status.default">Hola, estoy usando Messenger Académico.</string>
     <string name="global_notice_online">En línea</string>
     <string name="chat_info_connection_lastseen">últ. vez hoy a las %s</string>
@@ -101,7 +99,7 @@
     <string name="chat.message.academic.information">Rol: %1$s, Nivel %2$s \nAño: %3$s, Curso: %4$s, Sección %5$s.</string>
     <string name="chat.message.rol.information">Rol: %1$s.</string>
 
-    <string name="profile.notice">"Esto no es un nombre de usuario ni un pin. \n""Este nombre será visible para tus contactos de Messenger Academico."</string>
+    <string name="profile.notice">"Esto no es un name de usuario ni un pin. \n""Este name será visible para tus contactos de Messenger Academico."</string>
     <string name="profile.title">Perfil</string>
 
     <!--Google Play Services -->
@@ -121,6 +119,39 @@
     <string name="officialmessage_state_waiting">Esperando Confirmación</string>
     <string name="officialmessage_state_confirm">Confirmado</string>
     <string name="officialmessage_state_deny">Denegado</string>
+    <string name="activity_importdata_error">Error Importando Contactos</string>
+    <string name="activity_importdata_success">Contactos Actualizados Correctamente</string>
+    <string name="error_uploading_image">Error Subiendo Imagen</string>
+    <string name="error_sending_message">Error enviando el mensaje</string>
+    <string name="dialog_title_importante_message">Mensaje Importante</string>
+    <string name="global_source_mobile">MÓVIL</string>
+    <string name="global_user_not_verificated">Usuario Regular</string>
+    <string name="global_rol_verified">(%s)</string>
+    <string name="global_hint_default">Introducir texto aquí</string>
+    <string name="global_edit_name">Escribe tu name</string>
+    <string name="error_updating_displayname">Error actualizando name de usuario</string>
+    <string name="global_message_success">Listo</string>
+    <string name="global_message_error">Error</string>
+    <string name="global_ok">OK</string>
+    <string name="global_cancel">Cancelar</string>
+    <string name="global_message_delete">Eliminar</string>
+    <string name="global_message_copy">Copiar</string>
+    <string name="activity_chat_messages_copied">%d mensaje(s) copiado(s)</string>
+    <string name="error_removing_message">Error eliminando mensaje</string>
+    <string name="activity_chat_messages_deleted">Mensajes eliminados</string>
+    <string name="error_removing_chat">Error eliminando chat</string>
+    <string name="global_user_info">Info y número de teléfono</string>
+    <string name="global_error_not_implemented">No implementado aún</string>
+    <string name="title_activity_group">Integrantes</string>
+    <string name="global_mssg_admin">Admin. del grupo</string>
+    <string name="title_activity_import_group">Importar Grupos de CRME</string>
+    <string name="action_import_crme_gruops">Importar Grupos del CRMEducaivo</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_grouplist_title">Grupos</string>
+    <string name="group_mssg_count_members">%d Integrantes</string>
+    <string name="global_mssg_refresh">Actualizar</string>
 
 
 </resources>

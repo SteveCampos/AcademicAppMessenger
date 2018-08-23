@@ -8,7 +8,7 @@
     <!--android:title="Compartir" />-->
 
     <item
-        android:id="@+id/menu_editar"
+        android:id="@+id/action_editar"
         android:title="@string/menu_options_profile_edit" />
 
 </menu>

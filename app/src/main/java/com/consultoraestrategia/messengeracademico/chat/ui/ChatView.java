@@ -1,6 +1,8 @@
 package com.consultoraestrategia.messengeracademico.chat.ui;
 
-import com.consultoraestrategia.messengeracademico.BaseView;
+import com.consultoraestrategia.messengeracademico.base.BaseView;
+import com.consultoraestrategia.messengeracademico.base.actionMode.BaseActionModeView;
+import com.consultoraestrategia.messengeracademico.base.actionMode.SelectMode;
 import com.consultoraestrategia.messengeracademico.chat.ChatPresenter;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
@@ -12,12 +14,7 @@ import java.util.List;
  * Created by @stevecampos on 9/03/2017.
  */
 
-public interface ChatView extends BaseView<ChatPresenter> {
-
-
-    void showProgress();
-
-    void hideProgress();
+public interface ChatView extends BaseActionModeView<ChatPresenter, ChatMessage> {
 
     void showReceptor(Contact receptor);
 
@@ -62,4 +59,12 @@ public interface ChatView extends BaseView<ChatPresenter> {
     void showButtomToScroll(int count);
 
     void addMoreMessages(List<ChatMessage> messages);
+
+    void showContactInPhone(String phoneNumber);
+
+    void copyText(String textToCopy);
+
+    void removeMessage(ChatMessage message);
+
+    void showFullScreenImg(String messageUri);
 }

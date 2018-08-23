@@ -1,9 +1,14 @@
 package com.consultoraestrategia.messengeracademico.importData;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.os.Bundle;
 import android.util.Log;
 
-import com.consultoraestrategia.messengeracademico.BaseView;
+import com.consultoraestrategia.messengeracademico.UseCaseHandler;
+import com.consultoraestrategia.messengeracademico.base.BasePresenter;
+import com.consultoraestrategia.messengeracademico.base.BasePresenterImpl;
+import com.consultoraestrategia.messengeracademico.base.BaseView;
 import com.consultoraestrategia.messengeracademico.importData.events.ImportDataEvent;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataView;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
@@ -17,27 +22,38 @@ import org.greenrobot.eventbus.Subscribe;
  * Created by @stevecampos on 24/02/2017.
  */
 
-public class ImportDataPresenterImpl implements ImportDataPresenter {
+public class ImportDataPresenterImpl extends BasePresenterImpl<ImportDataView> implements ImportDataPresenter {
     private static final String TAG = ImportDataPresenterImpl.class.getSimpleName();
-    private ImportDataView view;
     private ImportDataInteractor interactor;
-    private EventBus eventBus;
     private FirebaseUser mainUser;
 
     private boolean importFinished = false;
 
-    public ImportDataPresenterImpl(Context context) {
+
+    public ImportDataPresenterImpl(UseCaseHandler handler, Resources res, EventBus eventBus, Context context) {
+        super(handler, res, eventBus);
         this.interactor = new ImportDataInteractorImpl(context);
-        this.eventBus = GreenRobotEventBus.getInstance();
         this.mainUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
+    /*public ImportDataPresenterImpl(Context context) {
+        this.interactor = new ImportDataInteractorImpl(context);
+        this.eventBus = GreenRobotEventBus.getInstance();
+        this.mainUser = FirebaseAuth.getInstance().getCurrentUser();
+    }*/
+
+
     @Override
-    public void attachView(BaseView view) {
-        Log.d(TAG, "onCreate");
-        this.view = (ImportDataView) view;
+    protected String getTag() {
+        return TAG;
     }
 
+    @Override
+    protected BasePresenter<ImportDataView> getPresenterImpl() {
+        return this;
+    }
+
+    /*
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
@@ -75,6 +91,12 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
     @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed");
+    }*/
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showMainUser();
     }
 
     private void showMainUser() {
@@ -101,6 +123,7 @@ public class ImportDataPresenterImpl implements ImportDataPresenter {
     @Subscribe
     @Override
     public void onEventMainThread(ImportDataEvent event) {
+        Log.d(TAG, "onEventMainThread: ");
         switch (event.getType()) {
             case ImportDataEvent.OnContactImported:
                 onContactImported();

@@ -1,5 +1,7 @@
 package com.consultoraestrategia.messengeracademico.chat.domain.usecase;
 
+import android.text.TextUtils;
+
 import com.consultoraestrategia.messengeracademico.UseCase;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseChat;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
@@ -22,7 +24,11 @@ public class GenerateMessageKey extends UseCase<GenerateMessageKey.RequestValues
         Contact receptor = requestValues.getReceptor();
 
         String keyMessage = firebaseChat.getKeyMessage(emisor, receptor);
-        getUseCaseCallback().onSuccess(new ResponseValue(keyMessage));
+        if (!TextUtils.isEmpty(keyMessage)) {
+            getUseCaseCallback().onSuccess(new ResponseValue(keyMessage));
+        } else {
+            getUseCaseCallback().onError();
+        }
     }
 
     public static final class ResponseValue implements UseCase.ResponseValue {

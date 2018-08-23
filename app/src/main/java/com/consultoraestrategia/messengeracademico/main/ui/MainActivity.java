@@ -1,47 +1,57 @@
 package com.consultoraestrategia.messengeracademico.main.ui;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.consultoraestrategia.messengeracademico.MessengerAcademicoApp;
 import com.consultoraestrategia.messengeracademico.R;
+import com.consultoraestrategia.messengeracademico.base.actionMode.BaseActivityActionMode;
 import com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity;
+import com.consultoraestrategia.messengeracademico.chatList.ui.ChatListFragment;
+import com.consultoraestrategia.messengeracademico.contactList.ui.ContactListFragment;
+import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.entities.NotificationInbox;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
+import com.consultoraestrategia.messengeracademico.importGroups.ImportGroupActivity;
 import com.consultoraestrategia.messengeracademico.loadProfile.ui.LoadProfileActivity;
 import com.consultoraestrategia.messengeracademico.main.MainPresenter;
-import com.consultoraestrategia.messengeracademico.main.MainPresenterImpl;
 import com.consultoraestrategia.messengeracademico.main.adapters.MyFragmentAdapter;
 import com.consultoraestrategia.messengeracademico.main.di.MainComponent;
-import com.consultoraestrategia.messengeracademico.profileEditImage.ui.ProfileEditImageActivity;
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingPresenter;
 import com.consultoraestrategia.messengeracademico.notification.FirebaseMessagingView;
 import com.consultoraestrategia.messengeracademico.notification.di.FirebaseMessagingComponent;
-//import com.consultoraestrategia.messengeracademico.prueba.TestActivity;
+import com.consultoraestrategia.messengeracademico.profileEditImage.ui.ProfileEditImageActivity;
+import com.consultoraestrategia.messengeracademico.utils.JobServiceUtils;
 import com.consultoraestrategia.messengeracademico.verification.ui.VerificationActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
@@ -59,12 +69,12 @@ import butterknife.ButterKnife;
 import static com.consultoraestrategia.messengeracademico.chat.ui.ChatActivity.EXTRA_RECEPTOR_PHONENUMBER;
 import static com.consultoraestrategia.messengeracademico.notification.MyFirebaseMessagingService.MY_NOTIFICATION_ID;
 
-public class MainActivity extends AppCompatActivity implements MainView, FirebaseMessagingView {
+
+public class MainActivity extends BaseActivityActionMode<Chat, MainView, MainPresenter> implements MainView, FirebaseMessagingView {
     public static final String PREF_STEP = "PREF_STEP";
     public static final String PREF_STEP_COMPLETED = "PREF_STEP_COMPLETED";
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    MainPresenter presenter;
     MyFragmentAdapter fragmentAdapter;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -74,20 +84,71 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
     AppBarLayout appbar;
     @BindView(R.id.viewpager)
     ViewPager viewpager;
+    @BindView(R.id.toolbar_progress_bar)
+    ProgressBar toolbarProgressBar;
 
     private int currentItem = 0;
 
     private static final String USER_TOPIC = "user_";
     private static final String PREF_USERKEY = "PREF_USERKEY";
 
+
+    //BEGIN OVERRIDE PROTECTED METHODS FROM ABSTRACT BASE CLASS
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
+    protected String getTag() {
+        return MainActivity.class.getSimpleName();
+    }
+
+    public AppCompatActivity getActivity() {
+        return this;
+    }
+
+    @Override
+    protected MainPresenter getPresenter() {
+        MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
+        MainComponent mainComponent = app.getMainComponent(
+                getActivity(),
+                getSupportFragmentManager(),
+                PreferenceManager.getDefaultSharedPreferences(getActivity())
+        );
+        if (fragmentAdapter == null) {
+            mainComponent.getAdapter();
+        }
+        return mainComponent.getPresenter();
+    }
+
+    @Override
+    protected MainView getBaseView() {
+        return this;
+    }
+
+    @Override
+    protected Bundle getExtrasInf() {
+        return getIntent().getExtras();
+    }
+
+    @Override
+    protected void setContentView() {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        getSharedPreferences();
+    }
+
+    @Override
+    protected ViewGroup getRootLayout() {
+        return toolbar;
+    }
+
+    @Override
+    protected ProgressBar getProgressBar() {
+        return null;
+    }
+
+    //END OVERRIDES FROM ABSTRACT
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         boolean isStepsCompleted = isProcessCompleted();
         if (!isStepsCompleted) {
             forwardToStep();
@@ -97,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-            setupInjection();
+            setupNotificationInjection();
             setupViewPager();
         } else {
             startLoadProfile();
@@ -109,36 +170,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
     }
 
 
-    @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        return presenter;
-    }
-
-
     private FirebaseMessagingPresenter notificationPresenter;
-
-    private void setupInjection() {
-        Log.d(TAG, "setupInjection");
-        presenter = (MainPresenter) getLastCustomNonConfigurationInstance();
-        if (presenter == null) {
-            Log.d(TAG, "presenter == null, setup injection...");
-            MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
-            MainComponent mainComponent = app.getMainComponent(getActivity(), getSupportFragmentManager(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
-            presenter = mainComponent.getPresenter();
-            fragmentAdapter = mainComponent.getAdapter();
-        }
-
-        if (fragmentAdapter == null) {
-            Log.d(TAG, "adapter == == null, setup injection...");
-            MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
-            MainComponent mainComponent = app.getMainComponent(getActivity(), getSupportFragmentManager(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
-            fragmentAdapter = mainComponent.getAdapter();
-        }
-
-        presenter.attachView(this);
-        presenter.onCreate();
-        setupNotificationInjection();
-    }
 
     private void setupNotificationInjection() {
         MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
@@ -149,65 +181,25 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         notificationPresenter = component.getPresenter();
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d(TAG, "onBackPressed");
-        if (presenter != null) {
-            presenter.onBackPressed();
-        }
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onResume() {
-        Log.d(TAG, "onResume");
-        if (presenter != null) {
-            presenter.onResume();
-        }
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d(TAG, "onPause");
-        if (presenter != null) {
-            presenter.onPause();
-        }
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d(TAG, "onStop");
-        if (presenter != null) {
-            presenter.onStop();
-        }
-        super.onStop();
-    }
-
-    @Override
-    protected void onStart() {
-        if (presenter != null) {
-            presenter.onStart();
-        }
-        super.onStart();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        if (presenter != null) {
-            presenter.onDestroy();
-        }
-        super.onDestroy();
-    }
-
     private void setupViewPager() {
         Log.d(TAG, "setupViewPager");
+        if (fragmentAdapter == null) {
+            fragmentAdapter = getFragmentAdapter();
+        }
         viewpager.setOffscreenPageLimit(2);
         viewpager.setAdapter(fragmentAdapter);
         viewpager.setCurrentItem(currentItem);
         tabs.setupWithViewPager(viewpager);
+    }
+
+    private MyFragmentAdapter getFragmentAdapter() {
+        MessengerAcademicoApp app = (MessengerAcademicoApp) getApplication();
+        MainComponent mainComponent = app.getMainComponent(
+                getActivity(),
+                getSupportFragmentManager(),
+                PreferenceManager.getDefaultSharedPreferences(getActivity())
+        );
+        return mainComponent.getAdapter();
     }
 
     public boolean isProcessCompleted() {
@@ -222,10 +214,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         Class stepClass = null;
         boolean completed = false;
         switch (step) {
-            /*
-            case VerificationActivity.PREF_STEP_VERIFICATION:
-                stepClass = VerificationActivity.class;
-                break;*/
             case LoadProfileActivity.PREF_STEP_LOAD_PROFILE:
                 stepClass = LoadProfileActivity.class;
                 break;
@@ -275,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
             default:
                 break;
             case R.id.action_import:
-                startActivity(new Intent(this, ImportDataActivity.class));
+                presenter.onActionImportClicked();
                 break;
             case R.id.action_profile:
                 startActivity(new Intent(this, ProfileEditImageActivity.class));
@@ -283,9 +271,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
             case R.id.action_logout:
                 logout();
                 break;
-            /*case R.id.action_test:
-                startActivity(new Intent(this, TestActivity.class));
-                break;*/
+            case R.id.action_import_crme_gruops:
+                ImportGroupActivity.launch(this);
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -302,10 +290,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
                 });
     }
 
-    public AppCompatActivity getActivity() {
-        return this;
-    }
-
     @Override
     public void startChat(Contact contact) {
         Log.d(TAG, "startChat");
@@ -318,35 +302,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
     @Override
     public void fireNotification(ChatMessage message) {
         Log.d(TAG, "fireNotification");
-        /*try {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-            r.play();
-        } catch (Exception ex) {
-            Log.e(TAG, "ex: " + ex);
-            //e.printStackTrace();
-        }*/
-
         if (notificationPresenter != null) {
             notificationPresenter.onMessageReceived(message);
         }
-    }
-
-
-    @Override
-    public void setPresenter(MainPresenterImpl presenter) {
-
-    }
-
-    String phoneNumber;
-
-    private void getSharedPreferences() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        phoneNumber = settings.getString(MainActivity.PREF_STEP, "");
-
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        phoneNumber = sharedPref.getString(VerificationActivity.PREF_PHONENUMBER, "+51993061806");
-        Log.d(TAG, " phoneNumber : " + phoneNumber);
     }
 
     @Override
@@ -365,6 +323,67 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         return false;
     }
 
+    @Override
+    public void startImportDataJobService() {
+        JobServiceUtils.scheduleImportDataJobService(this);
+    }
+
+    @Override
+    public void showToolbarProgress() {
+        toolbarProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideToolbarProgress() {
+        toolbarProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void reloadContacts() {
+        ContactListFragment contactListFragment = getContactListFragment();
+        if (contactListFragment != null) {
+            contactListFragment.reloadContacts();
+        }
+    }
+
+    public ChatListFragment getChatListFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment :
+                fragments) {
+            if (fragment instanceof ChatListFragment) {
+                return (ChatListFragment) fragment;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void updateChat(Chat chat) {
+        ChatListFragment chatListFragment = getChatListFragment();
+        if (chatListFragment != null) {
+            chatListFragment.updateChat(chat);
+        }
+    }
+
+    @Override
+    public void removeChat(Chat chat) {
+        ChatListFragment chatListFragment = getChatListFragment();
+        if (chatListFragment != null) {
+            chatListFragment.removeChat(chat);
+        }
+    }
+
+    public ContactListFragment getContactListFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment f :
+                fragments) {
+            if (f instanceof ContactListFragment) {
+                return (ContactListFragment) f;
+            }
+        }
+        return null;
+    }
+
     private void inflateDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.google_play_services_title));
@@ -374,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
                 // User clicked OK button
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.marker_google_services))));
-                } catch (android.content.ActivityNotFoundException anfe) {
+                } catch (ActivityNotFoundException anfe) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.playstore_google_services))));
                 }
                 dialog.dismiss();
@@ -391,6 +410,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         alert11.setCancelable(false);
         alert11.show();
     }
+
     @Override
     public void createNotification(NotificationInbox notification) {
         Log.d(TAG, "createNotification");
@@ -452,5 +472,20 @@ public class MainActivity extends AppCompatActivity implements MainView, Firebas
         builder.setStyle(inboxStyle);
 
         NotificationManagerCompat.from(this).notify(MY_NOTIFICATION_ID, builder.build());
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                presenter.onActionDeleteClicked();
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public void onChatProfileClick(Contact contact) {
+
     }
 }

@@ -1,12 +1,10 @@
 package com.consultoraestrategia.messengeracademico.chatList;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.chatList.event.ChatListEvent;
 import com.consultoraestrategia.messengeracademico.chatList.ui.ChatListView;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
-import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 
@@ -61,18 +59,6 @@ public class ChatListPresenterImpl implements ChatListPresenter {
         Log.d(TAG, "onResume");
     }
 
-    /*
-    @Override
-    public void getPhoneNumber(SharedPreferences preferences) {
-        interactor.getPhoneNumber(preferences);
-    }
-
-    @Override
-    public void getContact(String phoneNumber) {
-        Log.d(TAG, "getContact");
-        interactor.getContact(phoneNumber);
-    }*/
-
     @Override
     public void getChats() {
         interactor.getChats();
@@ -99,51 +85,30 @@ public class ChatListPresenterImpl implements ChatListPresenter {
         }
     }
 
-    /*
-    @Override
-    public void onPhoneNumberRetreived(String phoneNumber) {
-        Log.d(TAG, "onPhoneNumberRetreived");
-        if (view != null) {
-            view.setPhoneNumber(phoneNumber);
-        }
-    }
-
-    @Override
-    public void onContactRetreived(Contact contact) {
-        if (view != null) {
-            view.setContact(contact);
-        }
-    }*/
-
-    @Override
     public void onChatsRetreived(List<Chat> chats) {
         if (view != null) {
-            view.onChatsChanged(chats);
+            view.updateChatList(chats);
         }
     }
 
-    @Override
     public void onChatAdded(Chat chat) {
         if (view != null) {
-            view.onChatAdded(chat);
+            view.addChat(chat);
         }
     }
 
-    @Override
     public void onChatChanged(Chat chat) {
         if (view != null) {
-            view.onChatChanged(chat);
+            view.updateChatAndUp(chat);
         }
     }
 
-    @Override
     public void onChatDeleted(Chat chat) {
         if (view != null) {
-            view.onChatRemoved(chat);
+            view.removeChat(chat);
         }
     }
 
-    @Override
     public void onChatClicked(Chat chat) {
         Log.d(TAG, "onChatClicked");
         interactor.onChatClicked(chat);

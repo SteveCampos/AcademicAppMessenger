@@ -9,5 +9,5 @@ import com.raizlabs.android.dbflow.annotation.Database;
 @Database(name = MessengerAcademicoDatabase.NAME, version = MessengerAcademicoDatabase.VERSION)
 public class MessengerAcademicoDatabase {
     public static final String NAME = "MessengerAcademicoDatabase"; // we will add the .db extension
-    public static final int VERSION = 14;
+    public static final int VERSION = 1;
 }

@@ -83,5 +83,4 @@ public class MessengerAcademicoApp extends Application {
                 .messengerAcademicoAppModule(new MessengerAcademicoAppModule(context, preferences))
                 .build();
     }
-
 }

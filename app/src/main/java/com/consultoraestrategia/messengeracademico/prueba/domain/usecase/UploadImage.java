@@ -36,30 +36,23 @@ public class UploadImage extends UseCase<UploadImage.RequestValues, UploadImage.
             firebaseImageStorage.
                     uploadImage(
                             Uri.parse(message.getMessageUri()),
-                            new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            new FirebaseImageStorage.FileListener() {
                                 @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    Log.d(TAG, "onSuccess: " + taskSnapshot);
-                                    // When the image has successfully uploaded, we get its download URL
-                                    final Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                                    fireSucess(downloadUrl);
+                                public void onSuccess(String url) {
+                                    fireSucess(Uri.parse(url));
                                 }
-                            },
-                            new OnProgressListener<UploadTask.TaskSnapshot>() {
+
                                 @Override
-                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                                    Log.d(TAG, "onProgress: " + taskSnapshot);
-                                    double percent = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                                    fireProgress(percent);
+                                public void onFailure(Exception exception) {
+                                    fireFailure(exception);
                                 }
-                            },
-                            new OnFailureListener() {
+
                                 @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d(TAG, "onFailure: " + e);
-                                    fireFailure(e);
+                                public void onProgress(double progress) {
+                                    fireProgress(progress);
                                 }
-                            });
+                            }
+                    );
         }else{
             fireFailure(new Exception("message != null && message.getMessageUri() != null && message.getKeyMessage() != null are false!!!"));
         }

@@ -3,16 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity">
-    <!--<item-->
-        <!--android:id="@+id/menu_compartir"-->
-        <!--android:title="Compartir" />-->
+    <!--<item
+        android:id="@+id/menu_compartir"
+        android:title="Compartir" />-->
 
+    <!--
     <item
-        android:id="@+id/menu_editar"
+        android:id="@+id/action_editar"
         android:title="@string/menu_options_profile_edit" />
 
     <item
-        android:id="@+id/menu_contactos"
-        android:title="@string/menu_options_profile_view" />
+        android:id="@+id/action_view_contact"
+        android:title="@string/menu_options_profile_view" />-->
 
 </menu>

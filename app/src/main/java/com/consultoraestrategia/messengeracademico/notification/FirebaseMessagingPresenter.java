@@ -10,4 +10,5 @@ import com.google.firebase.messaging.RemoteMessage;
 public interface FirebaseMessagingPresenter {
     void onMessageReceived(RemoteMessage remoteMessage);
     void onMessageReceived(ChatMessage message);
+    void onMessageReceived(String keyMessage);
 }

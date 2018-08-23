@@ -205,7 +205,7 @@ public class VerificationActivity extends AppCompatActivity implements Verificat
     }
 
     public void verificate() {
-        VerificationActivityPermissionsDispatcher.verificatePhoneNumberWithCheck(this);
+        VerificationActivityPermissionsDispatcher.verificatePhoneNumberWithPermissionCheck(this);
     }
 
     @NeedsPermission({Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS})

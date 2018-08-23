@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.chatList.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,7 @@ import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chatList.ChatListPresenter;
 import com.consultoraestrategia.messengeracademico.chatList.ChatListPresenterImpl;
 import com.consultoraestrategia.messengeracademico.chatList.adapter.ChatListAdapter;
-import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListener;
+import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListListener;
 import com.consultoraestrategia.messengeracademico.dialogProfile.DialogProfile;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
@@ -32,25 +33,39 @@ import butterknife.Unbinder;
  * Created by jairc on 22/03/2017.
  */
 
-public class ChatListFragment extends Fragment implements ChatListener, ChatListView {
+public class ChatListFragment extends Fragment implements ChatListView {
 
     private static final String TAG = ChatListFragment.class.getSimpleName();
     @BindView(R.id.my_recycler_view)
     RecyclerView myRecyclerView;
     Unbinder unbinder;
 
-    private DividerItemDecoration mDividerItemDecoration;
-
     private ChatListAdapter adapter;
     private ChatListPresenter presenter;
-
-    FragmentManager fm = getFragmentManager();
 
     public ChatListFragment() {
     }
 
     public static ChatListFragment newInstance() {
         return new ChatListFragment();
+    }
+
+    private ChatListListener listener;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ChatListListener) {
+            this.listener = (ChatListListener) context;
+        } else {
+            throw new ClassCastException(context.getClass() + " must implement ChatListener!!!");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        listener = null;
+        super.onDetach();
     }
 
     @Override
@@ -100,74 +115,47 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
     private void init() {
         setupRecycler();
         presenter = new ChatListPresenterImpl(this);
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         presenter.onCreateView();
-        //presenter.getPhoneNumber(preferences);
     }
 
     private void setupRecycler() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         myRecyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ChatListAdapter(getActivity(), new ArrayList<Chat>(), this);
-        mDividerItemDecoration = new DividerItemDecoration(myRecyclerView.getContext(),
+        adapter = new ChatListAdapter(new ArrayList<Chat>(), this);
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(myRecyclerView.getContext(),
                 linearLayoutManager.getOrientation());
-        //myRecyclerView.addItemDecoration(mDividerItemDecoration);
         myRecyclerView.setAdapter(adapter);
     }
 
     @Override
-    public void onChatAdded(Chat chat) {
-        adapter.onChatAdded(chat);
+    public void addChat(Chat chat) {
+        adapter.addChat(chat);
     }
 
     @Override
-    public void onChatChanged(Chat chat) {
-        adapter.onChatChanged(chat);
+    public void updateChat(Chat chat) {
+        Log.d(TAG, "updateChat: ");
+        adapter.updateChat(chat);
     }
 
     @Override
-    public void onChatRemoved(Chat chat) {
-        adapter.onChatDeleted(chat);
+    public void removeChat(Chat chat) {
+        adapter.removeChat(chat);
     }
 
     @Override
-    public void onChatsChanged(List<Chat> chats) {
+    public void updateChatList(List<Chat> chats) {
         adapter.setChats(chats);
     }
 
-    /*
     @Override
-    public void setContact(Contact contact) {
-        if (contact != null) {
-            me = contact;
-            setupRecycler(me);
-            presenter.getChats(me);
-        }
-    }*/
-
-    /*
-    @Override
-    public void setPhoneNumber(String phoneNumber) {
-        Log.d(TAG, "setPhoneNumber");
-        if (phoneNumber != null) {
-            this.phoneNumber = phoneNumber;
-            presenter.getContact(phoneNumber);
-        }
-    }*/
-
-    @Override
-    public void onChatClickedListener(Chat chat) {
-        Log.d(TAG, "onChatClickedListener");
-        presenter.onChatClicked(chat);
+    public void updateChatAndUp(Chat chat) {
+        Log.d(TAG, "updateChatAndUp: ");
+        adapter.updateAndUp(chat);
     }
 
     @Override
-    public void onImageClickdListener(Contact contact) {
-        /*DialogProfile newFragment = new DialogProfile();
-        newFragment.show(getFragmentManager(), "datePicker");
-        Toast.makeText(getActivity(),"Contact: "+contact.getPhoneNumber(),Toast.LENGTH_LONG).show();
-            */
-
+    public void onChatProfileClick(Contact contact) {
         Bundle args = new Bundle();
         args.putString("imageUri", contact.getPhotoUrl());
         args.putString("nameContact", contact.getName());
@@ -175,5 +163,15 @@ public class ChatListFragment extends Fragment implements ChatListener, ChatList
         DialogProfile newFragment = new DialogProfile();
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "TAG");
+    }
+
+    @Override
+    public void onClick(Chat data, View view) {
+        listener.onClick(data, view);
+    }
+
+    @Override
+    public void onLongClick(Chat data, View view) {
+        listener.onLongClick(data, view);
     }
 }
