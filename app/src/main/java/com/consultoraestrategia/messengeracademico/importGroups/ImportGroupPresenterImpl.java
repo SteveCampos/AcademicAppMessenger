@@ -15,17 +15,24 @@ import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.L
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.Periodo;
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.ResponseCrmeGroups;
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.Value;
+import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseGroup;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseHelper;
 import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
 import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.Grupo;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.utils.PhonenumberUtils;
+import com.consultoraestrategia.messengeracademico.workManager.ImportContactsFromCrmeUsers;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.raizlabs.android.dbflow.config.DatabaseDefinition;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
+import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
+import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -33,6 +40,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 public class ImportGroupPresenterImpl extends BasePresenterImpl<ImportGroupView> implements ImportGroupPresenter {
     public static final String TAG = "ImportGroupPresImpl";
@@ -156,6 +166,7 @@ public class ImportGroupPresenterImpl extends BasePresenterImpl<ImportGroupView>
                     }
 
                     Map<String, Object> gruposMap = Grupo.toMap(grupos);
+                    saveGruposOnDb(grupos);
                     FirebaseDatabase.getInstance().getReference().updateChildren(gruposMap, new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -185,6 +196,53 @@ public class ImportGroupPresenterImpl extends BasePresenterImpl<ImportGroupView>
         }
     }
 
+    public void saveGruposOnDb(List<Grupo> grupos) {
+        /*List<CrmeUser> crmeUserList = new ArrayList<>();
+        for (Grupo grupo :
+                grupos) {
+            crmeUserList.addAll(grupo.getIntegrantes());
+        }*/
+
+
+        /*FastStoreModelTransaction<CrmeUser> trans = FastStoreModelTransaction
+                .insertBuilder(FlowManager.getModelAdapter(CrmeUser.class))
+                .addAll(grupo.getIntegrantes())
+                .build();
+        FlowManager.getDatabase(MessengerAcademicoDatabase.class).executeTransaction(trans);*/
+        ProcessModelTransaction<Grupo> processModelTransaction =
+                new ProcessModelTransaction.Builder<>(new ProcessModelTransaction.ProcessModel<Grupo>() {
+                    @Override
+                    public void processModel(Grupo grupo, DatabaseWrapper wrapper) {
+                        List<CrmeUser> integrantes = grupo.getIntegrantes();
+                        for (CrmeUser integrante :
+                                integrantes) {
+                            integrante.save();
+                        }
+                    }
+
+                })
+                        .processListener(new ProcessModelTransaction.OnModelProcessListener<Grupo>() {
+                            @Override
+                            public void onModelProcessed(long current, long total, Grupo modifiedModel) {
+                                Log.d(TAG, "onModelProcessed:  current: " + current + ", total: " + total);
+                                if (current == (total - 1)) {
+                                    Log.d(TAG, "onModelProcessed finished!!!");
+
+                                    OneTimeWorkRequest compressionWork =
+                                            new OneTimeWorkRequest.Builder(ImportContactsFromCrmeUsers.class)
+                                                    .build();
+                                    WorkManager.getInstance().enqueue(compressionWork);
+                                }
+                            }
+                        })
+                        .addAll(grupos).build();
+        DatabaseDefinition database = FlowManager.getDatabase(MessengerAcademicoDatabase.class);
+        Transaction transaction = database.beginTransactionAsync(processModelTransaction).build();
+        transaction.execute();
+
+
+    }
+
     private void showError(String error) {
         enableBttnImport(true);
         hideProgress();
@@ -199,10 +257,11 @@ public class ImportGroupPresenterImpl extends BasePresenterImpl<ImportGroupView>
     @Override
     public void importBttnClicked() {
         Log.d(TAG, "importBttnClicked");
-        showDialogToDeleteGroups(
+        /*showDialogToDeleteGroups(
                 "¿Desea eliminar los grupos anteriormente creados?",
                 "Eliga OK para eliminar los grupos anteriores, o CANCELAR para conservarlos"
-        );
+        );*/
+        onDialogNegativeClicked();
     }
 
     private void showDialogToDeleteGroups(String title, String message) {

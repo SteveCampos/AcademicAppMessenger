@@ -28,6 +28,8 @@ public interface ChatView extends BaseActionModeView<ChatPresenter, ChatMessage>
 
     void showConnection(Connection connection);
 
+
+
     void showReceptorAction(Contact receptor, String action);
 
     void startPickImageActivity();

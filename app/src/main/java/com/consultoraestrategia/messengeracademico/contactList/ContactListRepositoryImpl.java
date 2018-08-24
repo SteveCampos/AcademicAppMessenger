@@ -35,7 +35,7 @@ public class ContactListRepositoryImpl implements ContactListRepository {
                 .select()
                 .from(Contact.class)
                 .where(Contact_Table.uid.isNotNull())
-                .and(Contact_Table.type.eq(Contact.TYPE_ADDED_AND_VISIBLE))
+                //.and(Contact_Table.type.eq(Contact.TYPE_ADDED_AND_VISIBLE))
                 .and(Contact_Table.uid.notEq(mainUser.getUid()))
                 .orderBy(Contact_Table.name, true)
                 .async()

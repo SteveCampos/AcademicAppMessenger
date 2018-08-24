@@ -61,6 +61,7 @@ import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.fullScreen.FullscreenActivity;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
+import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
 import com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity;
 import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
 import com.vanniktech.emoji.EmojiEditText;
@@ -107,6 +108,8 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
     ImageView imgProfile;
     @BindView(R.id.txt_name)
     TextView txtName;
+    @BindView(R.id.txt_rol)
+    TextView txtRol;
     @BindView(R.id.txt_connection)
     TextView txtConnection;
     @BindView(R.id.toolbar)
@@ -408,13 +411,34 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
 
     @Override
     public void showReceptor(Contact receptor) {
+        String name = receptor.getDisplayName();
+
+        CrmeUser crmeUser = CrmeUser.getCrmeUser(receptor.getPhoneNumber());
+        if (crmeUser != null) {
+            txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_verify_white,
+                    0,
+                    0,
+                    0
+            );
+
+            name = crmeUser.getName();
+            String rol = crmeUser.getDisplayName();
+            txtRol.setVisibility(View.VISIBLE);
+            if (!TextUtils.isEmpty(rol))
+                txtRol.setText(rol);
+        } else {
+            txtRol.setVisibility(View.GONE);
+        }
+
         String verified = receptor.getInfoVerified();
         if (!TextUtils.isEmpty(verified)) {
             txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     R.drawable.ic_verify_white, 0, 0, 0
             );
         }
-        txtName.setText(receptor.getName());
+        if (!TextUtils.isEmpty(name))
+            txtName.setText(name);
 
         Glide
                 .with(this)

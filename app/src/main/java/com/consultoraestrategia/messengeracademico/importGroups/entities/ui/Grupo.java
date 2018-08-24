@@ -3,12 +3,20 @@ package com.consultoraestrategia.messengeracademico.importGroups.entities.ui;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
+import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Table(database = MessengerAcademicoDatabase.class)
 public class Grupo {
+    @PrimaryKey
     private String uid;
+    @Column
     private String name;
     private List<CrmeUser> integrantes = new ArrayList<>();
 

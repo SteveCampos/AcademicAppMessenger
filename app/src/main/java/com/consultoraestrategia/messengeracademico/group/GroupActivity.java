@@ -1,5 +1,6 @@
 package com.consultoraestrategia.messengeracademico.group;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,9 +9,11 @@ import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -42,10 +45,9 @@ public class GroupActivity extends BaseActivity<GroupView, GroupPresenter> imple
     AppCompatTextView txtMemberCounter;
     @BindView(R.id.rcv_members)
     RecyclerView rcvMembers;
-    @BindView(R.id.img_search)
-    AppCompatImageView imgSearch;
     @BindView(R.id.progress_bar)
     ProgressBar progress;
+    SearchView searchView;
 
 
     public static final String EXTRA_GROUP_ID = "EXTRA_GROUP_ID";
@@ -123,9 +125,11 @@ public class GroupActivity extends BaseActivity<GroupView, GroupPresenter> imple
         txtMemberCounter.setText(formattedCount);
     }
 
+    IntegranteAdapter adapter;
+
     @Override
     public void showIntegrantes(List<CrmeUser> crmeUsers) {
-        IntegranteAdapter adapter = new IntegranteAdapter(new ArrayList<CrmeUser>());
+        adapter = new IntegranteAdapter(new ArrayList<CrmeUser>());
         adapter.setListener(new BaseAdapter.Listener<CrmeUser>() {
             @Override
             public void onItemSelected(CrmeUser item) {
@@ -156,12 +160,55 @@ public class GroupActivity extends BaseActivity<GroupView, GroupPresenter> imple
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_group, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        // listening to search query text change
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // filter recycler view when query submitted
+                adapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                // filter recycler view when text is changed
+                adapter.getFilter().filter(query);
+                return false;
+            }
+        });
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 break;
+            case R.id.action_search:
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // close search view on back button pressed
+        if (!searchView.isIconified()) {
+            searchView.setIconified(true);
+            return;
+        }
+        super.onBackPressed();
     }
 }

@@ -152,6 +152,7 @@
     <string name="fragment_grouplist_title">Grupos</string>
     <string name="group_mssg_count_members">%d Integrantes</string>
     <string name="global_mssg_refresh">Actualizar</string>
+    <string name="global_action_search">Buscar</string>
 
 
 </resources>

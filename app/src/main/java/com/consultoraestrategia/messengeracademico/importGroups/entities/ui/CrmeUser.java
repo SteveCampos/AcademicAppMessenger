@@ -2,17 +2,31 @@ package com.consultoraestrategia.messengeracademico.importGroups.entities.ui;
 
 import android.util.ArrayMap;
 
+import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.Map;
 
-public class CrmeUser {
+@Table(database = MessengerAcademicoDatabase.class)
+public class CrmeUser extends BaseModel {
+    @PrimaryKey
     private String id;
+    @Column
     private String phoneNumber;
+    @Column
     private String displayName;
+    @Column
     private boolean admin;
+    @Column
     private boolean tutor;
+    @Column
     private String name;
+
     private Contact contact;
 
     public CrmeUser() {
@@ -105,5 +119,12 @@ public class CrmeUser {
                 ", name='" + name + '\'' +
                 ", contact=" + contact +
                 '}';
+    }
+
+    public static CrmeUser getCrmeUser(String phoneNumber) {
+        return SQLite.select()
+                .from(CrmeUser.class)
+                .where(CrmeUser_Table.phoneNumber.eq(phoneNumber))
+                .querySingle();
     }
 }

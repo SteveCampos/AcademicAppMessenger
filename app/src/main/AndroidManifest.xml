@@ -138,7 +138,15 @@
         <activity
             android:name=".group.GroupActivity"
             android:label="@string/title_activity_group"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".importGroups.ImportGroupActivity"
             android:label="@string/title_activity_import_group"

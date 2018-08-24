@@ -67,7 +67,10 @@ public class FirebaseUser extends FirebaseHelper {
                         if (dataSnapshot.exists()) {
                             Contact contact = dataSnapshot.getValue(Contact.class);
                             listener.onSuccess(contact);
+                            return;
                         }
+
+                        listener.onFailure(new Exception("Contact not exists!"));
                     }
 
                     @Override

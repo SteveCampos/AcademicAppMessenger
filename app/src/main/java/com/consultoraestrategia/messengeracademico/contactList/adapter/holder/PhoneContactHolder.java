@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.contactList.adapter.holder;
 
 import android.content.Context;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.contactList.listeners.ContactListener;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +35,8 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
     AppCompatImageView imgStatusMessage;
     @BindView(R.id.txt_status)
     AppCompatTextView txtStatus;
+    @BindView(R.id.txt_rol)
+    AppCompatTextView txtRol;
 
     public PhoneContactHolder(View view) {
         super(view);
@@ -47,17 +51,33 @@ public class PhoneContactHolder extends RecyclerView.ViewHolder {
         String verified = null;
         if (contact != null) {
             String name = contact.getName();
+            String displayName = contact.getDisplayName();
             phoneNumber = contact.getPhoneNumber();
             String uriProfile = contact.getPhotoUrl();
 
-            title = !TextUtils.isEmpty(name) ? name : phoneNumber;
+            title = displayName;
+            if (TextUtils.isEmpty(title))
+                title = !TextUtils.isEmpty(name) ? name : phoneNumber;
             uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "";
             verified = contact.getInfoVerified();
+
+            CrmeUser crmeUser = CrmeUser.getCrmeUser(phoneNumber);
+            if (crmeUser != null) {
+                title = crmeUser.getName();
+                String rol = crmeUser.getDisplayName();
+                txtRol.setVisibility(View.VISIBLE);
+                if (!TextUtils.isEmpty(rol))
+                    txtRol.setText(rol);
+            } else {
+                txtRol.setVisibility(View.GONE);
+            }
         }
 
 
-        txtStatus.setText(phoneNumber);
-        txtName.setText(title);
+        if (!TextUtils.isEmpty(phoneNumber))
+            txtStatus.setText(phoneNumber);
+        if (!TextUtils.isEmpty(title))
+            txtName.setText(title);
         if (!TextUtils.isEmpty(verified)) {
             txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     0,

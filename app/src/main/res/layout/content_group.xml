@@ -16,7 +16,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintEnd_toStartOf="@+id/img_search"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="10 participantes" />
@@ -33,16 +33,6 @@
         app:layout_constraintTop_toBottomOf="@+id/txt_member_counter"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/item_member" />
-
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/img_search"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_search_grey_24dp" />
 
     <ProgressBar
         android:id="@+id/progress_bar"

@@ -16,6 +16,7 @@ import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListLis
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
 import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
 import com.google.firebase.auth.FirebaseUser;
 import com.vanniktech.emoji.EmojiTextView;
@@ -103,17 +104,41 @@ public class ChatItemHolder extends SelectableViewHolder<Chat> {
         String verified = null;
         if (contact != null) {
             String name = contact.getName();
+            String displayName = contact.getDisplayName();
             String phoneNumber = contact.getPhoneNumber();
             String uriProfile = contact.getPhotoUrl();
 
-            title = !TextUtils.isEmpty(name) ? name : phoneNumber;
+
+            title = displayName;
+            if (TextUtils.isEmpty(title))
+                title = !TextUtils.isEmpty(name) ? name : phoneNumber;
+
+
             uri = !TextUtils.isEmpty(uriProfile) ? uriProfile : "";
             verified = contact.getInfoVerified();
+            CrmeUser crmeUser = CrmeUser.getCrmeUser(phoneNumber);
+            if (crmeUser != null) {
+                txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.ic_verify,
+                        0,
+                        0,
+                        0
+                );
+
+                title = crmeUser.getName();
+                String rol = crmeUser.getDisplayName();
+                txtRolVerificado.setVisibility(View.VISIBLE);
+                if (!TextUtils.isEmpty(rol))
+                    txtRolVerificado.setText(rol);
+            } else {
+                txtRolVerificado.setVisibility(View.GONE);
+            }
         }
 
-        txtName.setText(title);
+        if (!TextUtils.isEmpty(title))
+            txtName.setText(title);
         if (!TextUtils.isEmpty(verified)) {
-            txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            /*txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     0,
                     0,
                     R.drawable.ic_verify,
@@ -121,9 +146,9 @@ public class ChatItemHolder extends SelectableViewHolder<Chat> {
             );
             txtRolVerificado.setVisibility(View.VISIBLE);
             String rolVerificado = String.format(itemView.getResources().getString(R.string.global_rol_verified), verified);
-            txtRolVerificado.setText(rolVerificado);
+            txtRolVerificado.setText(rolVerificado);*/
         } else {
-            txtRolVerificado.setVisibility(View.GONE);
+            //txtRolVerificado.setVisibility(View.GONE);
         }
         Glide
                 .with(itemView.getContext())

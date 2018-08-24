@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import com.bumptech.glide.Glide;
 import com.consultoraestrategia.messengeracademico.R;
@@ -15,17 +17,19 @@ import com.consultoraestrategia.messengeracademico.base.adapter.BaseAdapter;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class IntegranteAdapter extends BaseAdapter<CrmeUser, IntegranteAdapter.ViewHolder> {
+public class IntegranteAdapter extends BaseAdapter<CrmeUser, IntegranteAdapter.ViewHolder> implements Filterable {
     private static final String TAG = IntegranteAdapter.class.getSimpleName();
 
     public IntegranteAdapter(List<CrmeUser> items) {
         super(items);
+        listFiltered = items;
     }
 
     @NonNull
@@ -35,9 +39,62 @@ public class IntegranteAdapter extends BaseAdapter<CrmeUser, IntegranteAdapter.V
         return new ViewHolder(view);
     }
 
-    @Override
+    /*@Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ((ViewHolder) holder).bind(items.get(position), listener);
+    }*/
+
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        ((ViewHolder) holder).bind(listFiltered.get(position), listener);
+    }
+
+    @Override
+    public int getItemCount() {
+        return listFiltered.size();
+    }
+
+    public void setItems(List<CrmeUser> items) {
+        this.items.clear();
+        this.items.addAll(items);
+        this.listFiltered = items;
+        notifyDataSetChanged();
+    }
+
+    private List<CrmeUser> listFiltered = new ArrayList<>();
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    listFiltered = getItems();
+                } else {
+                    List<CrmeUser> filteredList = new ArrayList<>();
+                    for (CrmeUser row : getItems()) {
+
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (row.getName().toLowerCase().contains(charString.toLowerCase()) || row.getDisplayName().contains(charSequence)) {
+                            filteredList.add(row);
+                        }
+                    }
+
+                    listFiltered = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = listFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                listFiltered = (ArrayList<CrmeUser>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

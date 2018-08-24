@@ -52,6 +52,9 @@ ext {
     firebaseStorageVersion = '16.0.1'
     firebaseDbVersion = '16.0.1'
 
+    //jetpack
+    workVersion = '1.0.0-alpha07'
+
     /*
     firebaseCoreVersion = '15.0.0'
     firebaseAuthVersion = '15.0.0'
