@@ -844,11 +844,11 @@ public class ChatRepository implements ChatDataSource {
 
     private void onEmisorReceiveMessageWrited(ChatMessage message) {
         Log.d(TAG, "onEmisorReceiveMessageWrited");
-        //message.setMessageStatus(ChatMessage.STATUS_SEND);
+        message.setMessageStatus(ChatMessage.STATUS_SEND);
         //fire
-        //fireMessage(message);
+        fireMessage(message);
         //save on local
-        //saveMessageOnLocal(message);
+        saveMessageOnLocal(message);
     }
 
     public void getCrmeUserFromPhoneNumber(final String phoneNumber, final FirebaseHelper.CompletionListener<CrmeUser> listener) {
