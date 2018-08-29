@@ -433,7 +433,7 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
     }
 
     @Override
-    public void showReceptor(Contact receptor) {
+    public void showReceptor(final Contact receptor) {
         String name = receptor.getDisplayName();
 
         CrmeUser crmeUser = CrmeUser.getCrmeUser(receptor.getPhoneNumber());
@@ -460,7 +460,7 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
             String phoneNumberObservador = currentUser.getPhoneNumber();
             String phoneNumberObservado = receptor.getPhoneNumber();
             String observadorFormatted = PhonenumberUtils.formatPhonenumber("PE", phoneNumberObservador);
-            String observadoFormatted = PhonenumberUtils.formatPhonenumber("PE", phoneNumberObservado);
+            final String observadoFormatted = PhonenumberUtils.formatPhonenumber("PE", phoneNumberObservado);
 
             api.getInfo(observadorFormatted, observadoFormatted, new CrmeApiImpl.Listener<ResponseGetInfo>() {
                 @Override
@@ -477,6 +477,7 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
                         crmeUser.setId(id);
                         crmeUser.setName(nombreCompleto);
                         crmeUser.setDisplayName(rolDependienteDelObservador);
+                        crmeUser.setPhoneNumber(observadoFormatted);
                         boolean saved = crmeUser.save();
                         if (saved) {
                             showCrmeUser(crmeUser);
