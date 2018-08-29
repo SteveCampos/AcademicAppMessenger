@@ -119,21 +119,20 @@ public class ImportGroupPresenterImpl extends BasePresenterImpl<ImportGroupView>
 
                     Value value = data.getValue().get(0);
 
-                    CrmeUser admin = new CrmeUser();
-                    admin.setId(String.valueOf(value.getPersonaId()));
-                    admin.setAdmin(true);
-                    admin.setDisplayName(value.getNombres() + ", " + value.getApellidoPaterno() + " " + value.getApellidoMaterno());
-                    admin.setPhoneNumber(PhonenumberUtils.formatPhonenumber(PhonenumberUtils.getCountryCode(manager), value.getCelular()));
-                    admin.setName(value.getApellidoPaterno() + " " + value.getApellidoMaterno() + ", " + value.getNombres());
 
                     final List<Grupo> grupos = new ArrayList<>();
                     List<Periodo> secciones = value.getPeriodos();
                     for (Periodo periodo :
                             secciones) {
+
+
+                        CrmeUser admin = new CrmeUser();
+                        admin.setId(String.valueOf(value.getPersonaId()));
                         admin.setTutor(false);
-                        Grupo grupo = new Grupo();
-                        grupo.setUid(admin.getId() + "_" + periodo.getPeriodoId() + "_" + periodo.getGrupoId());
-                        grupo.setName(periodo.getGruponombre() + ", " + periodo.getNombre() + " - " + periodo.getNivelAcademico());
+                        admin.setAdmin(true);
+                        admin.setDisplayName(value.getNombres() + ", " + value.getApellidoPaterno() + " " + value.getApellidoMaterno());
+                        admin.setPhoneNumber(PhonenumberUtils.formatPhonenumber(PhonenumberUtils.getCountryCode(manager), value.getCelular()));
+                        admin.setName(value.getApellidoPaterno() + " " + value.getApellidoMaterno() + ", " + value.getNombres());
 
                         int tutorId = periodo.getTutorId();
 
@@ -143,6 +142,11 @@ public class ImportGroupPresenterImpl extends BasePresenterImpl<ImportGroupView>
                         }
 
                         admin.setTutor(isTutor);
+
+
+                        Grupo grupo = new Grupo();
+                        grupo.setUid(admin.getId() + "_" + periodo.getPeriodoId() + "_" + periodo.getGrupoId());
+                        grupo.setName(periodo.getGruponombre() + ", " + periodo.getNombre() + " - " + periodo.getNivelAcademico());
 
 
                         List<CrmeUser> integrantes = new ArrayList<>();

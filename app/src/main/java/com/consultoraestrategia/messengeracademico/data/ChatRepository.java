@@ -1,17 +1,24 @@
 package com.consultoraestrategia.messengeracademico.data;
 
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.consultoraestrategia.messengeracademico.crme_educativo.api.CrmeApiImpl;
+import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.ResponseGetInfo;
 import com.consultoraestrategia.messengeracademico.data.source.local.ChatLocalDataSource;
 import com.consultoraestrategia.messengeracademico.data.source.remote.ChatRemoteDataSource;
+import com.consultoraestrategia.messengeracademico.domain.FirebaseHelper;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
 import com.consultoraestrategia.messengeracademico.lib.GreenRobotEventBus;
 import com.consultoraestrategia.messengeracademico.main.event.MainEvent;
 import com.consultoraestrategia.messengeracademico.postEvent.ChatListPostEvent;
 import com.consultoraestrategia.messengeracademico.postEvent.ChatPostEvent;
+import com.consultoraestrategia.messengeracademico.utils.PhonenumberUtils;
 import com.consultoraestrategia.messengeracademico.utils.StringUtils;
+import com.google.android.gms.common.util.CrashUtils;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
@@ -844,9 +851,129 @@ public class ChatRepository implements ChatDataSource {
         //saveMessageOnLocal(message);
     }
 
+    public void getCrmeUserFromPhoneNumber(final String phoneNumber, final FirebaseHelper.CompletionListener<CrmeUser> listener) {
+        Log.d(TAG, "getCrmeUserFromPhoneNumber: " + phoneNumber);
+        String myPhone = mainUser.getPhoneNumber();
+        String myPhoneNumberFormatted = PhonenumberUtils.formatPhonenumber("PE", myPhone);
+        final String observadoFormatted = PhonenumberUtils.formatPhonenumber("PE", phoneNumber);
+
+        CrmeApiImpl api = CrmeApiImpl.getInstance();
+        api.getInfo(myPhoneNumberFormatted, observadoFormatted, new CrmeApiImpl.Listener<ResponseGetInfo>() {
+            @Override
+            public void onSuccess(ResponseGetInfo data) {
+                Log.d(TAG, "getCrmeUserFromPhoneNumber onSuccess: ");
+                String info = data.getValue();
+                if (TextUtils.isEmpty(info) || !data.getSuccessful()) {
+                    listener.onFailure(new Exception("Info is empty!!!"));
+                    return;
+                }
+
+                CrmeUser crmeUser = new CrmeUser();
+                crmeUser.setPhoneNumber(observadoFormatted);
+
+                String[] nombres = info.split("-");
+                int infoSize = nombres.length;
+                Log.d(TAG, "infoSize: " + infoSize);
+                if (infoSize < 3) {
+                    listener.onFailure(new Exception("El tamaño de la información no es la adecuada "));
+                    return;
+                }
+
+                crmeUser.setId(nombres[0]);
+                crmeUser.setName(nombres[1]);
+                crmeUser.setDisplayName(nombres[2]);
+                boolean saved = crmeUser.save();
+
+                if (saved) {
+                    listener.onSuccess(crmeUser);
+                } else {
+                    listener.onFailure(new Exception("Failed to save crmeUser!!!"));
+                }
+            }
+
+            @Override
+            public void onFailure(Exception ex) {
+                Log.e(TAG, "getCrmeUserFromPhoneNumber onFailure: ");
+                if (listener != null) {
+                    listener.onFailure(ex);
+                }
+            }
+        });
+
+    }
+
+
+    private void getCrmeUser(final ChatMessage message, String phoneNumber) {
+        getCrmeUserFromPhoneNumber(message.getEmisor().getPhoneNumber(), new FirebaseHelper.CompletionListener<CrmeUser>() {
+            @Override
+            public void onSuccess(CrmeUser data) {
+                chatLocalDataSource.getChat(message, new GetChatCallback() {
+                    @Override
+                    public void onChatLoaded(Chat chat) {
+                        saveMessageOnLocal(message, chat);
+                        chatLocalDataSource.saveMessage(message, chat, new ListenMessagesCallback() {
+                            @Override
+                            public void onMessageChanged(ChatMessage message) {
+                                Log.d(TAG, "getCrmeUser getCrmeUserFromPhoneNumber getChat saveMessag onMessageChanged: ");
+                                fireMessage(message);
+                            }
+
+                            @Override
+                            public void onError(String error) {
+                                Log.d(TAG, "getCrmeUser getCrmeUserFromPhoneNumber getChat saveMessag onError: " + error);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        Log.d(TAG, "getChat from message onDataNotAvailable!!! imposible to recover chat!!");
+
+                    }
+                });
+                /*saveMessage(message, null, new ListenMessagesCallback() {
+                    @Override
+                    public void onMessageChanged(ChatMessage message) {
+                        Log.d(TAG, "getCrmeUser saveMessage onMessageChanged");
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.d(TAG, "getCrmeUser saveMessage onError");
+                    }
+                });*/
+            }
+
+            @Override
+            public void onFailure(Exception ex) {
+
+            }
+        });
+    }
+
     private void onReceptorReceiveMessageWrited(ChatMessage message) {
         Log.d(TAG, "onReceptorReceiveMessageWrited");
+
         message.setMessageStatus(ChatMessage.STATUS_DELIVERED);
+
+        //Cuando me llegue un mensaje, validaré si el emisor o el receptor exista en mis contactos
+        //si no existe, entonces consumiré un servicio para saber quién es el usuario.
+        boolean existsEmisor = message.getEmisor().exists();
+        boolean existsReceptor = message.getReceptor().exists();
+
+        Log.d(TAG, "existsEmisor: " + existsEmisor);
+        Log.d(TAG, "existsReceptor: " + existsReceptor);
+
+        if (!existsEmisor && message.getEmisor().getPhoneNumber() != null) {
+            getCrmeUser(message, message.getEmisor().getPhoneNumber());
+            return;
+        }
+
+        if (!existsReceptor && message.getReceptor().getPhoneNumber() != null) {
+            getCrmeUser(message, message.getReceptor().getPhoneNumber());
+            return;
+        }
+
         //fire!
         fireMessage(message);
         //save on local and remote!

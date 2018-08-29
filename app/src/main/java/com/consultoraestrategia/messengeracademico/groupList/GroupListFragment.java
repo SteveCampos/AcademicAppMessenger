@@ -182,7 +182,11 @@ public class GroupListFragment extends Fragment {
     public void deleteGroupFromUser(Grupo grupo) {
         FirebaseGroup firebaseGroup = FirebaseGroup.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        firebaseGroup.deleteGroupFromUser(currentUser.getUid(), grupo.getUid(), new FirebaseHelper.CompletionListener<Grupo>() {
+        if (currentUser == null) return;
+
+        String phoneNumberFormatted = PhonenumberUtils.formatPhonenumber("PE", currentUser.getPhoneNumber());
+
+        firebaseGroup.deleteGroupFromUser(phoneNumberFormatted, grupo.getUid(), new FirebaseHelper.CompletionListener<Grupo>() {
             @Override
             public void onSuccess(Grupo item) {
                 removeGroup(item);

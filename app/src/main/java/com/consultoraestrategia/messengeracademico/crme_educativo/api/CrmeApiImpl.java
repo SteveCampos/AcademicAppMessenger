@@ -4,7 +4,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.ResponseCrmeGroups;
+import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.ResponseGetInfo;
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.ResponseUpdatePersonaPhoneNumber;
+import com.consultoraestrategia.messengeracademico.crme_educativo.api.params.GetInfoParams;
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.params.UpdatePersonaPhoneNumberParams;
 
 import retrofit2.Call;
@@ -102,6 +104,39 @@ public class CrmeApiImpl {
 
             @Override
             public void onFailure(@NonNull Call<ResponseUpdatePersonaPhoneNumber> call, @NonNull Throwable t) {
+                Log.d(TAG, "onFailure");
+                if (listener != null) {
+                    listener.onFailure(new Exception(t.getMessage()));
+                }
+            }
+        });
+    }
+
+    public void getInfo(String phoneNumberObservador, String phoneNumberObservado, final Listener<ResponseGetInfo> listener) {
+        CrmeRequestBody<GetInfoParams> crmeRequestBody = new CrmeRequestBody<>();
+        crmeRequestBody.setMethod("fins_Listar");
+        crmeRequestBody.setParameters(new GetInfoParams(phoneNumberObservador, phoneNumberObservado));
+
+        Call<ResponseGetInfo> call = api.getInfo(crmeRequestBody);
+        call.enqueue(new Callback<ResponseGetInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseGetInfo> call, @NonNull Response<ResponseGetInfo> response) {
+                Log.d(TAG, "getInfo onResponse: " + response);
+                Log.d(TAG, "getInfo onResponse body: " + response.body());
+                if (response.isSuccessful()) {
+                    if (listener != null) {
+                        listener.onSuccess(response.body());
+                    }
+                } else {
+                    //ApiError error = ErrorUtils.parseError(response);
+                    Log.d(TAG, "onResponse apiError: ");
+                    if (listener != null)
+                        listener.onFailure(new Exception("onResponse apiError!!!"));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseGetInfo> call, @NonNull Throwable t) {
                 Log.d(TAG, "onFailure");
                 if (listener != null) {
                     listener.onFailure(new Exception(t.getMessage()));

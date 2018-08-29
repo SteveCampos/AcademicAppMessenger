@@ -207,7 +207,7 @@ public class GroupPresenterImpl extends BasePresenterImpl<GroupView> implements 
         }
 
         if (!currentUser.getUid().equals(admin.getContact().getUid())
-                && !admin.isTutor()) {
+                || !admin.isTutor()) {
             showImportantMessage("Sólo el administrador puede editar los números del CRME");
             return;
         }

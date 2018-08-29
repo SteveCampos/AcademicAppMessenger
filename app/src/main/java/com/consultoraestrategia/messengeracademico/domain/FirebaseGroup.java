@@ -405,11 +405,11 @@ public class FirebaseGroup extends FirebaseHelper {
 
     }
 
-    public void deleteGroupFromUser(String userUid, final String groupId, final CompletionListener<Grupo> listener) {
+    public void deleteGroupFromUser(String phoneNumber, final String groupId, final CompletionListener<Grupo> listener) {
         getDatabase()
                 .getReference()
-                .child(PATH_GROUPS_FROM_USER)
-                .child(userUid)
+                .child(PATH_GROUPS_FROM_PHONENUMBER)
+                .child(phoneNumber)
                 .child(PATH_GROUPS)
                 .child(groupId).setValue(null, new DatabaseReference.CompletionListener() {
             @Override

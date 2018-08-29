@@ -139,7 +139,6 @@ public class GroupActivity extends BaseActivity<GroupView, GroupPresenter> imple
             @Override
             public void onItemLongSelected(CrmeUser item) {
                 presenter.onCrmeUserLongClicked(item);
-                presenter.onCrmeUserLongClicked(item);
             }
         });
 

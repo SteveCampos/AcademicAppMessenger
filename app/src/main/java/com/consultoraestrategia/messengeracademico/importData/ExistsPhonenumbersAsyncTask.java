@@ -8,6 +8,7 @@ import android.util.Log;
 import com.consultoraestrategia.messengeracademico.crme_educativo.RestApi;
 import com.consultoraestrategia.messengeracademico.domain.FirebaseContactsHelper;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -235,6 +236,21 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
                 JSONObject jsonObject = api.fins_Listar(observador, observado);
                 String infoVerified = jsonObject.getString("Value");
                 Log.d(TAG, "infoVerified: " + infoVerified);
+
+                String[] infoArray = infoVerified.split("-");
+                if (infoArray.length >= 3) {
+                    String id = infoArray[0];
+                    String nombreCompleto = infoArray[1];
+                    String rolDependienteDelObservador = infoArray[2];
+                    infoVerified = nombreCompleto;
+                    /*CrmeUser crmeUser = new CrmeUser();
+                    crmeUser.setId(id);
+                    crmeUser.setName(nombreCompleto);
+                    crmeUser.setDisplayName(rolDependienteDelObservador);
+                    boolean saved = crmeUser.save();*/
+                }
+
+
                 contact.setInfoVerified(infoVerified);
 
                 onPostExecute(contact);
