@@ -34,16 +34,15 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:drawablePadding="4dp"
+        android:ellipsize="end"
         android:maxLines="1"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:ellipsize="end"
         app:layout_constraintEnd_toStartOf="@+id/txt_time"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/img_profile"
         app:layout_constraintTop_toTopOf="@+id/img_profile"
         tools:text="Default name" />
-
 
 
     <android.support.v7.widget.AppCompatTextView
@@ -67,11 +66,11 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:contentDescription="@string/global.img.description"
-        tools:src="@drawable/ic_double_check_colored"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/txt_message"
         app:layout_constraintStart_toStartOf="@+id/txt_name"
-        app:layout_constraintTop_toTopOf="@+id/txt_message" />
+        app:layout_constraintTop_toTopOf="@+id/txt_message"
+        tools:src="@drawable/ic_double_check_colored" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/txt_rol_verificado"
@@ -80,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
-        android:maxLines="1"
+        android:maxLines="2"
         app:layout_constraintEnd_toStartOf="@+id/txt_counter"
         app:layout_constraintStart_toStartOf="@+id/txt_name"
         app:layout_constraintTop_toBottomOf="@+id/txt_name"

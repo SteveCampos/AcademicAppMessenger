@@ -143,7 +143,7 @@ dependencies {
     implementation 'org.parceler:parceler-api:1.1.10'
     annotationProcessor 'org.parceler:parceler:1.1.10'
 
-    implementation 'com.zhihu.android:matisse:0.5.0-beta3'
+    implementation 'com.zhihu.android:matisse:0.5.1'
 
     implementation('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
         transitive = true;
