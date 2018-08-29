@@ -904,7 +904,7 @@ public class ChatRepository implements ChatDataSource {
 
 
     private void getCrmeUser(final ChatMessage message, String phoneNumber) {
-        getCrmeUserFromPhoneNumber(message.getEmisor().getPhoneNumber(), new FirebaseHelper.CompletionListener<CrmeUser>() {
+        getCrmeUserFromPhoneNumber(phoneNumber, new FirebaseHelper.CompletionListener<CrmeUser>() {
             @Override
             public void onSuccess(CrmeUser data) {
                 chatLocalDataSource.getChat(message, new GetChatCallback() {

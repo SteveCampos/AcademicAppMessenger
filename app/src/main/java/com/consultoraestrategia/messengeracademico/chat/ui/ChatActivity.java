@@ -56,6 +56,8 @@ import com.consultoraestrategia.messengeracademico.chat.ChatPresenter;
 import com.consultoraestrategia.messengeracademico.chat.adapters.ChatMessageAdapter;
 import com.consultoraestrategia.messengeracademico.chat.di.ChatComponent;
 import com.consultoraestrategia.messengeracademico.chat.listener.ChatMessageListener;
+import com.consultoraestrategia.messengeracademico.crme_educativo.api.CrmeApiImpl;
+import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.ResponseGetInfo;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Connection;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
@@ -63,7 +65,10 @@ import com.consultoraestrategia.messengeracademico.fullScreen.FullscreenActivity
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
 import com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity;
+import com.consultoraestrategia.messengeracademico.utils.PhonenumberUtils;
 import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiImageView;
 import com.vanniktech.emoji.EmojiPopup;
@@ -409,11 +414,30 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
         adapter.setRecyclerView(recycler);
     }
 
+    private void showCrmeUser(CrmeUser crmeUser) {
+        txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_verify_white,
+                0,
+                0,
+                0
+        );
+
+        String name = crmeUser.getName();
+        String rol = crmeUser.getDisplayName();
+        txtRol.setVisibility(View.VISIBLE);
+        if (!TextUtils.isEmpty(rol))
+            txtRol.setText(rol);
+
+        if (!TextUtils.isEmpty(name))
+            txtName.setText(name);
+    }
+
     @Override
     public void showReceptor(Contact receptor) {
         String name = receptor.getDisplayName();
 
         CrmeUser crmeUser = CrmeUser.getCrmeUser(receptor.getPhoneNumber());
+
         if (crmeUser != null) {
             txtName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     R.drawable.ic_verify_white,
@@ -429,6 +453,42 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
                 txtRol.setText(rol);
         } else {
             txtRol.setVisibility(View.GONE);
+            CrmeApiImpl api = CrmeApiImpl.getInstance();
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser == null) return;
+
+            String phoneNumberObservador = currentUser.getPhoneNumber();
+            String phoneNumberObservado = receptor.getPhoneNumber();
+            String observadorFormatted = PhonenumberUtils.formatPhonenumber("PE", phoneNumberObservador);
+            String observadoFormatted = PhonenumberUtils.formatPhonenumber("PE", phoneNumberObservado);
+
+            api.getInfo(observadorFormatted, observadoFormatted, new CrmeApiImpl.Listener<ResponseGetInfo>() {
+                @Override
+                public void onSuccess(ResponseGetInfo data) {
+                    String infoVerified = data.getValue();
+                    Log.d(TAG, "infoVerified: " + infoVerified);
+
+                    String[] infoArray = infoVerified.split("-");
+                    if (infoArray.length >= 3) {
+                        String id = infoArray[0];
+                        String nombreCompleto = infoArray[1];
+                        String rolDependienteDelObservador = infoArray[2];
+                        CrmeUser crmeUser = new CrmeUser();
+                        crmeUser.setId(id);
+                        crmeUser.setName(nombreCompleto);
+                        crmeUser.setDisplayName(rolDependienteDelObservador);
+                        boolean saved = crmeUser.save();
+                        if (saved) {
+                            showCrmeUser(crmeUser);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception ex) {
+                    txtRol.setVisibility(View.GONE);
+                }
+            });
         }
 
         String verified = receptor.getInfoVerified();

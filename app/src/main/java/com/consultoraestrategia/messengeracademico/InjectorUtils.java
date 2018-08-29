@@ -16,8 +16,8 @@ public class InjectorUtils {
         return ChatRepository.getInstance(
                 new ChatLocalDataSource(new ChatStorageImpl(new ChatDbFlowStorage()), FirebaseAuth.getInstance().getCurrentUser()),
                 new ChatRemoteDataSource(FirebaseChat.getInstance(), com.consultoraestrategia.messengeracademico.domain.FirebaseUser.getInstance(), FirebaseAuth.getInstance().getCurrentUser()),
-                new ChatListPostEventImpl(),
-                new ChatPostEventImpl(),
+                ChatListPostEventImpl.getInstance(),
+                ChatPostEventImpl.getInstance(),
                 FirebaseAuth.getInstance().getCurrentUser());
     }
 }

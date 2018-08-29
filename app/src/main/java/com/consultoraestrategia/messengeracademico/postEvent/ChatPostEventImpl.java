@@ -20,6 +20,15 @@ public class ChatPostEventImpl implements ChatPostEvent {
         this.eventBus = GreenRobotEventBus.getInstance();
     }
 
+    public static ChatPostEventImpl mInstance = null;
+
+    public static ChatPostEventImpl getInstance() {
+        if (mInstance == null) {
+            mInstance = new ChatPostEventImpl();
+        }
+        return mInstance;
+    }
+
     @Override
     public void post(ChatMessage message) {
         post(ChatEvent.TYPE_MESSAGE, null, message, null, null, null);

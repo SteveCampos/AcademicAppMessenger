@@ -27,6 +27,15 @@ public class ChatListPostEventImpl implements ChatListPostEvent {
         this.eventBus = eventBus;
     }
 
+    public static ChatListPostEventImpl mInstance = null;
+
+    public static ChatListPostEventImpl getInstance() {
+        if (mInstance == null) {
+            mInstance = new ChatListPostEventImpl();
+        }
+        return mInstance;
+    }
+
     @Override
     public void post(Chat chat) {
         post(ChatListEvent.TYPE_CHAT, null, null, null, chat);

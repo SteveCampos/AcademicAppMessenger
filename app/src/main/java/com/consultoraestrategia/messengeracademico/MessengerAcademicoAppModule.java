@@ -144,13 +144,13 @@ public class MessengerAcademicoAppModule {
     @Provides
     @Singleton
     ChatPostEvent provideChatPostEvent() {
-        return new ChatPostEventImpl();
+        return ChatPostEventImpl.getInstance();
     }
 
     @Provides
     @Singleton
     ChatListPostEvent provideChatListPostEvent() {
-        return new ChatListPostEventImpl();
+        return ChatListPostEventImpl.getInstance();
     }
 
     @Provides
