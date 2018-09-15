@@ -25,10 +25,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.consultoraestrategia.messengeracademico.MessengerAcademicoApp;
@@ -40,6 +42,7 @@ import com.consultoraestrategia.messengeracademico.contactList.ui.ContactListFra
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.entities.GlobalSettings;
 import com.consultoraestrategia.messengeracademico.entities.NotificationInbox;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.importGroups.ImportGroupActivity;
@@ -274,6 +277,9 @@ public class MainActivity extends BaseActivityActionMode<Chat, MainView, MainPre
             case R.id.action_import_crme_gruops:
                 ImportGroupActivity.launch(this);
                 break;
+            case R.id.action_servers:
+                presenter.onServerMenuClicked();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -371,6 +377,78 @@ public class MainActivity extends BaseActivityActionMode<Chat, MainView, MainPre
         if (chatListFragment != null) {
             chatListFragment.removeChat(chat);
         }
+    }
+
+    @Override
+    public void showListSingleChooser(String dialogTitle, final List<GlobalSettings> serverList, int positionSelected) {
+
+        if (serverList.isEmpty()) return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppDialogTheme);
+        int size = serverList.size();
+        final CharSequence[] singleItems = new CharSequence[size];
+
+        for (int i = 0; i < size; i++) {
+            singleItems[i] = serverList.get(i).getNombre();
+        }
+
+        if (positionSelected >= serverList.size()) {
+            positionSelected = -1;
+        }
+
+        builder.setTitle(dialogTitle)
+                .setSingleChoiceItems(singleItems, positionSelected, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(getTag(), "setSingleChoiceItems onClick i: " + which);
+                    }
+                })
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(getTag(), "setPositiveButton onClick i: " + which);
+                        int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+                        if (selectedPosition != -1) {
+                            GlobalSettings objectSelected = serverList.get(selectedPosition);
+                            presenter.onSelectedServidor(objectSelected, selectedPosition);
+                        }
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(getTag(), "setNegativeButton onClick i: " + which);
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    @Override
+    public void showEdtDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.alert_dialog_edt, null);
+        final EditText editText = dialogView.findViewById(R.id.edt_content);
+        builder
+                .setView(dialogView)
+                .setTitle(R.string.login_dialog_add_server)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        if (presenter != null) {
+                            presenter.onCustomUrlOk(editText.getText().toString());
+                        }
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public ContactListFragment getContactListFragment() {

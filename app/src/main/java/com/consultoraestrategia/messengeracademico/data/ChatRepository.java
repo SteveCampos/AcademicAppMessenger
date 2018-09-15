@@ -32,6 +32,10 @@ import java.util.Map;
  * Created by @stevecampos on 16/05/2017.
  */
 
+
+/*
+ES EL RESPONSABLE DE ENVIAR Y RECIBIR TODOS LOS MENSAJES, Y PUBLICAR EL EVENTO DE NUEVOS MENSAJES, Y NUEVOS CHATS
+* */
 public class ChatRepository implements ChatDataSource {
 
     private static final String TAG = ChatRepository.class.getSimpleName();
@@ -763,6 +767,7 @@ public class ChatRepository implements ChatDataSource {
         });
     }
 
+    /*HIPER IMPORTANTE*/
     private void onIncomingMessageChanged(ChatMessage message) {
         Log.d(TAG, "onMessageChanged");
         Log.d(TAG, "message: " + message.toString());

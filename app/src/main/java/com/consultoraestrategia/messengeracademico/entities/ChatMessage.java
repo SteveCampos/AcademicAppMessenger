@@ -29,9 +29,10 @@ public class ChatMessage extends BaseModel implements Selectable {
 
     public static final String TYPE_TEXT = "TEXT";
     public static final String TYPE_IMAGE = "IMAGE";
-    public static final String TYPE_AUDIO = "AUDIO";
-    public static final String TYPE_VIDEO = "VIDEO";
-    public static final String TYPE_FILE = "FILE";
+    public static final String TYPE_AUDIO = "AUDIO";//not supported
+    public static final String TYPE_VIDEO = "VIDEO";//not supported
+    public static final String TYPE_FILE = "FILE";//not supported
+    public static final String TYPE_RUBRO = "RUBRO";
     public static final String TYPE_TEXT_OFFICIAL = "TEXT_OFFICIAL";
 
 

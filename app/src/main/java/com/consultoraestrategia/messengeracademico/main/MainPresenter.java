@@ -4,6 +4,7 @@ import com.consultoraestrategia.messengeracademico.base.BasePresenter;
 import com.consultoraestrategia.messengeracademico.base.BaseView;
 import com.consultoraestrategia.messengeracademico.base.actionMode.BasePresenterActionMode;
 import com.consultoraestrategia.messengeracademico.entities.Chat;
+import com.consultoraestrategia.messengeracademico.entities.GlobalSettings;
 import com.consultoraestrategia.messengeracademico.main.ui.MainView;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -20,4 +21,10 @@ public interface MainPresenter extends BasePresenterActionMode<MainView, Chat> {
     void onActionImportClicked();
 
     void onActionDeleteClicked();
+
+    void onServerMenuClicked();
+
+    void onSelectedServidor(GlobalSettings objectSelected, int selectedPosition);
+
+    void onCustomUrlOk(String url);
 }

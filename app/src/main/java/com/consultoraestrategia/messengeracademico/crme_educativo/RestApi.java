@@ -2,6 +2,8 @@ package com.consultoraestrategia.messengeracademico.crme_educativo;
 
 import android.text.TextUtils;
 
+import com.consultoraestrategia.messengeracademico.entities.GlobalSettings;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,9 +29,9 @@ public class RestApi {
 
     private static RestApi mInstance;
 
-    public static RestApi getInstance(String urlString) {
+    public static RestApi getInstance() {
         if (mInstance == null) {
-            mInstance = new RestApi(urlString);
+            mInstance = new RestApi(GlobalSettings.getServerUrl()+"/");
         }
         return mInstance;
     }

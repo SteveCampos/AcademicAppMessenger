@@ -4,6 +4,7 @@ package com.consultoraestrategia.messengeracademico.main;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -17,6 +18,7 @@ import com.consultoraestrategia.messengeracademico.base.actionMode.BasePresenter
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.entities.GlobalSettings;
 import com.consultoraestrategia.messengeracademico.importData.events.ImportDataEvent;
 import com.consultoraestrategia.messengeracademico.lib.EventBus;
 import com.consultoraestrategia.messengeracademico.main.domain.usecase.DeleteChat;
@@ -28,6 +30,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.consultoraestrategia.messengeracademico.notification.MyFirebaseInstanceIdService.USER_TOPIC;
@@ -156,6 +159,57 @@ public class MainPresenterImpl extends BasePresenterActionModeImpl<MainView, Cha
                     }
             );
         }
+    }
+
+    @Override
+    public void onServerMenuClicked() {
+        Log.d(TAG, "onServerMenuClicked");
+        if (view == null) return;
+            List<GlobalSettings> serverList = new ArrayList<>();
+            serverList.add(GlobalSettings.getNewInstance(GlobalSettings.Servers.LOCAL));
+            serverList.add(GlobalSettings.getNewInstance(GlobalSettings.Servers.PRUEBAS));
+            serverList.add(GlobalSettings.getNewInstance(GlobalSettings.Servers.PRODUCCION));
+            serverList.add(GlobalSettings.getNewInstance(GlobalSettings.Servers.OTRO));
+            String serverUrl = GlobalSettings.getServerUrl();
+            int positionSelected = -1;
+            if (!TextUtils.isEmpty(serverUrl)) {
+                for (int i = 0; i < serverList.size(); i++) {
+                    String url = serverList.get(i).getUrlServer();
+                    if (serverUrl.equals(url)) {
+                        positionSelected = i;
+                        break;
+                    }
+                }
+            }
+
+            view.showListSingleChooser(res.getString(R.string.dialog_title_serverlist), serverList, positionSelected);
+    }
+
+    @Override
+    public void onSelectedServidor(GlobalSettings objectSelected, int selectedPosition) {
+            if (objectSelected.getNombre().equals(GlobalSettings.Servers.OTRO.getNombre())) {
+                showEdtDialog();
+                return;
+            }
+
+            boolean success = objectSelected.save();
+            if (!success) {
+                showImportantMessage(res.getString(R.string.error_server_url_saving));
+            }
+
+    }
+
+    @Override
+    public void onCustomUrlOk(String url) {
+        GlobalSettings.Servers servers = GlobalSettings.Servers.OTRO;
+        GlobalSettings otro = GlobalSettings.getNewInstance(servers);
+        otro.setUrlServer(url + servers.getPath());
+        otro.save();
+    }
+
+    private void showEdtDialog() {
+        if (view != null) view.showEdtDialog();
+
     }
 
     private void removeChat(Chat chat) {

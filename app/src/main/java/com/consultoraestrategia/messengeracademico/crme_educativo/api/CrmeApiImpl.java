@@ -8,6 +8,7 @@ import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.R
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.entities.ResponseUpdatePersonaPhoneNumber;
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.params.GetInfoParams;
 import com.consultoraestrategia.messengeracademico.crme_educativo.api.params.UpdatePersonaPhoneNumberParams;
+import com.consultoraestrategia.messengeracademico.entities.GlobalSettings;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,11 +19,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CrmeApiImpl {
     // Trailing slash is needed
     public static final String TAG = "CrmeApiImpl";
-    private static final String BASE_URL = "http://pruebas.consultoraestrategia.com/portalmovil/PortalAcadMovil.ashx/";
-    private Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
     private static CrmeApiImpl mInstance = null;
     private CrmeApi api;
 
@@ -34,6 +30,11 @@ public class CrmeApiImpl {
     }
 
     private CrmeApiImpl() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(GlobalSettings.getServerUrl()+"/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
         api = retrofit.create(CrmeApi.class);
     }
 

@@ -6,7 +6,10 @@ import com.consultoraestrategia.messengeracademico.chatList.listener.ChatListLis
 import com.consultoraestrategia.messengeracademico.entities.Chat;
 import com.consultoraestrategia.messengeracademico.entities.ChatMessage;
 import com.consultoraestrategia.messengeracademico.entities.Contact;
+import com.consultoraestrategia.messengeracademico.entities.GlobalSettings;
 import com.consultoraestrategia.messengeracademico.main.MainPresenter;
+
+import java.util.List;
 
 /**
  * Created by Steve on 7/03/2017.
@@ -31,4 +34,8 @@ public interface MainView extends BaseActionModeView<MainPresenter, Chat>, ChatL
     void updateChat(Chat chat);
 
     void removeChat(Chat chat);
+
+    void showListSingleChooser(String dialogTitle, List<GlobalSettings> serverList, int positionSelected);
+
+    void showEdtDialog();
 }

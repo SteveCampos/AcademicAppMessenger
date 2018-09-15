@@ -47,6 +47,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private LinearLayoutManager mLinearLayoutManager;
     private OnBottomReachedListener onBottomReachedListener;
 
+
     public interface OnBottomReachedListener {
         void onBottomReached();
 
@@ -156,6 +157,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
 
         }
+        /*
+        if (message.getMessageType().equals(ChatMessage.TYPE_RUBRO)) {
+            if (message.getEmisor().getUid().equals(mainUser.getUid())) {
+                return TYPE_EMISOR_RUBRO;
+            } else {
+                return TYPE_RECEPTOR_RUBRO;
+            }
+
+        }*/
 
         return TYPE_EMISOR_TEXT;
     }

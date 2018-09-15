@@ -153,6 +153,9 @@
     <string name="group_mssg_count_members">%d Integrantes</string>
     <string name="global_mssg_refresh">Actualizar</string>
     <string name="global_action_search">Buscar</string>
-
-
+    <string name="menu_serverlist">Servidores</string>
+    <string name="dialog_title_serverlist">Servidores</string>
+    <string name="error_server_url_saving">Error guardando la dirección del servidor</string>
+    <string name="global_server_custom">Url personalizada</string>
+    <string name="login_dialog_add_server">Servidor Url</string>
 </resources>

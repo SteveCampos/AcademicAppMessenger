@@ -231,7 +231,7 @@ public class ExistsPhonenumbersAsyncTask extends AsyncTask<List<Contact>, Void, 
             Log.d(TAG, "observador: " + observador);
             Log.d(TAG, "observado: " + observado);
 
-            RestApi api = RestApi.getInstance("");
+            RestApi api = RestApi.getInstance();
             try {
                 JSONObject jsonObject = api.fins_Listar(observador, observado);
                 String infoVerified = jsonObject.getString("Value");
