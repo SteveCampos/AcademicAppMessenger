@@ -175,6 +175,9 @@ public class ChatItemHolder extends SelectableViewHolder<Chat> {
                 default:
                     message = lastMessage.getMessageText();
                     break;
+                case ChatMessage.TYPE_RUBRO:
+                    message = res.getString(R.string.txt_global_rubro);
+                    break;
                 case ChatMessage.TYPE_IMAGE:
                     message = res.getString(R.string.txt_global_photo);
                     break;

@@ -21,4 +21,8 @@
 
     <dimen name="image_default_size">198dp</dimen>
     <dimen name="image_emoji_size">20dp</dimen>
+    <dimen name="table_header_width_eval_session">45dp</dimen>
+    <dimen name="table_firstheader_width_eval_session">120dp</dimen>
+    <dimen name="table_body_height_eval_bidimencional">55dp</dimen>
+    <dimen name="table_body_height_eval_session">45dp</dimen>
 </resources>

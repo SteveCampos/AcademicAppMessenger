@@ -158,4 +158,14 @@
     <string name="error_server_url_saving">Error guardando la dirección del servidor</string>
     <string name="global_server_custom">Url personalizada</string>
     <string name="login_dialog_add_server">Servidor Url</string>
+    <string name="txt_global_rubro">*Evaluación*</string>
+    <string name="global_btn_text_finalizar">Finalizar</string>
+    <string name="global_btn_text_back">Atrás</string>
+    <string name="global_btn_text_next">Siguiente</string>
+    <string name="fragment_eval_rubrica_bidimiensional_hint_puntos">Puntos</string>
+    <string name="fragment_eval_rubrica_bidimiensional_hint_nota">Nota</string>
+    <string name="fragment_eval_rubrica_bidimiensional_hint_desempenio">Desempeño</string>
+    <string name="fragment_eval_rubrica_bidimiensional_hint_logro">Logro</string>
+
+
 </resources>

@@ -69,4 +69,6 @@ public interface ChatView extends BaseActionModeView<ChatPresenter, ChatMessage>
     void removeMessage(ChatMessage message);
 
     void showFullScreenImg(String messageUri);
+
+    void showInfoRubro(String messageText);
 }

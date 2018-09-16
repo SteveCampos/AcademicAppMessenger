@@ -695,6 +695,12 @@ public class ChatPresenterImpl extends BasePresenterActionModeImpl<ChatView, Cha
         showMessage(R.string.global_error_not_implemented);
     }
 
+    @Override
+    public void onSelectRubro(ChatMessage message) {
+        showMessage(R.string.global_error_not_implemented);
+        if(view!=null)view.showInfoRubro(message.getMessageText());
+    }
+
     private String getTextCopied(List<ChatMessage> messages) {
         StringBuilder textCopied = new StringBuilder();
         for (int i = 0; i < messages.size(); i++) {

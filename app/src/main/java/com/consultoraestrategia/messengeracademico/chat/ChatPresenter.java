@@ -70,4 +70,5 @@ public interface ChatPresenter extends BasePresenterActionMode<ChatView, ChatMes
 
     void attachContactClicked();
 
+    void onSelectRubro(ChatMessage message);
 }

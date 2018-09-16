@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageImageEmisorHolder;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageImageReceptorHolder;
+import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageRubroEmisorHolder;
+import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageRubroReceptorHolder;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageTextEmisorHolder;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageTextOfficialEmisorHolder;
 import com.consultoraestrategia.messengeracademico.chat.adapters.holder.MessageTextReceptorHolder;
@@ -37,6 +39,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_EMISOR_TEXT_OFFICIAL = 301;
     private static final int TYPE_RECEPTOR_TEXT_OFFICIAL = 302;
 
+    private static final int TYPE_EMISOR_RUBRO = 401;
+    private static final int TYPE_RECEPTOR_RUBRO = 402;
 
     private static final String TAG = ChatMessageAdapter.class.getSimpleName();
 
@@ -46,6 +50,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private RecyclerView recyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private OnBottomReachedListener onBottomReachedListener;
+
 
 
     public interface OnBottomReachedListener {
@@ -157,15 +162,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
 
         }
-        /*
+
         if (message.getMessageType().equals(ChatMessage.TYPE_RUBRO)) {
             if (message.getEmisor().getUid().equals(mainUser.getUid())) {
                 return TYPE_EMISOR_RUBRO;
             } else {
                 return TYPE_RECEPTOR_RUBRO;
             }
-
-        }*/
+        }
 
         return TYPE_EMISOR_TEXT;
     }
@@ -180,6 +184,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             default://TYPE_EMISOR_TEXT
                 View v1 = inflater.inflate(R.layout.chat_item_text_emisor, parent, false);
                 viewHolder = new MessageTextEmisorHolder(v1);
+                break;
+            case TYPE_EMISOR_RUBRO:
+                View v8 = inflater.inflate(R.layout.chat_item_rubro_emisor, parent, false);
+                viewHolder = new MessageRubroEmisorHolder(v8);
+                break;
+            case TYPE_RECEPTOR_RUBRO:
+                View v9 = inflater.inflate(R.layout.chat_item_rubro_receptor, parent, false);
+                viewHolder = new MessageRubroReceptorHolder(v9);
                 break;
             case TYPE_RECEPTOR_TEXT:
                 View v2 = inflater.inflate(R.layout.chat_item_text_receptor, parent, false);
@@ -249,6 +261,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TYPE_RECEPTOR_TEXT_OFFICIAL:
                 MessagetextOfficialReceptorHolder vh6 = (MessagetextOfficialReceptorHolder) holder;
                 vh6.bind(message, previousMessage, listener);
+                break;
+            case TYPE_EMISOR_RUBRO:
+                //MessageRubroEmisorHolder vh7 = (MessageRubroEmisorHolder) holder;
+                //vh7.bind(message, previousMessage, listener);
+                break;
+            case TYPE_RECEPTOR_RUBRO:
+                MessageRubroReceptorHolder v8 = (MessageRubroReceptorHolder) holder;
+                v8.bind(message, previousMessage, listener);
                 break;
         }
     }

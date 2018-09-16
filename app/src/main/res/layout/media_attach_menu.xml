@@ -19,7 +19,7 @@
         android:orientation="vertical">
 
 
-        <!--row 1 -->
+        Row-row 1 -->
 
         <LinearLayout
             android:id="@+id/layout.firstrow"
@@ -91,7 +91,7 @@
         </LinearLayout>
 
 
-        <!--row 2 -->
+        Row-row 2 -->
 
         <LinearLayout
 

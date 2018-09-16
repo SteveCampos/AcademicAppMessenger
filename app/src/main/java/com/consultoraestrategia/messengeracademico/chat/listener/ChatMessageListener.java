@@ -22,4 +22,6 @@ public interface ChatMessageListener extends SelectListener<ChatMessage> {
     void onNewMessageAddedToTheBottom();
 
     void onLoadMore(ChatMessage olderMessage);
+
+    void onClickRubro(ChatMessage message, View v);
 }

@@ -64,6 +64,7 @@ import com.consultoraestrategia.messengeracademico.entities.Contact;
 import com.consultoraestrategia.messengeracademico.fullScreen.FullscreenActivity;
 import com.consultoraestrategia.messengeracademico.importData.ui.ImportDataActivity;
 import com.consultoraestrategia.messengeracademico.importGroups.entities.ui.CrmeUser;
+import com.consultoraestrategia.messengeracademico.infoRubro.ui.IndoRubroFragment;
 import com.consultoraestrategia.messengeracademico.profile.ui.ProfileActivity;
 import com.consultoraestrategia.messengeracademico.utils.PhonenumberUtils;
 import com.consultoraestrategia.messengeracademico.utils.TimeUtils;
@@ -384,6 +385,12 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
     }
 
     @Override
+    public void showInfoRubro(String messageText) {
+        IndoRubroFragment indoRubroFragment = IndoRubroFragment.newInstance(messageText);
+        indoRubroFragment.show(getSupportFragmentManager(), IndoRubroFragment.class.getSimpleName());
+    }
+
+    @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
         if (emojiPopup != null) {
@@ -569,6 +576,11 @@ public class ChatActivity extends BaseActivityActionMode<ChatMessage, ChatView, 
     public void onLoadMore(ChatMessage olderMessage) {
         Log.d(TAG, "onLoadMore");
         presenter.loadMoreMessages(olderMessage);
+    }
+
+    @Override
+    public void onClickRubro(ChatMessage message, View v) {
+        presenter.onSelectRubro(message);
     }
 
 
