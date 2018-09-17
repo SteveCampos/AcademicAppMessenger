@@ -16,7 +16,7 @@ public class NotaCell extends Cell
         this.selected = selected;
     }
 
-    private ColorNota color;
+    private ColorNota color = ColorNota.BLANCO;
 
     public ColorNota getColor() {
         return color;

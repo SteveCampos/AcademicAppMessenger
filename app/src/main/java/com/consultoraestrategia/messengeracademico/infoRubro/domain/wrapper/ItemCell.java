@@ -8,12 +8,25 @@ import org.json.JSONObject;
  */
 
 public class ItemCell {
+    private int competenciaId;
     private String content;
     private String urlImg;
+    private boolean select;
 
-    public ItemCell(String content, String urlImg) {
+
+    public ItemCell(int competenciaId, String content, String urlImg, boolean select) {
+        this.competenciaId = competenciaId;
         this.content = content;
         this.urlImg = urlImg;
+        this.select = select;
+    }
+
+    public int getCompetenciaId() {
+        return competenciaId;
+    }
+
+    public void setCompetenciaId(int competenciaId) {
+        this.competenciaId = competenciaId;
     }
 
     public String getContent() {
@@ -43,5 +56,13 @@ public class ItemCell {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public boolean isSelect() {
+        return select;
+    }
+
+    public void setSelect(boolean select) {
+        this.select = select;
     }
 }

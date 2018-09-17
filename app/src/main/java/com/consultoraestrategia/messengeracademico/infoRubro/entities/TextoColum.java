@@ -5,7 +5,7 @@ package com.consultoraestrategia.messengeracademico.infoRubro.entities;
  */
 
 public class TextoColum extends Column {
-    private ColorNota colorNota;
+    private ColorNota colorNota = ColorNota.BLANCO;
     private String valorNumerico;
 
     public ColorNota getColorNota() {

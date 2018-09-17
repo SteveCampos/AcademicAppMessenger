@@ -162,6 +162,7 @@
     <string name="global_btn_text_finalizar">Finalizar</string>
     <string name="global_btn_text_back">Atrás</string>
     <string name="global_btn_text_next">Siguiente</string>
+    <string name="global_btn_text_close">Cerrar</string>
     <string name="fragment_eval_rubrica_bidimiensional_hint_puntos">Puntos</string>
     <string name="fragment_eval_rubrica_bidimiensional_hint_nota">Nota</string>
     <string name="fragment_eval_rubrica_bidimiensional_hint_desempenio">Desempeño</string>

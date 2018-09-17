@@ -8,9 +8,21 @@
     android:background="@color/md_white_1000">
 
     <TextView
+        android:id="@+id/txtFondo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/md_light_blue_50"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/img_alumn_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/text_alumn_name"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="22dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -21,18 +33,18 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/img_alumn_profile"
-        app:layout_constraintTop_toTopOf="@+id/img_alumn_profile" />
+        app:layout_constraintTop_toTopOf="@+id/img_alumn_profile"
+        tools:text="Juan Daniel" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/img_alumn_profile"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/badge_circle"
-        android:layout_marginLeft="8dp" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_curso"
+        app:srcCompat="@drawable/badge_circle" />
 
 
     <android.support.design.widget.TextInputLayout
@@ -56,7 +68,8 @@
             android:focusable="false"
             android:hint="@string/fragment_eval_rubrica_bidimiensional_hint_puntos"
             android:maxLines="1"
-            android:text="" />
+            android:text=""
+            tools:text="51/60" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -66,6 +79,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/til_logro"
         app:layout_constraintEnd_toStartOf="@+id/til_desempenio"
         app:layout_constraintHorizontal_bias="0.5"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@+id/til_puntos"
         app:layout_constraintTop_toTopOf="@+id/til_logro">
 
@@ -82,7 +96,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/til_desempenio"
-        android:layout_width="64dp"
+        android:layout_width="100dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/til_logro"
         app:layout_constraintEnd_toStartOf="@+id/til_logro"
@@ -98,7 +112,8 @@
             android:focusable="false"
             android:hint="@string/fragment_eval_rubrica_bidimiensional_hint_desempenio"
             android:maxLines="1"
-            android:text="" />
+            android:text=""
+            tools:text="85%" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -117,7 +132,8 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:focusable="false"
-            android:hint="@string/fragment_eval_rubrica_bidimiensional_hint_logro" />
+            android:hint="@string/fragment_eval_rubrica_bidimiensional_hint_logro"
+            tools:text="Destacado" />
     </android.support.design.widget.TextInputLayout>
 
     <com.evrencoskun.tableview.TableView
@@ -130,7 +146,7 @@
         android:layout_marginTop="8dp"
         android:minHeight="100dp"
         app:column_header_height="@dimen/table_header_width_eval_session"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnRetroceder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_logro"
@@ -161,7 +177,42 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/img_alumn_profile"
-        app:layout_constraintTop_toBottomOf="@+id/text_alumn_name" />
+        app:layout_constraintTop_toBottomOf="@+id/text_alumn_name"
+        tools:text="Blanco Calla" />
 
+    <Button
+        android:id="@+id/btnRetroceder"
+        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/global_btn_text_close"
+        android:textColor="@color/md_blue_500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_rubrica"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Educación Matematica"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/md_light_blue_A700"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_curso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="2dp"
+        android:text="Matematica 2° grado -Moises"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_rubrica" />
 
 </android.support.constraint.ConstraintLayout>

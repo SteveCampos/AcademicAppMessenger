@@ -697,7 +697,6 @@ public class ChatPresenterImpl extends BasePresenterActionModeImpl<ChatView, Cha
 
     @Override
     public void onSelectRubro(ChatMessage message) {
-        showMessage(R.string.global_error_not_implemented);
         if(view!=null)view.showInfoRubro(message.getMessageText());
     }
 

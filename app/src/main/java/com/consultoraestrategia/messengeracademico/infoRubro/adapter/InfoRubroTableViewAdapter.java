@@ -12,6 +12,7 @@ import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.Defa
 import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.DefaultColumnViewHolder;
 import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.EvaluacionCellViewHolder;
 import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.NotaCellViewHolder;
+import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.NotaRowViewHolder;
 import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.RubroRowViewHolder;
 import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.SelectorIconosRowViewHolder;
 import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.SelectorValoresColumnViewHolder;
@@ -20,6 +21,7 @@ import com.consultoraestrategia.messengeracademico.infoRubro.entities.Column;
 import com.consultoraestrategia.messengeracademico.infoRubro.entities.CompetenciaCell;
 import com.consultoraestrategia.messengeracademico.infoRubro.entities.ImagenColumn;
 import com.consultoraestrategia.messengeracademico.infoRubro.entities.NotaCell;
+import com.consultoraestrategia.messengeracademico.infoRubro.entities.NotaColumn;
 import com.consultoraestrategia.messengeracademico.infoRubro.entities.Row;
 import com.consultoraestrategia.messengeracademico.infoRubro.entities.TextoColum;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
@@ -32,7 +34,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 public class InfoRubroTableViewAdapter extends AbstractTableAdapter<Column, Row, Cell> {
 
     private static final int CELL_COMPETENCIA = 1, CELL_NOTA = 2;
-    private static final int COLUMN_TEXTO = 11, COLUMN_IMAGEN = 12;
+    private static final int COLUMN_TEXTO = 11, COLUMN_IMAGEN = 12, COLUMN_NOTA = 13;
     private CornerHolder viewHolder;
 
     public InfoRubroTableViewAdapter(Context p_jContext) {
@@ -41,15 +43,18 @@ public class InfoRubroTableViewAdapter extends AbstractTableAdapter<Column, Row,
 
     @Override
     public int getColumnHeaderItemViewType(int position) {
-        int cantidad = m_jCellItems.size();
-        if (cantidad != 0) {
-         Cell cell = m_jCellItems.get(0).get(position);
-         if(cell instanceof CompetenciaCell){
-             return CELL_COMPETENCIA;
-         }else if(cell instanceof NotaCell){
-             return CELL_NOTA;
-         }
+
+        if (m_jColumnHeaderItems.size() != 0) {
+            Column column = m_jColumnHeaderItems.get(position);
+            if(column instanceof TextoColum) {
+                return COLUMN_TEXTO;
+            } else if(column instanceof ImagenColumn){
+                return COLUMN_IMAGEN;
+            }else if(column instanceof NotaColumn){
+                return COLUMN_NOTA;
+            }
         }
+
             return 0;
     }
 
@@ -60,13 +65,14 @@ public class InfoRubroTableViewAdapter extends AbstractTableAdapter<Column, Row,
 
     @Override
     public int getCellItemViewType(int position) {
-        if (m_jColumnHeaderItems.size() != 0) {
-            Column column = m_jColumnHeaderItems.get(position);
-           if(column instanceof TextoColum) {
-               return COLUMN_TEXTO;
-           } else if(column instanceof ImagenColumn){
-               return COLUMN_IMAGEN;
-           }
+        int cantidad = m_jCellItems.size();
+        if (cantidad != 0) {
+            Cell cell = m_jCellItems.get(0).get(position);
+            if(cell instanceof CompetenciaCell){
+                return CELL_COMPETENCIA;
+            }else if(cell instanceof NotaCell){
+                return CELL_NOTA;
+            }
         }
         return 0;
     }
@@ -102,19 +108,6 @@ public class InfoRubroTableViewAdapter extends AbstractTableAdapter<Column, Row,
 
     @Override
     public RecyclerView.ViewHolder onCreateColumnHeaderViewHolder(ViewGroup parent, int viewType) {
-        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.table_row_rubro_evaluacion_layout, parent, false);
-        return new RubroRowViewHolder(layout);
-    }
-
-    @Override
-    public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object p_jValue, int p_nXPosition) {
-        Row column =  (Row) p_jValue;
-        RubroRowViewHolder rubroRowViewHolder = (RubroRowViewHolder)holder;
-        rubroRowViewHolder.bind(column);
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateRowHeaderViewHolder(ViewGroup parent, int viewType) {
         View layout;
         switch (viewType){
             default:
@@ -126,11 +119,15 @@ public class InfoRubroTableViewAdapter extends AbstractTableAdapter<Column, Row,
             case COLUMN_IMAGEN:
                 layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.table_view_selector_iconos_layout, parent, false);
                 return new SelectorIconosRowViewHolder(layout);
+            case COLUMN_NOTA:
+                layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.table_view_nota_evaluacion_layout, parent, false);
+                return new NotaRowViewHolder(layout);
         }
+
     }
 
     @Override
-    public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object p_jValue, int p_nYPosition) {
+    public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object p_jValue, int p_nXPosition) {
         if (holder instanceof SelectorValoresColumnViewHolder && p_jValue instanceof TextoColum) {
             TextoColum textoColum = (TextoColum)p_jValue;
             SelectorValoresColumnViewHolder selectorValoresColumnViewHolder = (SelectorValoresColumnViewHolder) holder;
@@ -139,7 +136,24 @@ public class InfoRubroTableViewAdapter extends AbstractTableAdapter<Column, Row,
             ImagenColumn imagenColumn = (ImagenColumn)p_jValue;
             SelectorIconosRowViewHolder selectorIconosRowViewHolder = (SelectorIconosRowViewHolder)holder;
             selectorIconosRowViewHolder.bind(imagenColumn);
+        }else if(holder instanceof NotaRowViewHolder && p_jValue instanceof NotaColumn){
+            NotaColumn notaColumn = (NotaColumn)p_jValue;
+            NotaRowViewHolder notaRowViewHolder = (NotaRowViewHolder)holder;
+            notaRowViewHolder.bind(notaColumn);
         }
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateRowHeaderViewHolder(ViewGroup parent, int viewType) {
+        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.table_row_rubro_evaluacion_layout, parent, false);
+        return new RubroRowViewHolder(layout);
+    }
+
+    @Override
+    public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object p_jValue, int p_nYPosition) {
+        Row column =  (Row) p_jValue;
+        RubroRowViewHolder rubroRowViewHolder = (RubroRowViewHolder)holder;
+        rubroRowViewHolder.bind(column);
     }
 
     @Override

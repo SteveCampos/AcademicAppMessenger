@@ -8,32 +8,36 @@ import java.util.List;
 
 public class RubroUIFIrebase {
     private static final String TAG = RubroUIFIrebase.class.getSimpleName();
+    private String nombreCursoGradoSeccion;
+    private String nombreRubrica;
     private String nombre;
     private String apellido;
     private String urlImg;
     private String puntos;
     private String nota;
-    private String desempeño;
+    private String desempenio;
     private String logro;
     private List<FirstColumn> columna;
     private List<HeaderTable> fila;
     private List<ListCells> cells;
 
-
-    public RubroUIFIrebase(String nombre, String apellido, String urlImg, String puntos, String nota, String desempeño, String logro, List<FirstColumn> columna, List<HeaderTable> fila, List<ListCells> cells) {
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.urlImg = urlImg;
-        this.puntos = puntos;
-        this.nota = nota;
-        this.desempeño = desempeño;
-        this.logro = logro;
-        this.columna = columna;
-        this.fila = fila;
-        this.cells = cells;
+    public RubroUIFIrebase() {
     }
 
-    public RubroUIFIrebase() {
+    public String getNombreCursoGradoSeccion() {
+        return nombreCursoGradoSeccion;
+    }
+
+    public void setNombreCursoGradoSeccion(String nombreCursoGradoSeccion) {
+        this.nombreCursoGradoSeccion = nombreCursoGradoSeccion;
+    }
+
+    public String getNombreRubrica() {
+        return nombreRubrica;
+    }
+
+    public void setNombreRubrica(String nombreRubrica) {
+        this.nombreRubrica = nombreRubrica;
     }
 
     public String getNombre() {
@@ -76,12 +80,12 @@ public class RubroUIFIrebase {
         this.nota = nota;
     }
 
-    public String getDesempeño() {
-        return desempeño;
+    public String getDesempenio() {
+        return desempenio;
     }
 
-    public void setDesempeño(String desempeño) {
-        this.desempeño = desempeño;
+    public void setDesempenio(String desempenio) {
+        this.desempenio = desempenio;
     }
 
     public String getLogro() {
@@ -114,21 +118,5 @@ public class RubroUIFIrebase {
 
     public void setCells(List<ListCells> cells) {
         this.cells = cells;
-    }
-
-    @Override
-    public String toString() {
-        return "RubroUIFIrebase{" +
-                "nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
-                ", urlImg='" + urlImg + '\'' +
-                ", puntos='" + puntos + '\'' +
-                ", nota='" + nota + '\'' +
-                ", desempeño='" + desempeño + '\'' +
-                ", logro='" + logro + '\'' +
-                ", columna=" + columna.size() +
-                ", fila=" + fila.size() +
-                ", cells=" + cells.size() +
-                '}';
     }
 }

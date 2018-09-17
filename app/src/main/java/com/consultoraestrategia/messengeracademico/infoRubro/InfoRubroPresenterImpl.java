@@ -3,14 +3,10 @@ package com.consultoraestrategia.messengeracademico.infoRubro;
 import android.os.Bundle;
 
 import com.consultoraestrategia.messengeracademico.infoRubro.domain.useCase.TransformarJsonRubroObjeto;
-import com.consultoraestrategia.messengeracademico.infoRubro.entities.Row;
+import com.consultoraestrategia.messengeracademico.infoRubro.entities.Alumno;
 import com.consultoraestrategia.messengeracademico.infoRubro.ui.IndoRubroFragment;
 import com.consultoraestrategia.messengeracademico.infoRubro.ui.InfoRubroView;
 import com.consultoraestrategia.messengeracademico.infoRubro.domain.wrapper.RubroUIFIrebase;
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Jse on 15/09/2018.
@@ -57,6 +53,15 @@ public class InfoRubroPresenterImpl implements InfoRubroPresenter {
                     @Override
                     public void onSuccess(TransformarJsonRubroObjeto.Response response) {
                         if(view!=null)view.showTableView(response.getCellListList(), response.getColumnList(), response.getRowList());
+                        Alumno alumno = response.getAlumno();
+                        if(view!=null)view.setPuntos(alumno.getPuntos());
+                        if(view!=null)view.setAlumno(alumno);
+                        if(view!=null)view.setNota(alumno.getNota());
+                        if(view!=null)view.setDesempenio(alumno.getDesempenio());
+                        if(view!=null)view.setLogro(alumno.getLogro());
+                        if(view!=null)view.setNombreRubrica(response.getNombreRubrica());
+                        if(view!=null)view.setNombreCurso(response.getNombreCurso());
+
                     }
 
                     @Override

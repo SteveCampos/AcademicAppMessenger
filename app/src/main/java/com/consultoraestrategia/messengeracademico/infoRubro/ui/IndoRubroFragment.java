@@ -13,14 +13,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.consultoraestrategia.messengeracademico.R;
 import com.consultoraestrategia.messengeracademico.infoRubro.InfoRubroPresenter;
 import com.consultoraestrategia.messengeracademico.infoRubro.InfoRubroPresenterImpl;
 import com.consultoraestrategia.messengeracademico.infoRubro.adapter.InfoRubroTableViewAdapter;
+import com.consultoraestrategia.messengeracademico.infoRubro.adapter.holder.CornerHolder;
 import com.consultoraestrategia.messengeracademico.infoRubro.domain.useCase.TransformarJsonRubroObjeto;
+import com.consultoraestrategia.messengeracademico.infoRubro.entities.Alumno;
 import com.consultoraestrategia.messengeracademico.infoRubro.entities.Cell;
 import com.consultoraestrategia.messengeracademico.infoRubro.entities.Column;
 import com.consultoraestrategia.messengeracademico.infoRubro.entities.Row;
@@ -30,6 +33,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -67,6 +71,10 @@ public class IndoRubroFragment extends DialogFragment implements InfoRubroView {
     TextView textAlumnLastname;
     @BindView(R.id.root)
     ConstraintLayout root;
+    @BindView(R.id.txt_rubrica)
+    TextView txtRubrica;
+    @BindView(R.id.txt_curso)
+    TextView txtCurso;
     private Unbinder unbinder;
     private InfoRubroTableViewAdapter adapter;
     private InfoRubroPresenter presenter;
@@ -80,6 +88,7 @@ public class IndoRubroFragment extends DialogFragment implements InfoRubroView {
         fragment.setArguments(args);
         return fragment;
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -113,12 +122,61 @@ public class IndoRubroFragment extends DialogFragment implements InfoRubroView {
     @Override
     public void setPresenter(InfoRubroPresenter presenter) {
         presenter.setExtras(getArguments());
+        presenter.attachView(this);
         presenter.onViewCreated();
     }
 
     @Override
     public void showTableView(List<List<Cell>> cellListList, List<Column> columnList, List<Row> rowList) {
-        adapter.setAllItems(columnList,rowList,cellListList);
+        adapter = new InfoRubroTableViewAdapter(getActivity());
+        table.setAdapter(adapter);
+        table.setHasFixedWidth(false);
+        table.setIgnoreSelectionColors(true);
+        CornerHolder cornerHolder = adapter.getViewHolder();
+        if (cornerHolder != null) cornerHolder.bind("Hi ;)");
+        adapter.setAllItems(columnList, rowList, cellListList);
+    }
+
+    @Override
+    public void setPuntos(String puntos) {
+        edtPuntos.setText(puntos);
+    }
+
+    @Override
+    public void setAlumno(Alumno alumno) {
+        textAlumnName.setText(alumno.getNombre());
+        textAlumnLastname.setText(alumno.getApellido());
+        Glide.with(this)
+                .load(alumno.getUrlImg())
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .error(R.drawable.ic_info_outline_black_24dp)
+                .into(imgAlumnProfile);
+    }
+
+    @Override
+    public void setDesempenio(String desempenio) {
+        edtDesempenio.setText(desempenio);
+    }
+
+    @Override
+    public void setNota(String nota) {
+        edtNota.setText(nota);
+    }
+
+    @Override
+    public void setLogro(String logro) {
+        edtLogro.setText(logro);
+    }
+
+    @Override
+    public void setNombreRubrica(String nombreRubrica) {
+        txtRubrica.setText(nombreRubrica);
+    }
+
+    @Override
+    public void setNombreCurso(String nombreCurso) {
+        txtCurso.setText(nombreCurso);
     }
 
     @Override
@@ -146,5 +204,10 @@ public class IndoRubroFragment extends DialogFragment implements InfoRubroView {
                 .setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         this.getDialog().getWindow().
                 setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    @OnClick(R.id.btnRetroceder)
+    public void onViewClicked() {
+        dismiss();
     }
 }

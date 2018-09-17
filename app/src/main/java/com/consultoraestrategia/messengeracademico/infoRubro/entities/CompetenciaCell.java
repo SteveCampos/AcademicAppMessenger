@@ -6,7 +6,7 @@ package com.consultoraestrategia.messengeracademico.infoRubro.entities;
 
 public class CompetenciaCell extends Cell{
     public enum Tipo{TRANSVERSAL, ENFOQUE,BASE}
-    private Tipo tipo;
+    private Tipo tipo = Tipo.BASE;
 
     public Tipo getTipo() {
         return tipo;

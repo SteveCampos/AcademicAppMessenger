@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/md_grey_200"
+            android:textColor="@color/md_light_blue_A700"
             app:layout_constraintBottom_toBottomOf="@+id/bg_img"
             app:layout_constraintEnd_toEndOf="@+id/bg_img"
             tools:text="XX:XX" />
