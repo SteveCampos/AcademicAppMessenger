@@ -69,7 +69,7 @@ public class MessageRubroEmisorHolder extends SelectableViewHolder<ChatMessage> 
 
         MessageUtils.
                 setTimeTitleVisibility(message.getTimestamp(), previousMessage == null ? 0 : previousMessage.getTimestamp(), txtDayGroup, itemView.getResources());
-        MessageImageReceptorHolder.loadImageView(bgImg, img, message);
+        //MessageImageReceptorHolder.loadImageView(bgImg, img, message);
 
         Drawable statusDrawable = MessageUtils.getDrawableFromMessageStatus(message.getMessageStatus(), itemView.getContext());
 

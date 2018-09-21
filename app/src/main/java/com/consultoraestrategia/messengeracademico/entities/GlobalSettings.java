@@ -1,6 +1,7 @@
 package com.consultoraestrategia.messengeracademico.entities;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.consultoraestrategia.messengeracademico.db.MessengerAcademicoDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -88,11 +89,11 @@ public class GlobalSettings extends BaseModel {
         String serverUrl = null;
         GlobalSettings settings = getCurrentSettings();
         if (settings != null) {
+            Log.d("GlobalSettings", "Servidor" + settings.getUrlServer());
             serverUrl = settings.getUrlServer();
         }
         return serverUrl;
     }
-
 
     public enum Servers{
         LOCAL("CRM Local",

@@ -1,6 +1,8 @@
 package com.consultoraestrategia.messengeracademico.notification;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -12,6 +14,8 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -23,6 +27,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
 
     private static final String TAG = "MyFMService";
     public static final int MY_NOTIFICATION_ID = 2348;
+    public static final String USER_TOPIC = "user_";
+    private static final String PREF_USERKEY = "PREF_USERKEY";
+
+
+    public String getKey() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return preferences.getString(PREF_USERKEY, null);
+    }
 
     @Override
     public void onCreate() {

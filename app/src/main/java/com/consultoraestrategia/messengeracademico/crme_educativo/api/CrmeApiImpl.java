@@ -23,10 +23,7 @@ public class CrmeApiImpl {
     private CrmeApi api;
 
     public static CrmeApiImpl getInstance() {
-        if (mInstance == null) {
-            mInstance = new CrmeApiImpl();
-        }
-        return mInstance;
+        return new CrmeApiImpl();
     }
 
     private CrmeApiImpl() {

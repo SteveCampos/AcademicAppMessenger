@@ -52,7 +52,8 @@ public class InfoRubroPresenterImpl implements InfoRubroPresenter {
                 new TransformarJsonRubroObjeto.Callback() {
                     @Override
                     public void onSuccess(TransformarJsonRubroObjeto.Response response) {
-                        if(view!=null)view.showTableView(response.getCellListList(), response.getColumnList(), response.getRowList());
+                        String nombreTabla = "Indicadores";
+                        if(view!=null)view.showTableView(response.getCellListList(), response.getColumnList(), response.getRowList(), nombreTabla);
                         Alumno alumno = response.getAlumno();
                         if(view!=null)view.setPuntos(alumno.getPuntos());
                         if(view!=null)view.setAlumno(alumno);

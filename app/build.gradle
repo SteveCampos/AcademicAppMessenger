@@ -59,7 +59,7 @@ dependencies {
     implementation "com.firebase:firebase-jobdispatcher:$rootProject.ext.jobDispatcherVersion"
     implementation "com.google.firebase:firebase-core:$rootProject.ext.firebaseCoreVersion"
     implementation "com.google.firebase:firebase-database:$rootProject.ext.firebaseDbVersion"
-    //implementation "com.google.firebase:firebase-auth:$rootProject.ext.firebaseAuthVersion"
+    implementation "com.google.firebase:firebase-auth:$rootProject.ext.firebaseAuthVersion"
     implementation "com.google.firebase:firebase-storage:$rootProject.ext.firebaseStorageVersion"
     implementation "com.google.firebase:firebase-messaging:$rootProject.ext.firebaseMessagingVersion"
     // FirebaseUI Auth only

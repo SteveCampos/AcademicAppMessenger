@@ -127,14 +127,14 @@ public class IndoRubroFragment extends DialogFragment implements InfoRubroView {
     }
 
     @Override
-    public void showTableView(List<List<Cell>> cellListList, List<Column> columnList, List<Row> rowList) {
+    public void showTableView(List<List<Cell>> cellListList, List<Column> columnList, List<Row> rowList, String nombreTabla) {
         adapter = new InfoRubroTableViewAdapter(getActivity());
         table.setAdapter(adapter);
         table.setHasFixedWidth(false);
         table.setIgnoreSelectionColors(true);
-        CornerHolder cornerHolder = adapter.getViewHolder();
-        if (cornerHolder != null) cornerHolder.bind("Hi ;)");
         adapter.setAllItems(columnList, rowList, cellListList);
+        CornerHolder cornerHolder = adapter.getViewHolder();
+        if (cornerHolder != null) cornerHolder.bind(nombreTabla);
     }
 
     @Override

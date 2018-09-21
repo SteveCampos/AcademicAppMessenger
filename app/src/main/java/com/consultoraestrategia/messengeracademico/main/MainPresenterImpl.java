@@ -80,6 +80,7 @@ public class MainPresenterImpl extends BasePresenterActionModeImpl<MainView, Cha
         Log.d(TAG, "onCreate");
         //eventBus.register(this);
         view.checkGooglePlayServicesAvailable();
+        suscribeToNotifications(mainUser);
     }
 
     @Override

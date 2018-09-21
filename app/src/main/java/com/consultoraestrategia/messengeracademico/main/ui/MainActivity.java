@@ -168,6 +168,8 @@ public class MainActivity extends BaseActivityActionMode<Chat, MainView, MainPre
         }
     }
 
+
+
     private void startLoadProfile() {
         forwardToClass(LoadProfileActivity.class);
     }
@@ -291,6 +293,11 @@ public class MainActivity extends BaseActivityActionMode<Chat, MainView, MainPre
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
                         // user is now signed out
+                        //CrmeUser
+                        //Chat
+                        //OfficialMessage
+                        //ChatMessage
+                        //Contact
                         forwardToClass(LoadProfileActivity.class);
                     }
                 });

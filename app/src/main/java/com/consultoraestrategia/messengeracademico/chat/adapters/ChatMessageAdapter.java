@@ -263,8 +263,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 vh6.bind(message, previousMessage, listener);
                 break;
             case TYPE_EMISOR_RUBRO:
-                //MessageRubroEmisorHolder vh7 = (MessageRubroEmisorHolder) holder;
-                //vh7.bind(message, previousMessage, listener);
+                MessageRubroEmisorHolder vh7 = (MessageRubroEmisorHolder) holder;
+                vh7.bind(message, previousMessage, listener);
                 break;
             case TYPE_RECEPTOR_RUBRO:
                 MessageRubroReceptorHolder v8 = (MessageRubroReceptorHolder) holder;

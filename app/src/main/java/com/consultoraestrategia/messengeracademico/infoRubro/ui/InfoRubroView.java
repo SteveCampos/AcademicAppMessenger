@@ -15,7 +15,7 @@ import java.util.List;
 public interface InfoRubroView {
     void setPresenter(InfoRubroPresenter presenter);
 
-    void showTableView(List<List<Cell>> cellListList, List<Column> columnList, List<Row> rowList);
+    void showTableView(List<List<Cell>> cellListList, List<Column> columnList, List<Row> rowList, String nombreTabla);
 
     void setPuntos(String puntos);
 
